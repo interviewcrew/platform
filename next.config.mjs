@@ -16,6 +16,17 @@ const withMDX = nextMDX({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
+  images: {
+    remotePatterns: [
+      { hostname: "avatars.githubusercontent.com", pathname: "/u/*" },
+      { hostname: "cdn.discordapp.com", pathname: "/avatars/*" },
+      { hostname: "*.googleusercontent.com", pathname: "/a/*" },
+      { hostname: '*.gravatar.com', pathname: '/**' },
+      { hostname: "media.licdn.com", pathname: "**" },
+      { hostname: "uploadthing.com", pathname: "/f/**" },
+      { hostname: "utfs.io", pathname: "/f/**" },
+    ],
+  },
 }
 
 export default withSearch(withMDX(nextConfig))

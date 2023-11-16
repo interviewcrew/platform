@@ -12,6 +12,7 @@ import {
 import { useMobileNavigationStore } from '@/components/MobileNavigation'
 import { MobileSearch, Search } from '@/components/Search'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import UserMenu from './UserMenu'
 
 function TopLevelNavItem({
   href,
@@ -90,7 +91,7 @@ export const Header = forwardRef<
           <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
-          <Button href="#">Sign in</Button>
+          <UserMenu></UserMenu>
         </div>
       </div>
     </motion.div>
