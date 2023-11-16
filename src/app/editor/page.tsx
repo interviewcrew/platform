@@ -1,6 +1,10 @@
-import Editor from '@/components/editor'
-import Layout from '../internal-layout';
+import Editor from '@/components/Editor';
+import Layout from '../new-layout';
 
 export default function EditorPage() {
-  return (<Layout><Editor></Editor></Layout>)
+  return (
+    <Layout>
+      <Editor langName='kotlin' sampleCode='fun test(a: String): String'></Editor>
+    </Layout>
+  )
 }
