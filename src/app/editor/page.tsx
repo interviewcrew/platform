@@ -1,10 +1,14 @@
 import Editor from '@/components/Editor';
 import Layout from '../new-layout';
+import { SupportedLanguage } from '../supportedLangs';
 
 export default function EditorPage() {
+  const baseCode = 'fun test(a: String): String = ""';
+  const language: SupportedLanguage = { id: 78, language: "kotlin", engine: "Kotlin (1.3.70)" }
+
   return (
     <Layout>
-      <Editor langName='kotlin' sampleCode='fun test(a: String): String'></Editor>
+      <Editor language={language} baseCode={baseCode}></Editor>
     </Layout>
   )
 }
