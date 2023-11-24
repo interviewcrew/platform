@@ -1,19 +1,16 @@
 'use client'
 
-import { CodeSubmission, createCodeSubmission } from '@/app/actions';
+import { createCodeSubmission } from '@/app/actions';
+import { initialState } from '@/app/judge0';
 import { SupportedLanguage, supportedLangs } from '@/app/supportedLangs';
 import { loadLanguage } from '@uiw/codemirror-extensions-langs';
 import CodeMirror from '@uiw/react-codemirror';
 import { useTheme } from 'next-themes';
-import { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Button } from './Button';
+import { Pre } from './Code';
 import MenuWithSecondary from './MenuWithSecondary';
-
-const initialState: CodeSubmission = {
-  code: "",
-  languageId: 1
-}
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -59,10 +56,6 @@ export default function Editor({
 
   const [codeSubmission, formAction] = useFormState(createCodeSubmission, initialState);
 
-  const onChange = useCallback((val: any, viewUpdate: any) => {
-    setCodeContent(val);
-  }, []);
-
   return (
     <>
       <div className='mb-3'>
@@ -76,17 +69,18 @@ export default function Editor({
         value={codeContent}
         height="200px"
         extensions={[loadLanguage(selecetedLang.language)!!]}
-        onChange={onChange}
+        onChange={setCodeContent}
         className='mb-3'
       />
       <form action={formAction}>
         <input type="hidden" id="code" name="code" value={codeContent} required />
         <input type="hidden" id="languageId" name="languageId" value={selecetedLang.id} required />
         <SubmitButton />
-        <p aria-live="polite" className="sr-only">
-          {codeSubmission?.response}
-        </p>
       </form>
+      {codeSubmission.stdout && <Pre title='Standard Output' code={codeSubmission.stdout}><>{codeSubmission.stdout}</></Pre>}
+      {codeSubmission.stderr && <Pre title='Standard Error' code={codeSubmission.stderr}><>{codeSubmission.stderr}</></Pre>}
+      {codeSubmission.compile_output && <Pre title='Compile Output' code={codeSubmission.compile_output}><>{codeSubmission.compile_output}</></Pre>}
+      {codeSubmission.message && <Pre title='Message' code={codeSubmission.message}><>{codeSubmission.message}</></Pre>}
     </>
   );
 }
