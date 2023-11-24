@@ -1,11 +1,10 @@
-const apiKey: string = process.env.JUDGE0_API_KEY ?? ""
 const apiHost: string = process.env.JUDGE0_API_HOST ?? ""
 
 const headers = {
     "content-type": "application/json",
     "Content-Type": "application/json",
-    "X-RapidAPI-Key": apiKey,
-    "X-RapidAPI-Host": apiHost
+    "X-RapidAPI-Key": process.env.JUDGE0_RAPID_API_KEY ?? "",
+    "X-RapidAPI-Host": process.env.JUDGE0_RAPID_API_HOST ?? "",
 };
 
 const postRequest = async (path: string, data: object) => fetch(apiHost + path, {
@@ -46,6 +45,11 @@ export async function createSubmission({
 
     const response = await postRequest(path, data);
 
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`There was an error with status code ${response.status}: ${text}`)
+    }
+
     return response.json();
 }
 
@@ -60,6 +64,11 @@ export async function getSubmissionResult(token: string): Promise<SUBMISSION_RES
     })
 
     const response = await getRequest(path);
+
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`There was an error with status code ${response.status}: ${text}`)
+    }
 
     return response.json();
 }
