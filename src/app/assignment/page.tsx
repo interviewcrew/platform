@@ -1,8 +1,9 @@
 import Editor from '@/components/Editor';
 import Layout from '../new-layout';
 import { SupportedLanguage } from '../supportedLangs';
+import Compiler from '@/components/Compiler';
 
-export default function EditorPage() {
+export default function AssignmentPage() {
   const baseCode = `fun main() {
   println(test("foo"))
 }
@@ -12,7 +13,8 @@ fun test(a: String): String = a`;
 
   return (
     <Layout>
-      <Editor language={language} baseCode={baseCode}></Editor>
+      <Editor language={language} baseCode={baseCode}/>
+      <Compiler />
     </Layout>
   )
 }

@@ -1,32 +1,16 @@
 'use client'
 
-import { createCodeSubmission } from '@/app/actions';
-import { initialState } from '@/app/judge0';
 import { SupportedLanguage, supportedLangs } from '@/app/supportedLangs';
 import { loadLanguage } from '@uiw/codemirror-extensions-langs';
 import CodeMirror from '@uiw/react-codemirror';
 import { useTheme } from 'next-themes';
-import { Dispatch, SetStateAction, useState } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
-import { Button } from './Button';
-import { Pre } from './Code';
 import MenuWithSecondary from './MenuWithSecondary';
+import { useAssignmentStore } from '@/store/assignmentStore';
 
-function SubmitButton() {
-  const { pending } = useFormStatus()
+function LanguageSelector() {
+  const selectedLanguage = useAssignmentStore((state) => state.language); 
+  const setSelectedLanguage = useAssignmentStore((state) => state.setLanguage);
 
-  return (
-    <Button type="submit" aria-disabled={pending}>Submit</Button>
-  )
-}
-
-function LanguageSelector({
-  selectedLanguage,
-  setSelectedLanguage
-}: {
-  selectedLanguage: SupportedLanguage,
-  setSelectedLanguage: Dispatch<SetStateAction<SupportedLanguage>>
-}) {
   return (
     <MenuWithSecondary
       label='Engine:'
@@ -42,7 +26,6 @@ function LanguageSelector({
 
 export default function Editor({
   baseCode,
-  language,
 }: {
   baseCode: string
   language: SupportedLanguage
@@ -51,36 +34,28 @@ export default function Editor({
   let { resolvedTheme } = useTheme()
   let theme: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light'
 
-  const [codeContent, setCodeContent] = useState(baseCode);
-  const [selecetedLang, setSelecetedLang] = useState(language);
 
-  const [codeSubmission, formAction] = useFormState(createCodeSubmission, initialState);
+  const [codeContent, setCodeContent, selectedLang] = [
+    useAssignmentStore((state) => state.code),
+    useAssignmentStore((state) => state.setCode),
+    useAssignmentStore((state) => state.language),
+  ];
+
+  setCodeContent(baseCode);
 
   return (
     <>
       <div className='mb-3'>
-        <LanguageSelector
-          selectedLanguage={selecetedLang}
-          setSelectedLanguage={setSelecetedLang}
-        />
+        <LanguageSelector/>
       </div>
       <CodeMirror
         theme={theme}
         value={codeContent}
         height="200px"
-        extensions={[loadLanguage(selecetedLang.language)!!]}
+        extensions={[loadLanguage(selectedLang.language)!!]}
         onChange={setCodeContent}
         className='mb-3'
       />
-      <form action={formAction}>
-        <input type="hidden" id="code" name="code" value={codeContent} required />
-        <input type="hidden" id="languageId" name="languageId" value={selecetedLang.id} required />
-        <SubmitButton />
-      </form>
-      {codeSubmission.stdout && <Pre title='Standard Output' code={codeSubmission.stdout}><>{codeSubmission.stdout}</></Pre>}
-      {codeSubmission.stderr && <Pre title='Standard Error' code={codeSubmission.stderr}><>{codeSubmission.stderr}</></Pre>}
-      {codeSubmission.compile_output && <Pre title='Compile Output' code={codeSubmission.compile_output}><>{codeSubmission.compile_output}</></Pre>}
-      {codeSubmission.message && <Pre title='Message' code={codeSubmission.message}><>{codeSubmission.message}</></Pre>}
     </>
   );
 }

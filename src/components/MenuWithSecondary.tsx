@@ -18,7 +18,7 @@ export default function MenuWithSecondary<T>({
   label?: string,
   items: T[],
   selectedItem: T,
-  setSelectedItem: Dispatch<SetStateAction<T>>
+  setSelectedItem: (i: T) => void,
   keySelector: (i: T) => Key,
   primarySelector: (i: T) => string,
   secondarySelector: (i: T) => string,
