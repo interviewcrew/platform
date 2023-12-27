@@ -1,8 +1,8 @@
 'use server';
 
 import { z } from 'zod';
-import { SUBMISSION_RESULT_RESPONSE, createSubmission, getSubmissionResult, isWaiting } from './judge0';
-import { supportedLangIds } from "./supportedLangs";
+import { SUBMISSION_RESULT_RESPONSE, createSubmission, getSubmissionResult, isWaiting } from '@/app/judge0';
+import { supportedLangIds } from "@/app/supportedIDEConfigs";
 
 export interface CodeSubmission {
   id?: string,
