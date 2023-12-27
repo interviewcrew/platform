@@ -38,6 +38,9 @@ export default {
     },
     typography: typographyStyles,
     extend: {
+      colors: {
+        'editor': '#282c33',
+      },
       boxShadow: {
         glow: '0 0 4px rgb(0 0 0 / 0.1)',
       },

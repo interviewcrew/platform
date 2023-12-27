@@ -38,3 +38,20 @@ export const supportedLangIds: readonly [string, ...string[]] = [
   supportedLangs[0].id.toString(),
   ...supportedLangs.slice(1).map(lang => lang.id.toString())
 ] as const
+
+export const supportedKeyBindings = [
+  {id: 1, name: "Standard", description: "Standard key bindings"},
+  {id: 2, name: "Vim", description: "Vim key bindings"},
+  {id: 3, name: "Emacs", description: "Emacs key bindings"},
+] as const;
+
+export type SupportedKeyBinding = typeof supportedKeyBindings[number];
+
+export const supportedKeyBindingIds: readonly [string, ...string[]] = [
+  supportedKeyBindings[0].id.toString(),
+  ...supportedKeyBindings.slice(1).map(keyBinding=> keyBinding.id.toString())
+] as const
+
+export type SupportedTabSize = 2 | 4 | 8;
+
+export type SupportedFontSize = 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21;

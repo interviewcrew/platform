@@ -1,28 +1,11 @@
 'use client'
 
-import { SupportedLanguage, supportedLangs } from '@/app/supportedLangs';
+import { SupportedLanguage, supportedLangs } from '@/app/supportedIDEConfigs';
 import { loadLanguage } from '@uiw/codemirror-extensions-langs';
 import CodeMirror from '@uiw/react-codemirror';
 import { useTheme } from 'next-themes';
 import MenuWithSecondary from './MenuWithSecondary';
 import { useAssignmentStore } from '@/store/assignmentStore';
-
-function LanguageSelector() {
-  const selectedLanguage = useAssignmentStore((state) => state.language); 
-  const setSelectedLanguage = useAssignmentStore((state) => state.setLanguage);
-
-  return (
-    <MenuWithSecondary
-      label='Engine:'
-      items={[...supportedLangs]}
-      selectedItem={selectedLanguage}
-      setSelectedItem={setSelectedLanguage}
-      keySelector={l => l.id}
-      primarySelector={l => l.language}
-      secondarySelector={l => l.engine}
-    />
-  )
-}
 
 export default function Editor({
   baseCode,
@@ -45,16 +28,13 @@ export default function Editor({
 
   return (
     <>
-      <div className='mb-3'>
-        <LanguageSelector/>
-      </div>
       <CodeMirror
         theme={theme}
         value={codeContent}
-        height="200px"
+        height='100%'
         extensions={[loadLanguage(selectedLang.language)!!]}
         onChange={setCodeContent}
-        className='mb-3'
+        className='h-full rounded-b-lg'
       />
     </>
   );

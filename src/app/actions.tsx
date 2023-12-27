@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { SUBMISSION_RESULT_RESPONSE, createSubmission, getSubmissionResult, isWaiting } from './judge0';
-import { supportedLangIds } from "./supportedLangs";
+import { supportedLangIds } from "./supportedIDEConfigs";
 
 export interface CodeSubmission {
   id?: string,

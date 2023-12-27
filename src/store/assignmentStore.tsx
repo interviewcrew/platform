@@ -1,4 +1,4 @@
-import { SupportedLanguage } from '@/app/supportedLangs';
+import { SupportedKeyBinding, SupportedLanguage } from '@/app/supportedIDEConfigs';
 import { create } from 'zustand';
 import {SUBMISSION_RESULT_RESPONSE} from '@/app/judge0';
 
@@ -6,8 +6,11 @@ interface AssignmentState {
   code: string;
   setCode: (code: string) => void;
 
-  language: SupportedLanguage
+  language: SupportedLanguage;
   setLanguage: (language: SupportedLanguage) => void;
+  
+  keyBinding: SupportedKeyBinding;
+  setKeyBinding: (keyBinding: SupportedKeyBinding) => void;
 
   submissionResult: SUBMISSION_RESULT_RESPONSE | null;
 }
@@ -16,7 +19,9 @@ export const useAssignmentStore = create<AssignmentState>((set) => ({
     code: '',
     setCode: (code: string) => set({ code }),
     language: { id: 78, language: "kotlin", engine: "Kotlin (1.3.70)" },
-    setLanguage: (language: SupportedLanguage) => {console.log(language); return set({ language })},
+    setLanguage: (language: SupportedLanguage) => set({ language }),
+    keyBinding: {id: 1, name: "Standard", description: "Standard key bindings"},
+    setKeyBinding: (keyBinding: SupportedKeyBinding) => set({ keyBinding }),
     submissionResult: null,
     setSubmissionResult: (submissionResult: SUBMISSION_RESULT_RESPONSE) => set({ submissionResult }),
 }));
