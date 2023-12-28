@@ -2,7 +2,6 @@ import { type Config } from 'tailwindcss'
 import typographyStyles from './typography'
 import typographyPlugin from '@tailwindcss/typography'
 import headlessuiPlugin from '@headlessui/tailwindcss'
-import tailwindcssAnimatePlugin from 'tailwindcss-animate'
 
 export default {
   content: [
@@ -39,7 +38,7 @@ export default {
     typography: typographyStyles,
     extend: {
       colors: {
-        'editor': '#282c33',
+        'editor': '#1e1e1e',
       },
       boxShadow: {
         glow: '0 0 4px rgb(0 0 0 / 0.1)',

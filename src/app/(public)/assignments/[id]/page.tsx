@@ -5,11 +5,13 @@ import Compiler from '@/components/Compiler';
 import { AssignmentLayout } from '@/components/AssignmentLayout';
 
 export default function AssignmentPage({params}: {params: {company: string, id: string}}) {
-  const baseCode = `fun main() {
-  println(test("foo"))
+  const baseCode = `function sum(a: number, b: number) {
+    return a + b;
 }
 
-fun test(a: String): String = a`;
+console.log("Result: " + sum(1,2))
+`;
+
   const language: SupportedLanguage = { id: 78, language: "kotlin", engine: "Kotlin (1.3.70)" }
 
   return (

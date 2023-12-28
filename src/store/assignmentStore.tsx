@@ -18,7 +18,7 @@ interface AssignmentState {
 export const useAssignmentStore = create<AssignmentState>((set) => ({
     code: '',
     setCode: (code: string) => set({ code }),
-    language: { id: 78, language: "kotlin", engine: "Kotlin (1.3.70)" },
+    language:{ id: 74, language: "typescript", engine: "TypeScript (3.7.4)" },
     setLanguage: (language: SupportedLanguage) => set({ language }),
     keyBinding: {id: 1, name: "Standard", description: "Standard key bindings"},
     setKeyBinding: (keyBinding: SupportedKeyBinding) => set({ keyBinding }),

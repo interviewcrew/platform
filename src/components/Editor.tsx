@@ -1,10 +1,11 @@
 'use client'
 
-import { SupportedLanguage, supportedLangs } from '@/app/supportedIDEConfigs';
+import { SupportedLanguage } from '@/app/supportedIDEConfigs';
 import { loadLanguage } from '@uiw/codemirror-extensions-langs';
-import CodeMirror from '@uiw/react-codemirror';
+import CodeMirror, { Extension } from '@uiw/react-codemirror';
+import { vscodeDark, defaultSettingsVscodeDark } from '@uiw/codemirror-theme-vscode';
+import { githubLightInit, defaultSettingsGithubLight } from '@uiw/codemirror-theme-github';
 import { useTheme } from 'next-themes';
-import MenuWithSecondary from './MenuWithSecondary';
 import { useAssignmentStore } from '@/store/assignmentStore';
 
 export default function Editor({
@@ -15,8 +16,18 @@ export default function Editor({
 }
 ) {
   let { resolvedTheme } = useTheme()
-  let theme: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light'
 
+  const githubLight = githubLightInit({
+    settings: {
+      background: 'rgb(248 250 252)',
+      fontFamily: defaultSettingsVscodeDark.fontFamily,
+      gutterBorder: 'rgb(248 250 252)',
+      gutterBackground: 'rgb(248 250 252)',
+      gutterForeground: defaultSettingsGithubLight.gutterForeground
+    }
+  })
+
+  let theme: Extension = resolvedTheme === 'dark' ? vscodeDark : githubLight;
 
   const [codeContent, setCodeContent, selectedLang] = [
     useAssignmentStore((state) => state.code),
@@ -31,7 +42,7 @@ export default function Editor({
       <CodeMirror
         theme={theme}
         value={codeContent}
-        height='100%'
+        height='99%'
         extensions={[loadLanguage(selectedLang.language)!!]}
         onChange={setCodeContent}
         className='h-full rounded-b-lg'

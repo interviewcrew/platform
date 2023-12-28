@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@uiw/codemirror-theme-github": "^4.21.21",
+    "@uiw/codemirror-theme-vscode": "^4.21.21",
     "class-variance-authority": "^0.7.0",
     "lucide-react": "^0.302.0",
     "next": "^14.0.3",
