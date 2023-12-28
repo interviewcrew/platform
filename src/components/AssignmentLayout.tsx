@@ -22,7 +22,7 @@ export function AssignmentLayout({
     >
       <ResizablePanel defaultSize={50} className="min-w-[300px] p-2 flex flex-col">
         <div className="dark:bg-stone-700 bg-slate-100 rounded-t-lg p-2">Problem</div>
-        <div className="flex h-full items-center justify-center rounded-b-lg dark:bg-editor bg-slate-50">
+        <div className="flex h-full items-center justify-center rounded-b-lg dark:bg-editor bg-slate-50 overflow-y-scroll">
           {problem}
         </div>
       </ResizablePanel>
