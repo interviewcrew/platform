@@ -5,6 +5,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
+import { useAssignmentStore } from '@/store/assignmentStore';
 
 export function AssignmentLayout({
   editor,
@@ -15,6 +16,11 @@ export function AssignmentLayout({
   compiler: React.ReactNode,
   problem: React.ReactNode,
 }) {
+
+  const [submissionResult] = [
+    useAssignmentStore((state) => state.submissionResult), 
+  ];
+
   return (
     <ResizablePanelGroup
       direction="horizontal"
@@ -31,10 +37,11 @@ export function AssignmentLayout({
         <ResizablePanelGroup direction="vertical">
           <ResizablePanel defaultSize={90} className="min-h-[200px] h-full w-full p-2 flex flex-col">
             <div className="dark:bg-stone-700 bg-slate-100 rounded-t-lg p-2">Code</div>
-            <div className="h-full w-full rounded-b-lg dark:bg-editor bg-slate-50">
+            <div className="h-full w-full rounded-b-lg dark:bg-editor bg-slate-50 overflow-y-scroll">
               {editor}
             </div>
           </ResizablePanel>
+          {submissionResult && <>
           <ResizableHandle withHandle/>
           <ResizablePanel defaultSize={10} className="p-2 min-h-[100px] flex flex-col">
             <div className="dark:bg-stone-700 bg-slate-100 rounded-t-lg p-2">Execute</div>
@@ -42,6 +49,8 @@ export function AssignmentLayout({
               {compiler}
             </div>
           </ResizablePanel>
+          </>
+        }
         </ResizablePanelGroup>
       </ResizablePanel>
     </ResizablePanelGroup>

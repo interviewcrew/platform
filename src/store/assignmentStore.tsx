@@ -13,6 +13,7 @@ interface AssignmentState {
   setKeyBinding: (keyBinding: SupportedKeyBinding) => void;
 
   submissionResult: SUBMISSION_RESULT_RESPONSE | null;
+  setSubmissionResult: (submissionResult: SUBMISSION_RESULT_RESPONSE) => void;
 }
 
 export const useAssignmentStore = create<AssignmentState>((set) => ({

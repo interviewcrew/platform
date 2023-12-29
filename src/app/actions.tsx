@@ -20,14 +20,26 @@ export async function createCodeSubmission(
   _prevState: SUBMISSION_RESULT_RESPONSE,
   formData: FormData
 ): Promise<SUBMISSION_RESULT_RESPONSE> {
-  const request = schema.parse({
-    code: formData.get('code'),
-    languageId: formData.get('languageId'),
-  })
+  // const request = schema.parse({
+  //   code: formData.get('code'),
+  //   languageId: formData.get('languageId'),
+  // })
 
-  const result = await getCodeResult(request);
+  // const result = await getCodeResult(request);
 
-  return result
+  // return result
+  return new Promise((resolve, reject) => {
+    return resolve({
+      stdout: "This was the standard output",
+      time: "It took 1.2 seconds",
+      memory: "It used 1.2 MB of memory",
+      stderr: "This was the standard error",
+      token: "1234",
+      compile_output: "This was the compile output",
+      message: "This was the message",
+      status: { id: 3, description: "Accepted" },
+    })
+  });
 }
 
 async function getCodeResult(request: { code: string; languageId: string; }) {
