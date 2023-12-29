@@ -4,7 +4,7 @@ import { initialState } from '@/app/judge0';
 import { useTheme } from 'next-themes';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Pre } from './Code';
-import { useAssignmentStore } from '@/store/assignmentStore';
+// import { useAssignmentStore } from '@/store/assignmentStore';
 import { Button } from './Button';
 import { createCodeSubmission } from '@/app/actions';
 import { useEffect } from 'react';
@@ -19,11 +19,11 @@ function SubmitButton() {
 
 export function CompileButton() {
 
-  const [codeContent, selectedLang, setSubmissionResult] = [
-    useAssignmentStore((state) => state.code),
-    useAssignmentStore((state) => state.language),
-    useAssignmentStore((state) => state.setSubmissionResult),
-  ];
+  // const [codeContent, selectedLang, setSubmissionResult] = [
+  //   useAssignmentStore((state) => state.code),
+  //   useAssignmentStore((state) => state.language),
+  //   useAssignmentStore((state) => state.setSubmissionResult),
+  // ];
 
   const [submissionResults, formAction] = useFormState(createCodeSubmission, initialState);
   console.log("InitialState: ", submissionResults)
@@ -36,28 +36,30 @@ export function CompileButton() {
   return (
     <>
     <form action={formAction}>
-      <input type="hidden" id="code" name="code" value={codeContent} required />
-      <input type="hidden" id="languageId" name="languageId" value={selectedLang.id} required />
+      <input type="hidden" id="code" name="code" value="console.log('test')" required />
+      <input type="hidden" id="languageId" name="languageId" value="63" required />
       <SubmitButton />
     </form>
-    { submissionResults.compile_output && <Pre title='Compile Output' code={submissionResults.compile_output}><>{submissionResults.compile_output}</></Pre>}
+    <>Foo</>
+    <>{submissionResults.compile_output}</>
+    <>{JSON.stringify(submissionResults)}</>
     </>
   )
 }
 
 export function CompilerResults() {
-  let { resolvedTheme } = useTheme()
-  let theme: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light'
+  // let { resolvedTheme } = useTheme()
+  // let theme: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light'
 
 
-  const codeSubmission = useAssignmentStore((state) => state.submissionResult)!!;
+  // const codeSubmission = useAssignmentStore((state) => state.submissionResult)!!;
 
   return (
     <>
-      {codeSubmission.stdout && <Pre title='Standard Output' code={codeSubmission.stdout}><>{codeSubmission.stdout}</></Pre>}
+      {/* {codeSubmission.stdout && <Pre title='Standard Output' code={codeSubmission.stdout}><>{codeSubmission.stdout}</></Pre>}
       {codeSubmission.stderr && <Pre title='Standard Error' code={codeSubmission.stderr}><>{codeSubmission.stderr}</></Pre>}
       {codeSubmission.compile_output && <Pre title='Compile Output' code={codeSubmission.compile_output}><>{codeSubmission.compile_output}</></Pre>}
-      {codeSubmission.message && <Pre title='Message' code={codeSubmission.message}><>{codeSubmission.message}</></Pre>}
+      {codeSubmission.message && <Pre title='Message' code={codeSubmission.message}><>{codeSubmission.message}</></Pre>} */}
     </>
   );
 }

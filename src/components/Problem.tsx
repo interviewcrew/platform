@@ -17,24 +17,24 @@ export default function Problem({ problem }: { problem: string }) {
 
   const [colorMode, setColorMode] = useState<"light" | "dark">('dark');
 
-  useEffect(() => {
-    if (resolvedTheme === 'light') {
-      setStyle({
-        ...style,
-        backgroundColor: 'rgb(248 250 252)',
-      });
+  // useEffect(() => {
+  //   if (resolvedTheme === 'light') {
+  //     setStyle({
+  //       ...style,
+  //       backgroundColor: 'rgb(248 250 252)',
+  //     });
       
-      setColorMode("light");
-    }
-    else {
-      setStyle({
-        ...style,
-        backgroundColor: '#1e1e1e',
-      });
+  //     setColorMode("light");
+  //   }
+  //   else {
+  //     setStyle({
+  //       ...style,
+  //       backgroundColor: '#1e1e1e',
+  //     });
 
-      setColorMode("dark");
-    }
-  }, [resolvedTheme, style]);
+  //     setColorMode("dark");
+  //   }
+  // }, [resolvedTheme, style]);
 
   return (
     <MarkdownPreview

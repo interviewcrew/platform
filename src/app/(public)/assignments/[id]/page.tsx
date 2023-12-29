@@ -6,7 +6,7 @@ import Problem from '@/components/Problem';
 
 export default function AssignmentPage({ params }: { params: { company: string, id: string } }) {
   const baseCode = `function minCost(colors: string, neededTime: number[]): number {
-
+    return 0
 };`;
 
 const problem = `
