@@ -29,19 +29,6 @@ export async function createCodeSubmission(
 
   console.log(result);
   return result
-
-  // console.log("Respond comming in");
-
-  // return {
-  //     stdout: "This was the standard output",
-  //     time: "It took 1.2 seconds",
-  //     memory: "It used 1.2 MB of memory",
-  //     stderr: "This was the standard error",
-  //     token: "1234",
-  //     compile_output: "This was the compile output",
-  //     message: "This was the message",
-  //     status: { id: 3, description: "Accepted" },
-  //   };
 }
 
 async function getCodeResult(request: { code: string; languageId: string; }) {

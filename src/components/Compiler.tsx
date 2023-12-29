@@ -34,12 +34,14 @@ export function CompileButton() {
   // }, [submissionResults, setSubmissionResult])
 
   return (
+    <>
     <form action={formAction}>
       <input type="hidden" id="code" name="code" value={codeContent} required />
       <input type="hidden" id="languageId" name="languageId" value={selectedLang.id} required />
       <SubmitButton />
-      { submissionResults.compile_output }
     </form>
+    { submissionResults.compile_output && <Pre title='Compile Output' code={submissionResults.compile_output}><>{submissionResults.compile_output}</></Pre>}
+    </>
   )
 }
 
