@@ -1,7 +1,6 @@
 import Editor from '@/components/Editor';
-import Layout from '../../../new-layout';
-import { SupportedLanguage } from '../../../supportedIDEConfigs';
-import Compiler from '@/components/Compiler';
+import { SupportedLanguage } from '@/app/supportedIDEConfigs';
+import { CompilerResults } from '@/components/Compiler';
 import { AssignmentLayout } from '@/components/AssignmentLayout';
 import Problem from '@/components/Problem';
 
@@ -80,7 +79,7 @@ Copyright ©️ 2023 LeetCode All rights reserved
   return (
     <AssignmentLayout editor={
       <Editor language={language} baseCode={baseCode} />
-    } compiler={<Compiler />} problem={<Problem problem={problem}/>}>
+    } compiler={<CompilerResults />} problem={<Problem problem={problem}/>}>
     </AssignmentLayout>
   )
 }

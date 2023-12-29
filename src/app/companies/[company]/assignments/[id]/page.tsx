@@ -1,7 +1,7 @@
 import Editor from '@/components/Editor';
 import Layout from '@/app/new-layout';
 import { SupportedLanguage } from '@/app/supportedIDEConfigs';
-import Compiler from '@/components/Compiler';
+import CompilerResults from '@/components/Compiler';
 
 export default function AssignmentPage({params}: {params: {company: string, id: string}}) {
   const baseCode = `fun main() {
@@ -15,7 +15,7 @@ fun test(a: String): String = a`;
     <>
       {params.id + ' ' + params.company}
       <Editor language={language} baseCode={baseCode}/>
-      <Compiler />
+      <CompilerResults />
     </>
   )
 }

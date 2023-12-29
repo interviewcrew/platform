@@ -7,6 +7,7 @@ import { Pre } from './Code';
 import { useAssignmentStore } from '@/store/assignmentStore';
 import { Button } from './Button';
 import { createCodeSubmission } from '@/app/actions';
+import { useEffect } from 'react';
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -18,25 +19,31 @@ function SubmitButton() {
 
 export function CompileButton() {
 
-  const [codeContent, selectedLang, submissionResult, setSubmissionResult] = [
-    useAssignmentStore((state) => state.code), 
-    useAssignmentStore((state) => state.language), 
-    useAssignmentStore((state) => state.submissionResult),
+  const [codeContent, selectedLang, setSubmissionResult] = [
+    useAssignmentStore((state) => state.code),
+    useAssignmentStore((state) => state.language),
     useAssignmentStore((state) => state.setSubmissionResult),
   ];
 
-  const [codeSubmission, formAction] = useFormState(createCodeSubmission, initialState);
+  const [submissionResults, formAction] = useFormState(createCodeSubmission, initialState);
+  console.log("InitialState: ", submissionResults)
+
+  // useEffect(() => {
+  //   setSubmissionResult(submissionResults)
+  //   console.log("Updated result: ", submissionResults);
+  // }, [submissionResults, setSubmissionResult])
 
   return (
-        <form action={formAction}>
-          <input type="hidden" id="code" name="code" value={codeContent} required />
-          <input type="hidden" id="languageId" name="languageId" value={selectedLang.id} required />
-          <SubmitButton />
-        </form>
+    <form action={formAction}>
+      <input type="hidden" id="code" name="code" value={codeContent} required />
+      <input type="hidden" id="languageId" name="languageId" value={selectedLang.id} required />
+      <SubmitButton />
+      { submissionResults.compile_output }
+    </form>
   )
 }
 
-export default function Compiler() {
+export function CompilerResults() {
   let { resolvedTheme } = useTheme()
   let theme: 'light' | 'dark' = resolvedTheme === 'dark' ? 'dark' : 'light'
 
