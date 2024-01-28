@@ -48,6 +48,7 @@
     "drizzle-kit": "^0.20.13",
     "eslint": "^8",
     "eslint-config-next": "14.0.1",
+    "eslint-config-prettier": "^9.1.0",
     "flexsearch": "^0.7.31",
     "framer-motion": "^10.16.5",
     "mdast-util-to-string": "^4.0.0",
