@@ -1,5 +1,5 @@
 {
-  "name": "ai-mi",
+  "name": "interviewcrew",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,6 +11,7 @@
     "migrations:push": "node -r esbuild-register src/db/migrate.ts"
   },
   "dependencies": {
+    "@clerk/nextjs": "^4.29.5",
     "@uiw/codemirror-theme-github": "^4.21.21",
     "@uiw/codemirror-theme-vscode": "^4.21.21",
     "@uiw/react-markdown-preview": "^5.0.6",
@@ -27,7 +28,6 @@
   },
   "devDependencies": {
     "@algolia/autocomplete-core": "^1.12.1",
-    "@auth0/nextjs-auth0": "^3.3.0",
     "@headlessui/react": "^1.7.17",
     "@headlessui/tailwindcss": "^0.2.0",
     "@heroicons/react": "^2.0.18",

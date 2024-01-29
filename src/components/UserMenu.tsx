@@ -1,10 +1,10 @@
 'use client'
 
-import { useUser } from '@auth0/nextjs-auth0/client'
 import { Menu, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { Button } from './Button'
 import Avatar from './Avatar'
+import { useUser } from '@clerk/nextjs'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -16,10 +16,9 @@ function menuItemClasses(active: boolean): string {
 
 export default function UserMenu() {
 
-  const { user, error, isLoading } = useUser()
+  const { user, isLoaded, isSignedIn } = useUser()
 
-  if (isLoading) return <></>
-  if (error) return <>{error}</>
+  if (isLoaded) return <></>
 
   if (user) {
     return (
