@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
-import { assignments, companies, users, problems, programming_languages } from "@/db/schema";
+import { assignmentsTable, companiesTable, usersTable, problemsTable, programmingLanguagesTable } from "@/db/schema";
 import { supportedLangs } from "@/app/supportedIDEConfigs";
 import dotenv from "dotenv";
 
@@ -10,31 +10,31 @@ async function resetDB(): Promise<void> {
   const db = drizzle(sql);
 
   // Deletion happens in cascade
-  await db.delete(companies);
+  await db.delete(companiesTable);
 
   const insertedCompany = await db
-    .insert(companies)
+    .insert(companiesTable)
     .values({
       name: "Emma Sleep",
     })
-    .returning({ id: companies.id, name: companies.name });
+    .returning({ id: companiesTable.id, name: companiesTable.name });
 
   const user = await db
-    .insert(users)
+    .insert(usersTable)
     .values({
       authId: process.env.CLERK_SAMPLE_USER_ID,
       companyId: insertedCompany[0].id,
     })
     .returning({
-      id: users.id,
-      authId: users.authId,
-      companyId: users.companyId,
+      id: usersTable.id,
+      authId: usersTable.authId,
+      companyId: usersTable.companyId,
     });
 
-  await db.insert(programming_languages).values(supportedLangs.map((lang) => ({ id: lang.id, name: lang.language })));
+  await db.insert(programmingLanguagesTable).values(supportedLangs.map((lang) => ({ id: lang.id, name: lang.language })));
 
   const problem = await db
-  .insert(problems)
+  .insert(problemsTable)
   .values({
     title: "Minimum Time to Make Rope Colorful",
     description: `
@@ -102,27 +102,27 @@ Related Topics: [Array](/tag/array/), [String](/tag/string/), [Dynamic Programmi
 Copyright ©️ 2023 LeetCode All rights reserved
     `,
   }).returning({
-    id: problems.id,
-    title: problems.title,
-    description: problems.description,
+    id: problemsTable.id,
+    title: problemsTable.title,
+    description: problemsTable.description,
   });
 
 
 
   const assignment = await db
-    .insert(assignments)
+    .insert(assignmentsTable)
     .values({
       title: "Assignment 1",
-      hash: "Emma Sleep",
+      hash: "dpv-yhep-xer",
       companyId: user[0].companyId,
       problemId: problem[0].id,
     })
     .returning({
-      id: assignments.id,
-      title: assignments.title,
-      hash: assignments.hash,
-      companyId: assignments.companyId,
-      problemId: assignments.problemId,
+      id: assignmentsTable.id,
+      title: assignmentsTable.title,
+      hash: assignmentsTable.hash,
+      companyId: assignmentsTable.companyId,
+      problemId: assignmentsTable.problemId,
     });
 }
 
