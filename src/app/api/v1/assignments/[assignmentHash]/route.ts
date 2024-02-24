@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import { drizzle } from "drizzle-orm/vercel-postgres";
-import { getAssignmentFromDB } from "./transcriptions/route";
+import { getAssignment } from "@/db/repositories/assignmentRepository";
 
 export async function GET(
   _request: NextRequest,
@@ -17,7 +17,7 @@ export async function GET(
   try {
     const db = drizzle(sql);
 
-    const assignments = await getAssignmentFromDB(
+    const assignments = await getAssignment(
       db,
       params.assignmentHash,
       userAuthId

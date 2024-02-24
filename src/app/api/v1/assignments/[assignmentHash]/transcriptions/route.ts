@@ -2,21 +2,14 @@ import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import {
-  assignmentsTable,
-  companiesTable,
-  usersTable,
   transcriptionsTable,
 } from "@/db/schema";
-import { VercelPgDatabase, drizzle } from "drizzle-orm/vercel-postgres";
-import { eq, and } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/vercel-postgres";
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
+import { getAssignment } from "@/db/repositories/assignmentRepository";
+import { Transcription, insertTranscriptions } from "@/db/repositories/transcriptionRepository";
 
-type Transcription = {
-  speaker: string;
-  transcription: string;
-  order: number;
-};
 
 export async function POST(
   request: NextRequest,
@@ -58,7 +51,7 @@ export async function POST(
   try {
     const db = drizzle(sql);
 
-    const assignments = await getAssignmentFromDB(
+    const assignments = await getAssignment(
       db,
       params.assignmentHash,
       userAuthId
@@ -88,41 +81,4 @@ export async function POST(
       { status: 500 }
     );
   }
-}
-export async function getAssignmentFromDB(
-  db: VercelPgDatabase<Record<string, never>>,
-  assignmentHash: string,
-  userId: string
-) {
-  return await db
-    .select()
-    .from(assignmentsTable)
-    .leftJoin(companiesTable, eq(assignmentsTable.companyId, companiesTable.id))
-    .leftJoin(usersTable, eq(usersTable.companyId, companiesTable.id))
-    .where(
-      and(
-        eq(assignmentsTable.hash, assignmentHash),
-        eq(usersTable.authId, userId)
-      )
-    );
-}
-
-async function insertTranscriptions(
-  db: VercelPgDatabase<Record<string, never>>,
-  transcriptions: Transcription[],
-  assignmentId: number,
-  userId: number
-) {
-  await db
-    .insert(transcriptionsTable)
-    .values(
-      transcriptions.map((dialog) => ({
-        speaker: dialog.speaker,
-        transcription: dialog.transcription,
-        order: dialog.order,
-        assignmentId: assignmentId,
-        userId,
-      }))
-    )
-    .onConflictDoNothing();
 }
