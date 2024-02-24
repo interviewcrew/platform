@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS "transcriptions_assignment_id_order_user_id_index" ON "transcriptions" ("assignment_id","order","user_id");

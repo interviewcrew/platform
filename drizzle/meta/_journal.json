@@ -22,6 +22,13 @@
       "when": 1708766094251,
       "tag": "0002_dapper_mauler",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1708768728700,
+      "tag": "0003_sturdy_raza",
+      "breakpoints": true
     }
   ]
 }
