@@ -75,9 +75,9 @@ export const assignmentsTable = pgTable(
     companyId: integer("company_id")
       .references(() => companiesTable.id, { onDelete: "cascade" })
       .notNull(),
-    problemId: integer("problem_id")
-      .references(() => problemsTable.id, { onDelete: "cascade" })
-      .notNull(),
+    problemId: integer("problem_id").references(() => problemsTable.id, {
+      onDelete: "cascade",
+    }),
   },
   (table) => {
     return {
@@ -123,7 +123,7 @@ export const transcriptionsTable = pgTable(
       .notNull(),
   },
   (table) => ({
-    unq: uniqueIndex().on(table.assignmentId, table.order, table.userId)
+    unq: uniqueIndex().on(table.assignmentId, table.order, table.userId),
   })
 );
 

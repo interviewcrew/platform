@@ -1,0 +1,1 @@
+ALTER TABLE "assignments" ALTER COLUMN "problem_id" DROP NOT NULL;
