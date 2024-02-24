@@ -20,6 +20,7 @@
     "class-variance-authority": "^0.7.0",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.29.3",
+    "drizzle-zod": "^0.5.1",
     "lucide-react": "^0.302.0",
     "next": "^14.0.3",
     "react": "^18",
