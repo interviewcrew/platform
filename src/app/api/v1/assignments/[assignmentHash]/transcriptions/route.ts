@@ -89,7 +89,7 @@ export async function POST(
     );
   }
 }
-async function getAssignmentFromDB(
+export async function getAssignmentFromDB(
   db: VercelPgDatabase<Record<string, never>>,
   assignmentHash: string,
   userId: string
