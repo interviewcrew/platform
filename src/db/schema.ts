@@ -79,12 +79,13 @@ export type NewSubmission = typeof submissionsTable.$inferInsert;
 
 export const transcriptionsTable = pgTable("transcriptions", {
     id: serial("id").primaryKey(),
-    speacker: varchar("speaker", { length: 256}).notNull(),
+    speaker: varchar("speaker", { length: 256}).notNull(),
     transcription: text("transcription").notNull(),
     order: integer("order").notNull(),
     createdAt: timestamp("created_at", {mode: "date"} ).defaultNow(),
     updatedAt: timestamp("updated_at", {mode: "date"} ).defaultNow(),
     assignmentId: integer("assignment_id").references(() => assignmentsTable.id, { onDelete: "cascade" }).notNull(),
+    userId: integer("user_id").references(() => usersTable.id, { onDelete: "cascade" }).notNull(),
 });
 
 export type Transcription = typeof transcriptionsTable.$inferSelect;

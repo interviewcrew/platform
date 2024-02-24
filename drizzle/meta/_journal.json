@@ -15,6 +15,13 @@
       "when": 1708705383967,
       "tag": "0001_brown_bulldozer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1708766094251,
+      "tag": "0002_dapper_mauler",
+      "breakpoints": true
     }
   ]
 }
