@@ -11,6 +11,7 @@ async function resetDB(): Promise<void> {
 
   // Deletion happens in cascade
   await db.delete(organizationTable);
+  await db.delete(programmingLanguagesTable);
 
   const insertedOrganization = await db
     .insert(organizationTable)
