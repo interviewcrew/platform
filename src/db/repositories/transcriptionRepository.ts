@@ -10,7 +10,7 @@ export type Transcription = {
 export async function insertTranscriptions(
   db: VercelPgDatabase<Record<string, never>>,
   transcriptions: Transcription[],
-  assignmentId: number,
+  interviewId: number,
   userId: number
 ) {
   await db
@@ -20,7 +20,7 @@ export async function insertTranscriptions(
         speaker: dialog.speaker,
         transcription: dialog.transcription,
         order: dialog.order,
-        assignmentId: assignmentId,
+        interviewId: interviewId,
         userId,
       }))
     )

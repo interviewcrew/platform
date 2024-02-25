@@ -2,11 +2,11 @@
 
 import { supportedLangs, supportedKeyBindings } from '@/app/supportedIDEConfigs';
 import MenuWithSecondary from './MenuWithSecondary';
-import { useAssignmentStore } from '@/store/assignmentStore';
+import { useInterviewStore } from '@/store/interviewStore';
 
 export function LanguageSelector() {
-  const selectedLanguage = useAssignmentStore((state) => state.language); 
-  const setSelectedLanguage = useAssignmentStore((state) => state.setLanguage);
+  const selectedLanguage = useInterviewStore((state) => state.language);
+  const setSelectedLanguage = useInterviewStore((state) => state.setLanguage);
 
   return (
     <MenuWithSecondary
@@ -22,8 +22,8 @@ export function LanguageSelector() {
 }
 
 export function KeyBindingSelector() {
-  const selectedKeyBinding = useAssignmentStore((state) => state.keyBinding);
-  const setSelectedKeyBinding = useAssignmentStore((state) => state.setKeyBinding);
+  const selectedKeyBinding = useInterviewStore((state) => state.keyBinding);
+  const setSelectedKeyBinding = useInterviewStore((state) => state.setKeyBinding);
 
   return (
     <MenuWithSecondary

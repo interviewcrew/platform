@@ -15,7 +15,7 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { CompileButton } from './Compiler';
 
 
-export const AssignmentHeader = forwardRef<
+export const InterviewHeader = forwardRef<
   React.ElementRef<'div'>,
   { className?: string }
 >(function AssingmentHeader({ className }, ref) {

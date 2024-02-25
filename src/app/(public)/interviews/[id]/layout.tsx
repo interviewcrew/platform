@@ -2,7 +2,7 @@
 
 import { Providers } from "@/app/providers";
 import { Footer } from '@/components/Footer'
-import { AssignmentHeader } from '@/components/AssignmentHeader'
+import { InterviewHeader } from '@/components/InterviewHeader'
 
 export default function Layout({
   children,
@@ -12,7 +12,7 @@ export default function Layout({
     return (
         <Providers>
             <div className="h-screen py-14">
-              <AssignmentHeader />
+              <InterviewHeader />
               <main className="h-full">
                 {children}
               </main>

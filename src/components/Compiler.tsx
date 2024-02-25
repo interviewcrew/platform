@@ -3,7 +3,7 @@
 import { initialState } from '@/app/judge0';
 import { useTheme } from 'next-themes';
 import { useFormState, useFormStatus } from 'react-dom';
-import { useAssignmentStore } from '@/store/assignmentStore';
+import { useInterviewStore } from '@/store/interviewStore';
 import { createCodeSubmission } from '@/app/actions';
 import { useEffect } from 'react';
 import { useContainerSize } from '@/lib/hooks/ContinerSize';
@@ -12,7 +12,7 @@ function SubmitButton({backgroundColor, hoverColor, textColor}: {backgroundColor
   const { pending } = useFormStatus()
 
   const [setIsCompiling] = [
-    useAssignmentStore((state) => state.setIsCompiling),
+    useInterviewStore((state) => state.setIsCompiling),
   ];
 
   useEffect(() => {
@@ -40,9 +40,9 @@ export function CompileButton() {
   const { resolvedTheme } = useTheme();
 
   const [codeContent, selectedLang, setSubmissionResult] = [
-    useAssignmentStore((state) => state.code),
-    useAssignmentStore((state) => state.language),
-    useAssignmentStore((state) => state.setSubmissionResult),
+    useInterviewStore((state) => state.code),
+    useInterviewStore((state) => state.language),
+    useInterviewStore((state) => state.setSubmissionResult),
   ];
 
 
@@ -139,8 +139,8 @@ function CompileSuspence() {
 
 export function CompilerResults() {
   const [codeSubmission, isCompiling] = [
-    useAssignmentStore((state) => state.submissionResult)!!,
-    useAssignmentStore((state) => state.isCompiling),
+    useInterviewStore((state) => state.submissionResult)!!,
+    useInterviewStore((state) => state.isCompiling),
   ];
 
   return (

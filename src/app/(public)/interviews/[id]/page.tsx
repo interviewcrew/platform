@@ -1,10 +1,9 @@
 import Editor from '@/components/Editor';
-import { SupportedLanguage } from '@/app/supportedIDEConfigs';
 import { CompilerResults } from '@/components/Compiler';
-import { AssignmentLayout } from '@/components/AssignmentLayout';
+import { InterviewLayout } from '@/components/InterviewLayout';
 import Problem from '@/components/Problem';
 
-export default function AssignmentPage({ params }: { params: { company: string, id: string } }) {
+export default function InterviewPage({ params }: { params: { organization: string, id: string } }) {
   const baseCode = `function minCost(colors: string, neededTime: number[]): number {
     console.log("Hello World");
     return 0;
@@ -79,9 +78,9 @@ Copyright ©️ 2023 LeetCode All rights reserved
 `;
 
   return (
-    <AssignmentLayout editor={
+    <InterviewLayout editor={
       <Editor baseCode={baseCode} />
     } compiler={<CompilerResults />} problem={<Problem problem={problem}/>}>
-    </AssignmentLayout>
+    </InterviewLayout>
   )
 }

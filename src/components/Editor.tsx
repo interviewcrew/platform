@@ -6,7 +6,7 @@ import CodeMirror, { Extension } from '@uiw/react-codemirror';
 import { vscodeDark, defaultSettingsVscodeDark } from '@uiw/codemirror-theme-vscode';
 import { githubLightInit, defaultSettingsGithubLight } from '@uiw/codemirror-theme-github';
 import { useTheme } from 'next-themes';
-import { useAssignmentStore } from '@/store/assignmentStore';
+import { useInterviewStore } from '@/store/interviewStore';
 import { useEffect } from 'react';
 
 export default function Editor({
@@ -30,15 +30,15 @@ export default function Editor({
   let theme: Extension = resolvedTheme === 'dark' ? vscodeDark : githubLight;
 
   const [setCode, selectedLanguage] = [
-    useAssignmentStore((state) => state.setCode),
-    useAssignmentStore((state) => state.language),
+    useInterviewStore((state) => state.setCode),
+    useInterviewStore((state) => state.language),
   ];
 
   useEffect(() => {
     setCode(baseCode);
   }, [baseCode, setCode]);
 
-  const code = useAssignmentStore((state) => state.code);
+  const code = useInterviewStore((state) => state.code);
 
   return (
     <div data-gramm="false" className='h-full rounded-b-lg'>

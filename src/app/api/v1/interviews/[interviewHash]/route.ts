@@ -2,11 +2,11 @@ import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import { drizzle } from "drizzle-orm/vercel-postgres";
-import { getAssignment } from "@/db/repositories/assignmentRepository";
+import { getInterview } from "@/db/repositories/interviewRepository";
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { assignmentHash: string } }
+  { params }: { params: { interviewHash: string } }
 ) {
   const { userId: userAuthId } = auth();
 
@@ -17,20 +17,16 @@ export async function GET(
   try {
     const db = drizzle(sql);
 
-    const assignments = await getAssignment(
-      db,
-      params.assignmentHash,
-      userAuthId
-    );
+    const interviews = await getInterview(db, params.interviewHash, userAuthId);
 
-    if (assignments.length === 0) {
+    if (interviews.length === 0) {
       return NextResponse.json(
-        { error: "Assignment not found" },
+        { error: "Interview not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ assignment: assignments[0].assignments });
+    return NextResponse.json({ interview: interviews[0].interviews });
   } catch (error) {
     return NextResponse.json(
       { error: (error as { message: string }).message },

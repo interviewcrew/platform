@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
-import { assignmentsTable, companiesTable, usersTable, problemsTable, programmingLanguagesTable } from "@/db/schema";
+import { interviewsTable, organizationTable, usersTable, problemsTable, programmingLanguagesTable } from "@/db/schema";
 import { supportedLangs } from "@/app/supportedIDEConfigs";
 import dotenv from "dotenv";
 
@@ -10,25 +10,25 @@ async function resetDB(): Promise<void> {
   const db = drizzle(sql);
 
   // Deletion happens in cascade
-  await db.delete(companiesTable);
+  await db.delete(organizationTable);
 
-  const insertedCompany = await db
-    .insert(companiesTable)
+  const insertedOrganization = await db
+    .insert(organizationTable)
     .values({
       name: "Emma Sleep",
     })
-    .returning({ id: companiesTable.id, name: companiesTable.name });
+    .returning({ id: organizationTable.id, name: organizationTable.name });
 
   const user = await db
     .insert(usersTable)
     .values({
       authId: process.env.CLERK_SAMPLE_USER_ID,
-      companyId: insertedCompany[0].id,
+      organizationId: insertedOrganization[0].id,
     })
     .returning({
       id: usersTable.id,
       authId: usersTable.authId,
-      companyId: usersTable.companyId,
+      organizationId: usersTable.organizationId,
     });
 
   await db.insert(programmingLanguagesTable).values(supportedLangs.map((lang) => ({ id: lang.id, name: lang.language })));
@@ -109,20 +109,20 @@ Copyright ©️ 2023 LeetCode All rights reserved
 
 
 
-  const assignment = await db
-    .insert(assignmentsTable)
+  const interview = await db
+    .insert(interviewsTable)
     .values({
-      title: "Assignment 1",
+      title: "Interview 1",
       hash: "dpv-yhep-xer",
-      companyId: user[0].companyId,
+      organizationId: user[0].organizationId,
       problemId: problem[0].id,
     })
     .returning({
-      id: assignmentsTable.id,
-      title: assignmentsTable.title,
-      hash: assignmentsTable.hash,
-      companyId: assignmentsTable.companyId,
-      problemId: assignmentsTable.problemId,
+      id: interviewsTable.id,
+      title: interviewsTable.title,
+      hash: interviewsTable.hash,
+      organizationId: interviewsTable.organizationId,
+      problemId: interviewsTable.problemId,
     });
 }
 

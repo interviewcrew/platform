@@ -7,19 +7,19 @@ import {
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
-import { getAssignment } from "@/db/repositories/assignmentRepository";
+import { getInterview } from "@/db/repositories/interviewRepository";
 import { Transcription, insertTranscriptions } from "@/db/repositories/transcriptionRepository";
 
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { assignmentHash: string } }
+  { params }: { params: { interviewHash: string } }
 ) {
   const requestSchema = z.object({
     transcriptions: z.array(
       createInsertSchema(transcriptionsTable).omit({
         id: true,
-        assignmentId: true,
+        interviewId: true,
         createdAt: true,
         updatedAt: true,
         userId: true,
@@ -51,28 +51,28 @@ export async function POST(
   try {
     const db = drizzle(sql);
 
-    const assignments = await getAssignment(
+    const interviews = await getInterview(
       db,
-      params.assignmentHash,
+      params.interviewHash,
       userAuthId
     );
 
-    if (assignments.length === 0) {
+    if (interviews.length === 0) {
       return NextResponse.json(
-        { error: "Assignment not found" },
+        { error: "Interview not found" },
         { status: 404 }
       );
     }
 
-    const userId = assignments[0].users?.id;
+    const userId = interviews[0].users?.id;
     if (!userId) {
       return NextResponse.json(
-        { error: "Assignment doesn't blong to the user" },
+        { error: "Interview doesn't blong to the user" },
         { status: 404 }
       );
     }
 
-    insertTranscriptions(db, requestParsed.transcriptions, assignments[0].assignments.id, userId)
+    insertTranscriptions(db, requestParsed.transcriptions, interviews[0].interviews.id, userId)
 
     return NextResponse.json({ status: "Successful" });
   } catch (error) {

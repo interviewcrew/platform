@@ -8,15 +8,15 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-export const companiesTable = pgTable("companies", {
+export const organizationTable = pgTable("organizations", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
 });
 
-export type Company = typeof companiesTable.$inferSelect;
-export type NewCompany = typeof companiesTable.$inferInsert;
+export type Organization = typeof organizationTable.$inferSelect;
+export type NewOrganization = typeof organizationTable.$inferInsert;
 
 export const usersTable = pgTable(
   "users",
@@ -25,8 +25,8 @@ export const usersTable = pgTable(
     authId: varchar("auth_id", { length: 256 }),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
     updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
-    companyId: integer("company_id")
-      .references(() => companiesTable.id, { onDelete: "cascade" })
+    organizationId: integer("organization_id")
+      .references(() => organizationTable.id, { onDelete: "cascade" })
       .notNull(),
   },
   (table) => {
@@ -56,7 +56,7 @@ export const problemsTable = pgTable("problems", {
   description: text("description").notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
-  companyId: integer("company_id").references(() => companiesTable.id, {
+  organizationId: integer("organiaztion_id").references(() => organizationTable.id, {
     onDelete: "cascade",
   }),
 });
@@ -64,16 +64,16 @@ export const problemsTable = pgTable("problems", {
 export type Problem = typeof problemsTable.$inferSelect;
 export type NewProblem = typeof problemsTable.$inferInsert;
 
-export const assignmentsTable = pgTable(
-  "assignments",
+export const interviewsTable = pgTable(
+  "interviews",
   {
     id: serial("id").primaryKey(),
     title: varchar("title", { length: 256 }).notNull(),
     hash: varchar("hash", { length: 256 }).notNull(),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
     updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
-    companyId: integer("company_id")
-      .references(() => companiesTable.id, { onDelete: "cascade" })
+    organizationId: integer("organization_id")
+      .references(() => organizationTable.id, { onDelete: "cascade" })
       .notNull(),
     problemId: integer("problem_id").references(() => problemsTable.id, {
       onDelete: "cascade",
@@ -86,8 +86,8 @@ export const assignmentsTable = pgTable(
   }
 );
 
-export type Assignment = typeof assignmentsTable.$inferSelect;
-export type NewAssignment = typeof assignmentsTable.$inferInsert;
+export type Interview = typeof interviewsTable.$inferSelect;
+export type NewInterview = typeof interviewsTable.$inferInsert;
 
 export const submissionsTable = pgTable("submissions", {
   id: serial("id").primaryKey(),
@@ -95,8 +95,8 @@ export const submissionsTable = pgTable("submissions", {
   result: text("result").notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
-  assignmentId: integer("assignment_id")
-    .references(() => assignmentsTable.id, { onDelete: "cascade" })
+  interviewId: integer("interview_id")
+    .references(() => interviewsTable.id, { onDelete: "cascade" })
     .notNull(),
   languageId: integer("language_id")
     .references(() => programmingLanguagesTable.id, { onDelete: "cascade" })
@@ -115,15 +115,15 @@ export const transcriptionsTable = pgTable(
     order: integer("order").notNull(),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
     updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
-    assignmentId: integer("assignment_id")
-      .references(() => assignmentsTable.id, { onDelete: "cascade" })
+    interviewId: integer("interview_id")
+      .references(() => interviewsTable.id, { onDelete: "cascade" })
       .notNull(),
     userId: integer("user_id")
       .references(() => usersTable.id, { onDelete: "cascade" })
       .notNull(),
   },
   (table) => ({
-    unq: uniqueIndex().on(table.assignmentId, table.order, table.userId),
+    unq: uniqueIndex().on(table.interviewId, table.order, table.userId),
   })
 );
 

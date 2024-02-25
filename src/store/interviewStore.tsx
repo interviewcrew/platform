@@ -2,7 +2,7 @@ import { SupportedKeyBinding, SupportedLanguage } from '@/app/supportedIDEConfig
 import { create } from 'zustand';
 import {SUBMISSION_RESULT_RESPONSE} from '@/app/judge0';
 
-interface AssignmentState {
+interface InterviewState {
   code: string;
   setCode: (code: string) => void;
 
@@ -19,7 +19,7 @@ interface AssignmentState {
   setIsCompiling: (isCompiling: boolean) => void;
 }
 
-export const useAssignmentStore = create<AssignmentState>((set) => ({
+export const useInterviewStore = create<InterviewState>((set) => ({
     code: '',
     setCode: (code: string) => set({ code }),
     language:{ id: 74, language: "typescript", engine: "TypeScript (3.7.4)" },

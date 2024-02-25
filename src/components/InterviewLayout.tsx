@@ -5,10 +5,10 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
-import { useAssignmentStore } from '@/store/assignmentStore';
+import { useInterviewStore } from '@/store/interviewStore';
 import { useEffect, useState } from "react";
 
-export function AssignmentLayout({
+export function InterviewLayout({
   editor,
   compiler,
   problem,
@@ -19,8 +19,8 @@ export function AssignmentLayout({
 }) {
 
   const [submissionResult, isCompiling] = [
-    useAssignmentStore((state) => state.submissionResult),
-    useAssignmentStore((state) => state.isCompiling),
+    useInterviewStore((state) => state.submissionResult),
+    useInterviewStore((state) => state.isCompiling),
   ];
 
   const [hasResults, setHasResults] = useState(submissionResult !== null && submissionResult.status.id !== 1);
