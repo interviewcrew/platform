@@ -26,7 +26,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ interview: interviews[0].interviews });
+    return NextResponse.json({ ...interviews[0].interviews });
   } catch (error) {
     return NextResponse.json(
       { error: (error as { message: string }).message },
