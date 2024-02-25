@@ -15,7 +15,10 @@ export async function getInterview(
   return await db
     .select()
     .from(interviewsTable)
-    .leftJoin(organizationTable, eq(interviewsTable.organizationId, organizationTable.id))
+    .leftJoin(
+      organizationTable,
+      eq(interviewsTable.organizationId, organizationTable.id)
+    )
     .leftJoin(usersTable, eq(usersTable.organizationId, organizationTable.id))
     .where(
       and(
@@ -30,12 +33,21 @@ export async function insertInterview(
   interview: Interview,
   organizationId: number
 ) {
-  await db
+  return await db
     .insert(interviewsTable)
     .values({
       ...interview,
       organizationId: organizationId,
       problemId: null,
     })
-    .onConflictDoNothing();
+    .onConflictDoNothing()
+    .returning({
+      id: interviewsTable.id,
+      title: interviewsTable.title,
+      hash: interviewsTable.hash,
+      organizationId: interviewsTable.organizationId,
+      problemId: interviewsTable.problemId,
+      createdAt: interviewsTable.createdAt,
+      updatedAt: interviewsTable.updatedAt,
+    });
 }

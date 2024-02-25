@@ -64,14 +64,18 @@ export async function POST(request: NextRequest) {
 
     if (interviews.length > 0) {
       return NextResponse.json(
-        { error: "Interview already exists" },
-        { status: 409 }
+        { ...interviews[0].interviews },
+        { status: 200 }
       );
     }
 
-    insertInterview(db, requestParsed.interview, organization[0].organizations.id);
+    const interview = await insertInterview(
+      db,
+      requestParsed.interview,
+      organization[0].organizations.id
+    );
 
-    return NextResponse.json({ status: "Successful" });
+    return NextResponse.json({ ...interview[0] }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { error: (error as { message: string }).message },
