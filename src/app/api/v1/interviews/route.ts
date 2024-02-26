@@ -13,14 +13,12 @@ import {
 import { getOrganization } from "@/db/repositories/organizationRepository";
 
 export async function POST(request: NextRequest) {
-  const requestSchema = z.object({
-    interview: createInsertSchema(interviewsTable).omit({
-      id: true,
-      problemId: true,
-      organizationId: true,
-      createdAt: true,
-      updatedAt: true,
-    }),
+  const requestSchema = createInsertSchema(interviewsTable).omit({
+    id: true,
+    problemId: true,
+    organizationId: true,
+    createdAt: true,
+    updatedAt: true,
   });
 
   const { userId: userAuthId } = auth();
@@ -29,10 +27,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let requestParsed: { interview: Interview };
+  let interviewParams: Interview;
 
   try {
-    requestParsed = requestSchema.parse(await request.json());
+    interviewParams = requestSchema.parse(await request.json());
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ errors: error.issues }, { status: 400 });
@@ -56,11 +54,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const interviews = await getInterview(
-      db,
-      requestParsed.interview.hash,
-      userAuthId
-    );
+    const interviews = await getInterview(db, interviewParams.hash, userAuthId);
 
     if (interviews.length > 0) {
       return NextResponse.json(
@@ -71,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     const interview = await insertInterview(
       db,
-      requestParsed.interview,
+      interviewParams,
       organization[0].organizations.id
     );
 
