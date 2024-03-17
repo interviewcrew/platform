@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { Logo } from '@/components/Logo'
 import { SlimLayout } from '@/components/SlimLayout'
 import { type Metadata } from 'next'
-import { SignUp } from '@clerk/nextjs'
+import { SignUp, auth } from '@clerk/nextjs'
+import { redirect } from 'next/navigation'
 import '@/app/(public)/(auth)/styles.css'
 
 export const metadata: Metadata = {
@@ -11,6 +12,12 @@ export const metadata: Metadata = {
 }
 
 export default function Register() {
+  const { userId }= auth()
+
+  if(userId) {
+    redirect("/dashboard")
+  }
+
   return (
     <SlimLayout>
       <div className="flex">
@@ -18,7 +25,7 @@ export default function Register() {
           <Logo className="h-14 w-auto" />
         </Link>
       </div>
-      <SignUp />
+      <SignUp afterSignUpUrl={"/dashboard"}/>
       <div className="text-xs ml-2 text-gray-600">
         Have an account? {" "}
         <Link href="/login" className="text-blue-600 font-bold">

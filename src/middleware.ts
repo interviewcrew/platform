@@ -18,9 +18,9 @@ export default authMiddleware({
 
     if(
         !auth.orgId &&
-        request.nextUrl.pathname !== "/organizations" 
+        request.nextUrl.pathname !== "/dashboard/organizations" 
     ) {
-        const organizationSelection = new URL("/organizations", request.url);
+        const organizationSelection = new URL("/dashboard/organizations", request.url);
         return NextResponse.redirect(organizationSelection);
     }
 

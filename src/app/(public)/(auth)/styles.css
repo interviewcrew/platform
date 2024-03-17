@@ -10,8 +10,19 @@
   display: none;
 }
 
+.cl-scrollBox + div {
+  display: none;
+}
+
+.cl-pageScrollBox {
+  margin-bottom: 0;
+  box-shadow: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+
 .cl-card {
-  margin-bottom: 0px;
+  margin-bottom: 0;
   box-shadow: none;
   padding: 8px;
   margin: 2px;
