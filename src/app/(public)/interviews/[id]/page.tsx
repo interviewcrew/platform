@@ -1,6 +1,6 @@
 import Editor from '@/components/Editor';
 import { CompilerResults } from '@/components/Compiler';
-import { InterviewLayout } from '@/components/InterviewLayout';
+import { InterviewLayout } from '@/components/IDELayout';
 import Problem from '@/components/Problem';
 
 export default function InterviewPage({ params }: { params: { organization: string, id: string } }) {

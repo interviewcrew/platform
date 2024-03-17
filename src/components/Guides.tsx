@@ -1,4 +1,4 @@
-import { Button } from '@/components/Button'
+import { Button } from '@/components/IDEButton'
 import { Heading } from '@/components/Heading'
 
 const guides = [

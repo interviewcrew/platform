@@ -1,8 +1,8 @@
 'use client'
 
 import { Providers } from "@/app/providers";
-import { Footer } from '@/components/Footer'
-import { InterviewHeader } from '@/components/InterviewHeader'
+import { Footer } from '@/components/IDEFooter'
+import { InterviewHeader } from '@/components/IDEHeader'
 
 export default function Layout({
   children,

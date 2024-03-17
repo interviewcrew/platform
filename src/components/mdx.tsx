@@ -6,7 +6,7 @@ import { Heading } from '@/components/Heading'
 import { Prose } from '@/components/Prose'
 
 export const a = Link
-export { Button } from '@/components/Button'
+export { Button } from '@/components/IDEButton'
 export { CodeGroup, Code as code, Pre as pre } from '@/components/Code'
 
 export function wrapper({ children }: { children: React.ReactNode }) {

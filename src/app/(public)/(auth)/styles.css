@@ -1,0 +1,18 @@
+.cl-rootBox {
+  margin: 0 auto;
+}
+
+.cl-main + div {
+  display: none;
+}
+
+.cl-footer + div {
+  display: none;
+}
+
+.cl-card {
+  margin-bottom: 0px;
+  box-shadow: none;
+  padding: 8px;
+  margin: 2px;
+}

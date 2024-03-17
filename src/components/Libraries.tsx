@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import { Button } from '@/components/Button'
+import { Button } from '@/components/IDEButton'
 import { Heading } from '@/components/Heading'
 import logoGo from '@/images/logos/go.svg'
 import logoNode from '@/images/logos/node.svg'
