@@ -27,6 +27,7 @@ const nextConfig = {
       { hostname: "utfs.io", pathname: "/f/**" },
       { hostname: "tailwindui.com", pathname: "/**" },
       { hostname: "images.unsplash.com", pathname: "/**" },
+      { hostname: "img.clerk.com", pathname: "/**" },
     ],
   },
   async headers() {
