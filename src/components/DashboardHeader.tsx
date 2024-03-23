@@ -2,7 +2,6 @@
 
 import { Fragment } from "react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { LogoLight } from "@/components/LogoLight";
 import Image from "next/image";
 import { User } from "./page";
@@ -11,19 +10,31 @@ import { useClerk } from "@clerk/nextjs";
 import { IconLight } from "@/components/IconLight";
 import { Logo } from "@/components/Logo";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import clsx from "clsx";
 
 const navigation = [
-  { name: "Interviews", href: "#", current: true },
-  { name: "Problems", href: "#", current: false },
+  { name: "Interviews", href: "/dashboard", current: true },
+  { name: "Problems", href: "/dashboard/problems", current: false },
 ];
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
-export default function Header({ user }: { user: User }) {
+export default function Header({
+  user,
+  current,
+}: {
+  user: User;
+  current: string | null;
+}) {
   const { signOut } = useClerk();
   const router = useRouter();
+
+  navigation.forEach((item) => {
+    if (item.name === current) {
+      item.current = true;
+    } else {
+      item.current = false;
+    }
+  });
 
   return (
     <Popover
@@ -36,7 +47,7 @@ export default function Header({ user }: { user: User }) {
             <div className="relative flex flex-wrap items-center justify-center lg:justify-between">
               {/* Logo */}
               <div className="absolute left-0 flex-shrink-0 py-5 lg:static">
-                <a href="#">
+                <a href="/dashboard">
                   <span className="sr-only">Interview crew</span>
                   <IconLight className="md:hidden h-8 w-auto" />
                   <LogoLight className="hidden md:block h-8 w-auto" />
@@ -98,41 +109,37 @@ export default function Header({ user }: { user: User }) {
                   {/* Left nav */}
                   <div className="hidden lg:col-span-2 lg:block">
                     <nav className="flex space-x-4">
-                      {navigation.map((item) => (
+                      {current &&
+                        navigation.map((item) => (
+                          <a
+                            key={item.name}
+                            href={item.href}
+                            className={clsx(
+                              item.current ? "text-white" : "text-cyan-100",
+                              "rounded-md bg-white bg-opacity-0 px-3 py-2 text-sm font-medium hover:bg-opacity-10"
+                            )}
+                            aria-current={item.current ? "page" : undefined}
+                          >
+                            {item.name}
+                          </a>
+                        ))}
+                      {!current && (
                         <a
-                          key={item.name}
-                          href={item.href}
-                          className={classNames(
-                            item.current ? "text-white" : "text-cyan-100",
-                            "rounded-md bg-white bg-opacity-0 px-3 py-2 text-sm font-medium hover:bg-opacity-10"
-                          )}
-                          aria-current={item.current ? "page" : undefined}
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.back();
+                          }}
+                          className="text-cyan-100 rounded-md bg-white bg-opacity-0 px-3 py-2 text-sm font-medium hover:bg-opacity-10"
                         >
-                          {item.name}
+                          <ArrowLeft className="text-cyan-100 h-6 w-6" />
                         </a>
-                      ))}
+                      )}
                     </nav>
                   </div>
-                  <div className="px-12 lg:px-0">{/* Search */}</div>
-                  <div className="mx-auto w-full max-w-xs lg:max-w-md">
-                    <label htmlFor="search" className="sr-only">
-                      Search
-                    </label>
-                    <div className="relative text-white focus-within:text-gray-600">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <MagnifyingGlassIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </div>
-                      <input
-                        id="search"
-                        className="block w-full rounded-md border-0 bg-white/20 py-1.5 pl-10 pr-3 text-white placeholder:text-white focus:bg-white focus:text-gray-900 focus:ring-0 focus:placeholder:text-gray-500 sm:text-sm sm:leading-6"
-                        placeholder="Search"
-                        type="search"
-                        name="search"
-                      />
-                    </div>
+                  <div className="px-12 lg:px-0">
+                    {/* Search */}
+                    <div className="mx-auto w-full max-w-xs lg:max-w-md min-h-6"></div>
                   </div>
                 </div>
               </div>

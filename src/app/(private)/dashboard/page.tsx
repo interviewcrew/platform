@@ -1,7 +1,8 @@
 import { currentUser } from "@clerk/nextjs"
-import Header from "./Header";
+import Header from "@/components/DashboardHeader";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import InterviewList from "@/components/InterviewList";
 
 export interface User {
   fullName: string;
@@ -63,10 +64,6 @@ const announcements = [
   },
 ];
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
 export default async function DashboardPage() {
   const loadedUser = await currentUser();
 
@@ -82,27 +79,27 @@ export default async function DashboardPage() {
 
 
   const stats = [
-    { label: "All interviews", value: 0 },
-    { label: "Past interviews", value: 0 },
-    { label: "Upcoming interviews", value: 0 },
+    { label: "All", value: 0 },
+    { label: "Done", value: 0 },
+    { label: "Upcoming", value: 0 },
   ];
   
   return (
     <>
       <div className="min-h-full">
-        <Header user={user}/>
+        <Header user={user} current={"Interviews"}/>
         <main className="-mt-24 pb-8">
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-            <h1 className="sr-only">Profile</h1>
+            <h1 className="sr-only">Interviews</h1>
             {/* Main 3 column grid */}
-            <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
+            <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-5">
               {/* Left column */}
-              <div className="grid grid-cols-1 gap-4 lg:col-span-2">
+              <div className="grid grid-cols-1 col-span-2 gap-4">
                 {/* Welcome panel */}
                 <section aria-labelledby="profile-overview-title">
                   <div className="overflow-hidden rounded-lg bg-white shadow">
                     <h2 className="sr-only" id="profile-overview-title">
-                      Profile Overview
+                      Interviews status
                     </h2>
                     <div className="bg-white p-6">
                       <div className="sm:flex sm:items-center sm:justify-between">
@@ -151,17 +148,17 @@ export default async function DashboardPage() {
 
                 {/* Actions panel */}
                 <section aria-labelledby="quick-links-title">
-                  <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-gray-200 shadow sm:grid sm:grid-cols-2 sm:gap-px sm:divide-y-0">
+                  <div className="rounded-lg bg-white shadow">
                     <h2 className="sr-only" id="quick-links-title">
-                      Quick links
+                      Interview List
                     </h2>
-                    <div>Hello</div>
+                    <InterviewList interviewType={"All"} userId={loadedUser.id}/>
                   </div>
                 </section>
               </div>
 
               {/* Right column */}
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 col-span-3 tgap-4">
                 {/* Announcements */}
                 <section aria-labelledby="announcements-title">
                   <div className="overflow-hidden rounded-lg bg-white shadow">
