@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
 import {
   interviewsTable,
-  organizationTable,
+  organizationsTable,
   usersTable,
   problemsTable,
   programmingLanguagesTable,
@@ -16,7 +16,7 @@ async function resetDB(): Promise<void> {
   const db = drizzle(sql);
 
   // Deletion happens in cascade
-  await db.delete(organizationTable);
+  await db.delete(organizationsTable);
   await db.delete(programmingLanguagesTable);
 
   if (process.env.NODE_ENV === "production") {
@@ -35,7 +35,7 @@ async function resetDB(): Promise<void> {
   }
 
   const insertedOrganizations = await db
-    .insert(organizationTable)
+    .insert(organizationsTable)
     .values([
       {
         name: "InterviewCrew 1",
@@ -48,7 +48,7 @@ async function resetDB(): Promise<void> {
         slug: "interviewcrew-2",
       },
     ])
-    .returning({ id: organizationTable.id, name: organizationTable.name });
+    .returning({ id: organizationsTable.id, name: organizationsTable.name });
 
   const user = await db
     .insert(usersTable)
