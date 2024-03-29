@@ -2,35 +2,43 @@ import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import { drizzle } from "drizzle-orm/vercel-postgres";
-import { getInterview } from "@/db/repositories/interviewRepository";
+import { getInterviewByHashId } from "@/db/repositories/interviewRepository";
+import * as schema from "@/db/schema";
+import { withErrorHandler } from "@/lib/api-helpers/error-handler";
+import {
+  getOrganizationWithErrorHandling, getUserWithErrorHandling,
+} from "@/lib/api-helpers/auth";
 
-export async function GET(
+export const GET = withErrorHandler(getInterview);
+
+async function getInterview(
   _request: NextRequest,
   { params }: { params: { interviewHash: string } }
 ) {
-  const { userId: userAuthId } = auth();
+  const { userId: userExternalId } = auth();
 
-  if (!userAuthId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!userExternalId) {
+    return NextResponse.json({ error: "User is not logged in" }, { status: 401 });
   }
 
-  try {
-    const db = drizzle(sql);
+  const db = drizzle(sql, { schema });
 
-    const interviews = await getInterview(db, params.interviewHash, userAuthId);
+  const user = await getUserWithErrorHandling(db, userExternalId);
 
-    if (interviews.length === 0) {
-      return NextResponse.json(
-        { error: "Interview not found" },
-        { status: 404 }
-      );
-    }
+  const organization = await getOrganizationWithErrorHandling(
+    db,
+    user.organizationId
+  );
 
-    return NextResponse.json({ ...interviews[0].interviews });
-  } catch (error) {
-    return NextResponse.json(
-      { error: (error as { message: string }).message },
-      { status: 500 }
-    );
+  let interview = await getInterviewByHashId(
+    db,
+    params.interviewHash,
+    organization.id
+  );
+
+  if (!interview) {
+    return NextResponse.json({ error: "Interview not found" }, { status: 404 });
   }
+
+  return NextResponse.json(interview);
 }
