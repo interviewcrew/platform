@@ -43,6 +43,13 @@
       "when": 1708855059592,
       "tag": "0005_adorable_loki",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1711717318687,
+      "tag": "0006_mature_randall",
+      "breakpoints": true
     }
   ]
 }

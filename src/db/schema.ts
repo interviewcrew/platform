@@ -11,30 +11,24 @@ import {
 export const organizationTable = pgTable("organizations", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
+  externaleId: varchar("external_id", { length: 256 }).notNull().unique(),
+  slug: varchar("slug", { length: 256 }).notNull().unique(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });
 
 export type Organization = typeof organizationTable.$inferSelect;
 export type NewOrganization = typeof organizationTable.$inferInsert;
 
-export const usersTable = pgTable(
-  "users",
-  {
-    id: serial("id").primaryKey(),
-    authId: varchar("auth_id", { length: 256 }),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
-    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
-    organizationId: integer("organization_id")
-      .references(() => organizationTable.id, { onDelete: "cascade" })
-      .notNull(),
-  },
-  (table) => {
-    return {
-      authIdIndex: uniqueIndex("auth_id_index").on(table.authId),
-    };
-  }
-);
+export const usersTable = pgTable("users", {
+  id: serial("id").primaryKey(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  externalId: varchar("external_id", { length: 256 }).unique(),
+  organizationId: integer("organization_id")
+    .references(() => organizationTable.id, { onDelete: "cascade" })
+    .notNull(),
+});
 
 export type User = typeof usersTable.$inferSelect;
 export type NewUser = typeof usersTable.$inferInsert;
@@ -42,8 +36,8 @@ export type NewUser = typeof usersTable.$inferInsert;
 export const programmingLanguagesTable = pgTable("programming_languages", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });
 
 export type ProgrammingLanguage = typeof programmingLanguagesTable.$inferSelect;
@@ -54,11 +48,14 @@ export const problemsTable = pgTable("problems", {
   id: serial("id").primaryKey(),
   title: varchar("name", { length: 256 }).notNull(),
   description: text("description").notNull(),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
-  organizationId: integer("organiaztion_id").references(() => organizationTable.id, {
-    onDelete: "cascade",
-  }),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  organizationId: integer("organiaztion_id").references(
+    () => organizationTable.id,
+    {
+      onDelete: "cascade",
+    }
+  ),
 });
 
 export type Problem = typeof problemsTable.$inferSelect;
@@ -70,8 +67,8 @@ export const interviewsTable = pgTable(
     id: serial("id").primaryKey(),
     title: varchar("title", { length: 256 }).notNull(),
     hash: varchar("hash", { length: 256 }).notNull(),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
-    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
     organizationId: integer("organization_id")
       .references(() => organizationTable.id, { onDelete: "cascade" })
       .notNull(),
@@ -93,8 +90,8 @@ export const submissionsTable = pgTable("submissions", {
   id: serial("id").primaryKey(),
   code: text("code").notNull(),
   result: text("result").notNull(),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
   interviewId: integer("interview_id")
     .references(() => interviewsTable.id, { onDelete: "cascade" })
     .notNull(),
@@ -113,8 +110,8 @@ export const transcriptionsTable = pgTable(
     speaker: varchar("speaker", { length: 256 }).notNull(),
     transcription: text("transcription").notNull(),
     order: integer("order").notNull(),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
-    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
     interviewId: integer("interview_id")
       .references(() => interviewsTable.id, { onDelete: "cascade" })
       .notNull(),
