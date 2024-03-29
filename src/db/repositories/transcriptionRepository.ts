@@ -1,5 +1,6 @@
 import { VercelPgDatabase } from "drizzle-orm/vercel-postgres";
 import { transcriptionsTable } from "@/db/schema";
+import * as schema from "@/db/schema";
 
 export type Transcription = {
   speaker: string;
@@ -8,7 +9,7 @@ export type Transcription = {
 };
 
 export async function insertTranscriptions(
-  db: VercelPgDatabase<Record<string, never>>,
+  db: VercelPgDatabase<typeof schema>,
   transcriptions: Transcription[],
   interviewId: number,
   userId: number
