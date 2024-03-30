@@ -23,6 +23,7 @@
     "drizzle-zod": "^0.5.1",
     "lucide-react": "^0.302.0",
     "next": "^14.0.3",
+    "openai": "^4.29.2",
     "react": "^18",
     "react-dom": "^18",
     "react-resizable-panels": "^1.0.5",

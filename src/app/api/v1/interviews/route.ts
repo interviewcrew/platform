@@ -2,17 +2,25 @@ import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import { interviewsTable } from "@/db/schema";
-import { drizzle } from "drizzle-orm/vercel-postgres";
-import { z } from "zod";
+import { VercelPgDatabase, drizzle } from "drizzle-orm/vercel-postgres";
 import { createInsertSchema } from "drizzle-zod";
 import {
   Interview,
-  getInterview,
+  getInterviewByHashId,
   insertInterview,
 } from "@/db/repositories/interviewRepository";
-import { getOrganization } from "@/db/repositories/organizationRepository";
+import * as schema from "@/db/schema";
+import {
+  withErrorHandler,
+} from "@/lib/api-helpers/error-handler";
+import {
+  getOrganizationWithErrorHandling, getUserWithErrorHandling,
+} from "@/lib/api-helpers/auth";
+import { OptionsHandler } from "@/lib/api-helpers/shared";
 
-export async function POST(request: NextRequest) {
+export const POST = withErrorHandler(createInterview);
+
+async function createInterview(request: NextRequest) {
   const requestSchema = createInsertSchema(interviewsTable).omit({
     id: true,
     problemId: true,
@@ -21,65 +29,55 @@ export async function POST(request: NextRequest) {
     updatedAt: true,
   });
 
-  const { userId: userAuthId } = auth();
+  const { userId: userExternalId } = auth();
 
-  if (!userAuthId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  let interviewParams: Interview;
-
-  try {
-    interviewParams = requestSchema.parse(await request.json());
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ errors: error.issues }, { status: 400 });
-    }
-
+  if (!userExternalId) {
     return NextResponse.json(
-      { error: "Unknown request validation error" },
-      { status: 500 }
+      { error: "User is not logged in" },
+      { status: 401 }
     );
   }
 
-  try {
-    const db = drizzle(sql);
+  const interviewParams = requestSchema.parse(await request.json());
 
-    const organization = await getOrganization(db, userAuthId);
+  const db = drizzle(sql, { schema });
 
-    if (organization.length === 0) {
-      return NextResponse.json(
-        { error: "User doesn't belong to a organization" },
-        { status: 404 }
-      );
-    }
+  const user = await getUserWithErrorHandling(db, userExternalId);
 
-    const interviews = await getInterview(db, interviewParams.hash, userAuthId);
+  const organization = await getOrganizationWithErrorHandling(
+    db,
+    user.organizationId
+  );
 
-    if (interviews.length > 0) {
-      return NextResponse.json(
-        { ...interviews[0].interviews },
-        { status: 200 }
-      );
-    }
-
-    const interview = await insertInterview(
-      db,
-      interviewParams,
-      organization[0].organizations.id
-    );
-
-    return NextResponse.json({ ...interview[0] }, { status: 201 });
-  } catch (error) {
-    return NextResponse.json(
-      { error: (error as { message: string }).message },
-      { status: 500 }
-    );
-  }
+  return getOrInsertInterview(db, interviewParams, organization.id);
 }
 
-export async function OPTIONS(request: NextRequest) {
-  return new NextResponse("", {
-    status: 200,
-  });
+async function getOrInsertInterview(
+  db: VercelPgDatabase<typeof schema>,
+  interviewDto: Interview,
+  organizationId: number
+) {
+  let interview = await getInterviewByHashId(
+    db,
+    interviewDto.hash,
+    organizationId
+  );
+
+  if (interview) {
+    return NextResponse.json(interview, { status: 200 });
+  }
+
+  const interviews = await insertInterview(
+    db,
+    interviewDto,
+    organizationId
+  );
+
+  interview = interviews[0];
+
+  return NextResponse.json(interview, { status: 201 });
 }
+
+// This is to solve the bug in NextJS where if you don't have a GET route,
+// It will throw a CORS error. Because GET route is also handling the OPTIONS request
+export const OPTIONS = OptionsHandler;

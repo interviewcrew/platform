@@ -1,35 +1,54 @@
 import { VercelPgDatabase } from "drizzle-orm/vercel-postgres";
-import { interviewsTable, organizationTable, usersTable } from "@/db/schema";
+import { interviewsTable } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import * as schema from "@/db/schema";
 
 export type Interview = {
   title: string;
   hash: string;
 };
-
-export async function getInterview(
-  db: VercelPgDatabase<Record<string, never>>,
+export async function getInterviewByHashId(
+  db: VercelPgDatabase<typeof schema>,
   interviewHash: string,
-  userId: string
+  organiaztionId: number
 ) {
-  return await db
-    .select()
-    .from(interviewsTable)
-    .leftJoin(
-      organizationTable,
-      eq(interviewsTable.organizationId, organizationTable.id)
-    )
-    .leftJoin(usersTable, eq(usersTable.organizationId, organizationTable.id))
-    .where(
-      and(
-        eq(interviewsTable.hash, interviewHash),
-        eq(usersTable.authId, userId)
-      )
-    );
+  const interview = await db.query.interviewsTable.findFirst({
+    where: and(
+      eq(interviewsTable.hash, interviewHash),
+      eq(interviewsTable.organizationId, organiaztionId)
+    ),
+  });
+
+  return interview;
+}
+
+export async function getInterviewByHashIdWithFields(
+  db: VercelPgDatabase<typeof schema>,
+  interviewHash: string,
+  organiaztionId: number
+) {
+  const interview = await db.query.interviewsTable.findFirst({
+    where: and(
+      eq(interviewsTable.hash, interviewHash),
+      eq(interviewsTable.organizationId, organiaztionId)
+    ),
+    with: {
+      problem: true,
+      submissions: {
+        with: {
+          language: true,
+        },
+      },
+      transcriptions: true,
+      organization: true,
+    },
+  });
+
+  return interview;
 }
 
 export async function insertInterview(
-  db: VercelPgDatabase<Record<string, never>>,
+  db: VercelPgDatabase<typeof schema>,
   interview: Interview,
   organizationId: number
 ) {

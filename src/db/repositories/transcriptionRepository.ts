@@ -1,5 +1,7 @@
 import { VercelPgDatabase } from "drizzle-orm/vercel-postgres";
 import { transcriptionsTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import * as schema from "@/db/schema";
 
 export type Transcription = {
   speaker: string;
@@ -8,7 +10,7 @@ export type Transcription = {
 };
 
 export async function insertTranscriptions(
-  db: VercelPgDatabase<Record<string, never>>,
+  db: VercelPgDatabase<typeof schema>,
   transcriptions: Transcription[],
   interviewId: number,
   userId: number
@@ -25,4 +27,13 @@ export async function insertTranscriptions(
       }))
     )
     .onConflictDoNothing();
+}
+
+export async function getTranscriptionsByInterviewId(
+  db: VercelPgDatabase<typeof schema>,
+  interviewId: number
+) {
+  return await db.query.transcriptionsTable.findMany({
+    where: eq(transcriptionsTable.interviewId, interviewId),
+  });
 }

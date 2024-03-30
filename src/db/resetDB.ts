@@ -1,6 +1,12 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
-import { interviewsTable, organizationTable, usersTable, problemsTable, programmingLanguagesTable } from "@/db/schema";
+import {
+  interviewsTable,
+  organizationsTable,
+  usersTable,
+  problemsTable,
+  programmingLanguagesTable,
+} from "@/db/schema";
 import { supportedLangs } from "@/app/supportedIDEConfigs";
 import dotenv from "dotenv";
 
@@ -10,35 +16,69 @@ async function resetDB(): Promise<void> {
   const db = drizzle(sql);
 
   // Deletion happens in cascade
-  await db.delete(organizationTable);
+  await db.delete(organizationsTable);
   await db.delete(programmingLanguagesTable);
 
-  const insertedOrganization = await db
-    .insert(organizationTable)
-    .values({
-      name: "Emma Sleep",
-    })
-    .returning({ id: organizationTable.id, name: organizationTable.name });
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("Resetting the database is not allowed in production");
+  }
+
+  if (
+    !process.env.CLERK_SAMPLE_ORG_ID1 ||
+    !process.env.CLERK_SAMPLE_ORG_ID2 ||
+    !process.env.CLERK_SAMPLE_USER_ID1 ||
+    !process.env.CLERK_SAMPLE_USER_ID2
+  ) {
+    throw new Error(
+      "Please provide the organization and user id in the .env file"
+    );
+  }
+
+  const insertedOrganizations = await db
+    .insert(organizationsTable)
+    .values([
+      {
+        name: "InterviewCrew 1",
+        externaleId: process.env.CLERK_SAMPLE_ORG_ID1,
+        slug: "interviewcrew-1",
+      },
+      {
+        name: "InterviewCrew 2",
+        externaleId: process.env.CLERK_SAMPLE_ORG_ID2,
+        slug: "interviewcrew-2",
+      },
+    ])
+    .returning({ id: organizationsTable.id, name: organizationsTable.name });
 
   const user = await db
     .insert(usersTable)
-    .values({
-      authId: process.env.CLERK_SAMPLE_USER_ID,
-      organizationId: insertedOrganization[0].id,
-    })
+    .values([
+      {
+        externalId: process.env.CLERK_SAMPLE_USER_ID1,
+        organizationId: insertedOrganizations[0].id,
+      },
+      {
+        externalId: process.env.CLERK_SAMPLE_USER_ID2,
+        organizationId: insertedOrganizations[1].id,
+      },
+    ])
     .returning({
       id: usersTable.id,
-      authId: usersTable.authId,
+      externalId: usersTable.externalId,
       organizationId: usersTable.organizationId,
     });
 
-  await db.insert(programmingLanguagesTable).values(supportedLangs.map((lang) => ({ id: lang.id, name: lang.language })));
+  await db
+    .insert(programmingLanguagesTable)
+    .values(
+      supportedLangs.map((lang) => ({ id: lang.id, name: lang.language }))
+    );
 
   const problem = await db
-  .insert(problemsTable)
-  .values({
-    title: "Minimum Time to Make Rope Colorful",
-    description: `
+    .insert(problemsTable)
+    .values({
+      title: "Minimum Time to Make Rope Colorful",
+      description: `
 ### [1578. Minimum Time to Make Rope Colorful](https://leetcode.com/problems/minimum-time-to-make-rope-colorful/?envType=daily-question&envId=2023-12-27)
 
 Difficulty: Medium
@@ -102,13 +142,12 @@ Related Topics: [Array](/tag/array/), [String](/tag/string/), [Dynamic Programmi
 
 Copyright ©️ 2023 LeetCode All rights reserved
     `,
-  }).returning({
-    id: problemsTable.id,
-    title: problemsTable.title,
-    description: problemsTable.description,
-  });
-
-
+    })
+    .returning({
+      id: problemsTable.id,
+      title: problemsTable.title,
+      description: problemsTable.description,
+    });
 
   const interview = await db
     .insert(interviewsTable)
