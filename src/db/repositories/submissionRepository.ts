@@ -33,8 +33,10 @@ export async function getSubmissionsByInterviewId(
     where: eq(submissionsTable.interviewId, interviewId),
     with: {
       language: {
-        id: schema.programmingLanguagesTable.id,
-        name: schema.programmingLanguagesTable.name,
+        columns: {
+          id: true,
+          name: true,
+        }
       },
     },
   });

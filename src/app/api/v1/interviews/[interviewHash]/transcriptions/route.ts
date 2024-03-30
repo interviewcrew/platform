@@ -19,7 +19,7 @@ import { OptionsHandler } from "@/lib/api-helpers/shared";
 
 export const POST = withErrorHandler(createTranscription);
 
-export async function createTranscription(
+async function createTranscription(
   request: NextRequest,
   { params }: { params: { interviewHash: string } }
 ) {

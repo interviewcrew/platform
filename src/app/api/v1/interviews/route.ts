@@ -20,7 +20,7 @@ import { OptionsHandler } from "@/lib/api-helpers/shared";
 
 export const POST = withErrorHandler(createInterview);
 
-export async function createInterview(request: NextRequest) {
+async function createInterview(request: NextRequest) {
   const requestSchema = createInsertSchema(interviewsTable).omit({
     id: true,
     problemId: true,

@@ -16,7 +16,7 @@ import { withErrorHandler } from "@/lib/api-helpers/error-handler";
 
 export const GET = withErrorHandler(getFollowupQuestion);
 
-export async function getFollowupQuestion(
+async function getFollowupQuestion(
   _request: NextRequest,
   { params }: { params: { interviewHash: string } }
 ) {
