@@ -53,6 +53,7 @@ export function withErrorHandler(handler: Function) {
                 return NextResponse.json({ errors: error.issues }, { status: 400 });
             }
 
+            console.log(error)
             return NextResponse.json({ error: "Unknown server error" }, { status: 500 });
         }
     };
