@@ -1,5 +1,12 @@
 import { VercelPgDatabase } from "drizzle-orm/vercel-postgres";
-import { interviewsTable, organizationsTable, problemsTable, submissionsTable, transcriptionsTable, usersTable } from "@/db/schema";
+import {
+  interviewsTable,
+  organizationsTable,
+  problemsTable,
+  submissionsTable,
+  transcriptionsTable,
+  usersTable,
+} from "@/db/schema";
 import { eq, and, count } from "drizzle-orm";
 import * as schema from "@/db/schema";
 
@@ -72,20 +79,22 @@ export async function insertInterview(
 }
 
 export async function getAllInterviews(
-  db: VercelPgDatabase<Record<string, never>>,
-  userId: string
+  db: VercelPgDatabase<typeof schema>,
+  organiaztionId: number
 ) {
-  return await db
-    .select()
-    .from(interviewsTable)
-    .leftJoin(
-      organizationsTable,
-      eq(interviewsTable.organizationId, organizationsTable.id)
-    )
-    .leftJoin(usersTable, eq(usersTable.organizationId, organizationsTable.id))
-    .leftJoin(problemsTable, eq(problemsTable.id, interviewsTable.problemId))
-    .leftJoin(submissionsTable, eq(submissionsTable.interviewId, interviewsTable.id))
-    .where(eq(usersTable.externalId, userId));
+  return db.query.interviewsTable.findMany({
+    where: eq(interviewsTable.organizationId, organiaztionId),
+    with: {
+      organization: true,
+      problem: true,
+      transcriptions: true,
+      submissions: {
+        with: {
+          language: true,
+        },
+      },
+    },
+  });
 }
 
 export async function getUpcomingInterviews(
@@ -100,9 +109,15 @@ export async function getUpcomingInterviews(
       eq(interviewsTable.organizationId, organizationsTable.id)
     )
     .leftJoin(usersTable, eq(usersTable.organizationId, organizationsTable.id))
-    .leftJoin(transcriptionsTable, eq(transcriptionsTable.interviewId, interviewsTable.id))
+    .leftJoin(
+      transcriptionsTable,
+      eq(transcriptionsTable.interviewId, interviewsTable.id)
+    )
     .leftJoin(problemsTable, eq(problemsTable.id, interviewsTable.problemId))
-    .leftJoin(submissionsTable, eq(submissionsTable.interviewId, interviewsTable.id))
+    .leftJoin(
+      submissionsTable,
+      eq(submissionsTable.interviewId, interviewsTable.id)
+    )
     .where(
       and(
         eq(usersTable.externalId, userId),

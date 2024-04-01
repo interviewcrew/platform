@@ -6,14 +6,20 @@ import {
   usersTable,
   problemsTable,
   programmingLanguagesTable,
+  transcriptionsTable,
+  submissionsTable,
 } from "@/db/schema";
 import { supportedLangs } from "@/app/supportedIDEConfigs";
 import dotenv from "dotenv";
+import interview1Transcription from "@/db/seed/interview-transcription-1.json";
+import interview2Transcription from "@/db/seed/interview-transcription-2.json";
+import interview1Submission from "@/db/seed/interview-submission-1.json";
+import * as schema from "@/db/schema";
 
 dotenv.config({ path: ".env.local" });
 
 async function resetDB(): Promise<void> {
-  const db = drizzle(sql);
+  const db = drizzle(sql, { schema });
 
   // Deletion happens in cascade
   await db.delete(organizationsTable);
@@ -151,19 +157,69 @@ Copyright ©️ 2023 LeetCode All rights reserved
 
   const interview = await db
     .insert(interviewsTable)
-    .values({
-      title: "Interview 1",
-      hash: "dpv-yhep-xer",
-      organizationId: user[0].organizationId,
-      problemId: problem[0].id,
-    })
+    .values([
+      {
+        title: "Interview Mehdi <> Sadjad",
+        hash: "dpv-yhep-xer",
+        organizationId: user[0].organizationId,
+      },
+      {
+        title: "Interview online",
+        hash: "ime-dxge-aaz",
+        organizationId: user[0].organizationId,
+      },
+    ])
     .returning({
       id: interviewsTable.id,
       title: interviewsTable.title,
       hash: interviewsTable.hash,
       organizationId: interviewsTable.organizationId,
-      problemId: interviewsTable.problemId,
     });
+
+  await db.insert(transcriptionsTable).values([
+    ...interview1Transcription.map((interviewTranscription, index) => ({
+      interviewId: interview[0].id,
+      speaker: interviewTranscription.speaker,
+      transcription: interviewTranscription.transcription,
+      createdAt: calculateDatePlusTime(interviewTranscription.createdAt),
+      userId: user[0].id,
+      order: index + 1,
+    })),
+    ...interview2Transcription.map((interviewTranscription, index) => ({
+      interviewId: interview[1].id,
+      speaker: interviewTranscription.speaker,
+      transcription: interviewTranscription.transcription,
+      createdAt: new Date(interviewTranscription.createdAt),
+      userId: user[1].id,
+      order: index + 1,
+    }),
+    ),
+  ]);
+
+  await db.insert(submissionsTable).values(
+    interview1Submission.map((interviewSubmission, index) => ({
+      interviewId: interview[0].id,
+      languageId: 62,
+      code: interviewSubmission.code.join("\n"),
+      result: interviewSubmission.result.join("\n"),
+      createdAt: calculateDatePlusTime(interviewSubmission.createdAt),
+      userId: user[0].id,
+      order: index + 1,
+    }))
+  );
+}
+
+function calculateDatePlusTime(timeToAdd: string): Date {
+  const now = new Date();
+
+  const [hours, minutes, seconds] = timeToAdd.split(":").map(Number);
+
+  const createdAt = new Date(now.getTime());
+  createdAt.setHours(createdAt.getHours() + hours);
+  createdAt.setMinutes(createdAt.getMinutes() + minutes);
+  createdAt.setSeconds(createdAt.getSeconds() + seconds);
+
+  return createdAt;
 }
 
 resetDB().then(() => {

@@ -60,8 +60,6 @@ async function getFollowupQuestion(
 
   const interviewDetails = mergeByCreatedAt(transcriptions, submissions);
 
-  console.log(interviewDetails);
-
   const openai = new OpenAI({
     apiKey: process.env.OPEN_AI_API_KEY,
   });
