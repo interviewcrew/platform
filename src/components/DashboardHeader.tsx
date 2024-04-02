@@ -12,10 +12,11 @@ import { Logo } from "@/components/Logo";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import clsx from "clsx";
+import Link from "next/link";
 
-const navigation = [
-  { name: "Interviews", href: "/dashboard", current: true },
-  { name: "Problems", href: "/dashboard/problems", current: false },
+const navigation: { name: string; href: string; current: boolean }[] = [
+  // { name: "Interviews", href: "/dashboard", current: true },
+  // { name: "Problems", href: "/dashboard/problems", current: false },
 ];
 
 export default function Header({
@@ -111,7 +112,7 @@ export default function Header({
                     <nav className="flex space-x-4">
                       {current &&
                         navigation.map((item) => (
-                          <a
+                          <Link
                             key={item.name}
                             href={item.href}
                             className={clsx(
@@ -121,10 +122,10 @@ export default function Header({
                             aria-current={item.current ? "page" : undefined}
                           >
                             {item.name}
-                          </a>
+                          </Link>
                         ))}
                       {!current && (
-                        <a
+                        <Link
                           href="#"
                           onClick={(e) => {
                             e.preventDefault();
@@ -133,7 +134,7 @@ export default function Header({
                           className="text-cyan-100 rounded-md bg-white bg-opacity-0 px-3 py-2 text-sm font-medium hover:bg-opacity-10"
                         >
                           <ArrowLeft className="text-cyan-100 h-6 w-6" />
-                        </a>
+                        </Link>
                       )}
                     </nav>
                   </div>

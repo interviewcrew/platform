@@ -64,6 +64,23 @@ export type ProgrammingLanguage = typeof programmingLanguagesTable.$inferSelect;
 export type NewProgrammingLanguage =
   typeof programmingLanguagesTable.$inferInsert;
 
+export const languagesTable = pgTable("languages", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 256 }).notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const languagesTableRelations = relations(
+  languagesTable,
+  ({ many }) => ({
+    interviews: many(interviewsTable),
+  })
+);
+
+export type Language = typeof languagesTable.$inferSelect;
+export type NewLanguage = typeof languagesTable.$inferInsert;
+
 export const problemsTable = pgTable("problems", {
   id: serial("id").primaryKey(),
   title: varchar("name", { length: 256 }).notNull(),
@@ -94,17 +111,16 @@ export type NewProblem = typeof problemsTable.$inferInsert;
 
 export const jobAdsTable = pgTable("job_ads", {
   id: serial("id").primaryKey(),
-  title: varchar("title", { length: 256 }).notNull(),
-  description: text("description").notNull(),
+  title: varchar("title", { length: 256 }),
+  description: text("description"),
+  position: varchar("position", { length: 256 }),
+  seniority: varchar("seniority", { length: 256 }),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
   organizationId: integer("organization_id")
     .references(() => organizationsTable.id, { onDelete: "cascade" })
     .notNull(),
 });
-
-export type JobAd = typeof jobAdsTable.$inferSelect;
-export type NewJobAd = typeof jobAdsTable.$inferInsert;
 
 export const jobAdsTableRelations = relations(jobAdsTable, ({ one, many }) => ({
   organization: one(organizationsTable, {
@@ -113,6 +129,9 @@ export const jobAdsTableRelations = relations(jobAdsTable, ({ one, many }) => ({
   }),
   interviews: many(interviewsTable),
 }));
+
+export type JobAd = typeof jobAdsTable.$inferSelect;
+export type NewJobAd = typeof jobAdsTable.$inferInsert;
 
 export const candidatesTable = pgTable("candidates", {
   id: serial("id").primaryKey(),
@@ -127,9 +146,6 @@ export const candidatesTable = pgTable("candidates", {
     .notNull(),
 });
 
-export type Candidate = typeof candidatesTable.$inferSelect;
-export type NewCandidate = typeof candidatesTable.$inferInsert;
-
 export const candidatesTableRelations = relations(
   candidatesTable,
   ({ one, many }) => ({
@@ -141,26 +157,35 @@ export const candidatesTableRelations = relations(
   })
 );
 
+export type Candidate = typeof candidatesTable.$inferSelect;
+export type NewCandidate = typeof candidatesTable.$inferInsert;
+
 export const interviewsTable = pgTable(
   "interviews",
   {
     id: serial("id").primaryKey(),
     title: varchar("title", { length: 256 }).notNull(),
     hash: varchar("hash", { length: 256 }).notNull(),
-    position: varchar("position", { length: 256 }),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
     organizationId: integer("organization_id")
-      .references(() => organizationsTable.id, { onDelete: "cascade" })
-      .notNull(),
+      .notNull()
+      .references(() => organizationsTable.id, { onDelete: "cascade" }),
     problemId: integer("problem_id").references(() => problemsTable.id, {
-      onDelete: "cascade",
+      onDelete: "set null",
     }),
-    candidateId: integer("candidate_id").references(() => candidatesTable.id, {
-      onDelete: "cascade",
-    }),
-    jobAdId: integer("job_ad_id").references(() => jobAdsTable.id, {
-      onDelete: "cascade",
+    candidateId: integer("candidate_id")
+      .notNull()
+      .references(() => candidatesTable.id, {
+        onDelete: "set null",
+      }),
+    jobAdId: integer("job_ad_id")
+      .notNull()
+      .references(() => jobAdsTable.id, {
+        onDelete: "set null",
+      }),
+    languageId: integer("language_id").references(() => languagesTable.id, {
+      onDelete: "set null",
     }),
   },
   (table) => {
@@ -189,6 +214,11 @@ export const interviewsTableRelations = relations(
       fields: [interviewsTable.jobAdId],
       references: [jobAdsTable.id],
     }),
+    language: one(languagesTable, {
+      fields: [interviewsTable.languageId],
+      references: [languagesTable.id],
+    }),
+    evaluations: many(evaluationsTable),
     submissions: many(submissionsTable),
     transcriptions: many(transcriptionsTable),
   })
@@ -206,7 +236,7 @@ export const submissionsTable = pgTable("submissions", {
   interviewId: integer("interview_id")
     .references(() => interviewsTable.id, { onDelete: "cascade" })
     .notNull(),
-  languageId: integer("language_id")
+  programmingLanguageId: integer("programming_language_id")
     .references(() => programmingLanguagesTable.id, { onDelete: "cascade" })
     .notNull(),
 });
@@ -214,8 +244,8 @@ export const submissionsTable = pgTable("submissions", {
 export const submissionsTableRelations = relations(
   submissionsTable,
   ({ one }) => ({
-    language: one(programmingLanguagesTable, {
-      fields: [submissionsTable.languageId],
+    programmingLanguage: one(programmingLanguagesTable, {
+      fields: [submissionsTable.programmingLanguageId],
       references: [programmingLanguagesTable.id],
     }),
     interview: one(interviewsTable, {
@@ -300,3 +330,17 @@ export const evaluationsTable = pgTable("evaluations", {
 
 export type Evaluation = typeof evaluationsTable.$inferSelect;
 export type NewEvaluation = typeof evaluationsTable.$inferInsert;
+
+export const evaluationsTableRelations = relations(
+  evaluationsTable,
+  ({ one }) => ({
+    evaluationMetric: one(evaluationMetricsTable, {
+      fields: [evaluationsTable.evaluationMetricId],
+      references: [evaluationMetricsTable.id],
+    }),
+    interview: one(interviewsTable, {
+      fields: [evaluationsTable.interviewId],
+      references: [interviewsTable.id],
+    }),
+  })
+);

@@ -63,17 +63,14 @@ export default async function InterviewDetails({
                   )}
                   className="flex gap-x-2"
                 >
-                  <span className="truncate">{interview.title}</span>
-                  <span className="text-xs text-gray-400">
-                    gmeet / {interview.hash}
-                  </span>
+                  <span className="truncate text-gray-600">{interview.title}</span>
                 </Link>
               </h2>
             </div>
             <div className="flex items-center gap-x-2.5 text-xs leading-5 text-gray-400">
               {getInterviewType(interview) !== "upcoming" && (
                 <p className="truncate">
-                  duration: {getInterviewDuration(interview)}
+                  Duration: {getInterviewDuration(interview)}
                 </p>
               )}
               <svg

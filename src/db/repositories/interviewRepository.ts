@@ -1,13 +1,6 @@
 import { VercelPgDatabase } from "drizzle-orm/vercel-postgres";
-import {
-  interviewsTable,
-  organizationsTable,
-  problemsTable,
-  submissionsTable,
-  transcriptionsTable,
-  usersTable,
-} from "@/db/schema";
-import { eq, and, count } from "drizzle-orm";
+import { interviewsTable } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import * as schema from "@/db/schema";
 
 export type Interview = {
@@ -43,7 +36,7 @@ export async function getInterviewByHashIdWithFields(
       problem: true,
       submissions: {
         with: {
-          language: true,
+          programmingLanguage: true,
         },
       },
       transcriptions: true,
@@ -57,14 +50,17 @@ export async function getInterviewByHashIdWithFields(
 export async function insertInterview(
   db: VercelPgDatabase<typeof schema>,
   interview: Interview,
-  organizationId: number
+  organizationId: number,
+  jobAdId: number,
+  candidateId: number
 ) {
   return await db
     .insert(interviewsTable)
     .values({
       ...interview,
       organizationId: organizationId,
-      problemId: null,
+      jobAdId: jobAdId,
+      candidateId: candidateId,
     })
     .onConflictDoNothing()
     .returning({
@@ -73,6 +69,9 @@ export async function insertInterview(
       hash: interviewsTable.hash,
       organizationId: interviewsTable.organizationId,
       problemId: interviewsTable.problemId,
+      jobAdId: interviewsTable.jobAdId,
+      candidateId: interviewsTable.candidateId,
+      languageId: interviewsTable.languageId,
       createdAt: interviewsTable.createdAt,
       updatedAt: interviewsTable.updatedAt,
     });
@@ -88,40 +87,19 @@ export async function getAllInterviews(
       organization: true,
       problem: true,
       transcriptions: true,
+      jobAd: true,
+      candidate: true,
+      language: true,
+      evaluations: {
+        with: {
+          evaluationMetric: true,
+        },
+      },
       submissions: {
         with: {
-          language: true,
+          programmingLanguage: true,
         },
       },
     },
   });
-}
-
-export async function getUpcomingInterviews(
-  db: VercelPgDatabase<Record<string, never>>,
-  userId: string
-) {
-  return await db
-    .select()
-    .from(interviewsTable)
-    .leftJoin(
-      organizationsTable,
-      eq(interviewsTable.organizationId, organizationsTable.id)
-    )
-    .leftJoin(usersTable, eq(usersTable.organizationId, organizationsTable.id))
-    .leftJoin(
-      transcriptionsTable,
-      eq(transcriptionsTable.interviewId, interviewsTable.id)
-    )
-    .leftJoin(problemsTable, eq(problemsTable.id, interviewsTable.problemId))
-    .leftJoin(
-      submissionsTable,
-      eq(submissionsTable.interviewId, interviewsTable.id)
-    )
-    .where(
-      and(
-        eq(usersTable.externalId, userId),
-        eq(count(transcriptionsTable.interviewId), 0)
-      )
-    );
 }

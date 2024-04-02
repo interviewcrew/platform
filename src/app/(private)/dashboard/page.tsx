@@ -7,17 +7,21 @@ import { getOrganizationByExternalId } from "@/db/repositories/organizationRepos
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
 import * as schema from "@/db/schema";
-import { getAllInterviews, getInterviewByHashId } from "@/db/repositories/interviewRepository";
+import {
+  getAllInterviews,
+  getInterviewByHashId,
+} from "@/db/repositories/interviewRepository";
 import { cn, getUpdatedSearchParams } from "@/lib/utils";
-import InterviewDetails from "@/components/interviewDetails";
+import InterviewDetails from "@/components/InterviewDetails";
 import Link from "next/link";
+import { int } from "drizzle-orm/mysql-core";
+import InterviewEvaluationDetails from "@/components/InterviewEvaluationDetails";
 
 export interface User {
   fullName: string;
   imageUrl: string;
   primaryEmailAddress: string;
 }
-
 
 export default async function DashboardPage({
   params,
@@ -31,6 +35,7 @@ export default async function DashboardPage({
   const db = drizzle(sql, { schema });
 
   if (!organizationExternalId) {
+    console.log("OrganizationId not there", organizationExternalId);
     return redirect("/login");
   }
 
@@ -62,9 +67,16 @@ export default async function DashboardPage({
 
   let interview = null;
 
-  if (searchParams.interviewId && typeof searchParams.interviewId === "string") {
-    interview = allInterviews.filter((interview) => interview.id == Number(searchParams.interviewId))[0];
+  if (
+    searchParams.interviewId &&
+    typeof searchParams.interviewId === "string"
+  ) {
+    interview = allInterviews.filter(
+      (interview) => interview.id == Number(searchParams.interviewId)
+    )[0];
   }
+
+  let showEvaluation = interview && searchParams.evaluation;
 
   const status = searchParams?.status ?? "all";
 
@@ -115,7 +127,7 @@ export default async function DashboardPage({
                             <p className="text-sm font-medium text-gray-600">
                               Welcome back,
                             </p>
-                            <p className="text-xl font-bold text-gray-900 sm:text-2xl">
+                            <p className="text-xl font-bold text-gray-600 sm:text-2xl">
                               {user.fullName}
                             </p>
                           </div>
@@ -146,7 +158,7 @@ export default async function DashboardPage({
                             stat.label.toLowerCase()
                           )}
                         >
-                          <span className="text-gray-900">{stat.label}:</span>{" "}
+                          <span className="text-gray-700">{stat.label}:</span>{" "}
                           <span className="text-gray-600">
                             {stat.value.length}
                           </span>
@@ -174,7 +186,18 @@ export default async function DashboardPage({
 
               {/* Right column */}
               <div className="grid grid-cols-1 col-span-3 tgap-4">
-                <InterviewDetails interview={interview} searchParams={{}} />
+                {!showEvaluation && (
+                  <InterviewDetails
+                    interview={interview}
+                    searchParams={{ ...searchParams }}
+                  />
+                )}
+                {showEvaluation && (
+                  <InterviewEvaluationDetails
+                    interview={interview}
+                    searchParams={{ ...searchParams }}
+                  />
+                )}
               </div>
             </div>
           </div>
