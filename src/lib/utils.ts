@@ -56,3 +56,95 @@ export function mergeByCreatedAt<
 
   return merged;
 }
+
+export function toHumanTime(date: Date) {
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+
+  const interval = Math.floor(seconds / 31536000);
+
+  if (interval > 1) {
+    return interval + " years ago";
+  }
+  if (interval === 1) {
+    return interval + " year ago";
+  }
+
+  const months = Math.floor(seconds / 2628000);
+  if (months > 1) {
+    return months + " months ago";
+  }
+  if (months === 1) {
+    return months + " month ago";
+  }
+
+  const days = Math.floor(seconds / 86400);
+  if (days > 1) {
+    return days + " days ago";
+  }
+  if (days === 1) {
+    return days + " day ago";
+  }
+
+  const hours = Math.floor(seconds / 3600);
+  if (hours > 1) {
+    return hours + " hours ago";
+  }
+  if (hours === 1) {
+    return hours + " hour ago";
+  }
+
+  const minutes = Math.floor(seconds / 60);
+  if (minutes > 1) {
+    return minutes + " minutes ago";
+  }
+  if (minutes === 1) {
+    return minutes + " minute ago";
+  }
+
+  return "just now";
+}
+
+export function humanizeDuration(from: Date, to: Date): string {
+  const diff = Math.abs(from.getTime() - to.getTime()) / 1000;
+
+  const hours = Math.floor(diff / 3600);
+  const minutes = Math.floor((diff % 3600) / 60);
+  const seconds = Math.floor(diff % 60);
+
+  let response = "";
+
+  if (hours > 0) {
+    response += `${hours}h `;
+  }
+
+  if (minutes > 0) {
+    response += `${minutes}m `;
+  }
+
+  if (seconds > 0) {
+    response += `${seconds}s`;
+  }
+
+  return response;
+}
+
+export function getUpdatedSearchParams(
+  searchParams: { [key: string]: string | string[] | undefined },
+  key: string,
+  value: string | string[] | undefined
+) {
+  const updatedSearchParams = { ...searchParams, [key]: value };
+
+  return Object.entries(updatedSearchParams).reduce((acc, [key, value]) => {
+    if (value) {
+      let valueString = acc + (acc.endsWith("?") ? "" : "&") + key + "=";
+      if (Array.isArray(value)) {
+        valueString += value.join(",");
+      } else {
+        valueString += value;
+      }
+      return valueString;
+    }
+    return acc;
+  }, "?");
+}
