@@ -6,18 +6,30 @@ import {
   usersTable,
   problemsTable,
   programmingLanguagesTable,
+  transcriptionsTable,
+  submissionsTable,
+  languagesTable,
+  jobAdsTable,
+  candidatesTable,
+  evaluationMetricsTable,
 } from "@/db/schema";
 import { supportedLangs } from "@/app/supportedIDEConfigs";
 import dotenv from "dotenv";
+import interview1Transcription from "@/db/seed/interview-transcription-1.json";
+import interview2Transcription from "@/db/seed/interview-transcription-2.json";
+import interview1Submission from "@/db/seed/interview-submission-1.json";
+import * as schema from "@/db/schema";
 
 dotenv.config({ path: ".env.local" });
 
 async function resetDB(): Promise<void> {
-  const db = drizzle(sql);
+  const db = drizzle(sql, { schema });
 
   // Deletion happens in cascade
   await db.delete(organizationsTable);
   await db.delete(programmingLanguagesTable);
+  await db.delete(languagesTable);
+  await db.delete(evaluationMetricsTable);
 
   if (process.env.NODE_ENV === "production") {
     throw new Error("Resetting the database is not allowed in production");
@@ -149,21 +161,166 @@ Copyright ©️ 2023 LeetCode All rights reserved
       description: problemsTable.description,
     });
 
+  const languages = await db
+    .insert(languagesTable)
+    .values({
+      name: "English",
+    })
+    .returning({ id: languagesTable.id, name: languagesTable.name });
+
+  const jobAds = await db
+    .insert(jobAdsTable)
+    .values([
+      {
+        title: "Startup co-founder",
+        description:
+          "We want someone to join us as a co-founder for building a startup. \
+                      We are looking for a full-stack developer with experience in building startups.",
+        position: "Technical co-founder",
+        seniority: "Senior",
+        organizationId: user[0].organizationId,
+      },
+      {
+        organizationId: user[0].organizationId,
+      },
+    ])
+    .returning({
+      id: jobAdsTable.id,
+      title: jobAdsTable.title,
+      description: jobAdsTable.description,
+    });
+
+  const candidates = await db
+    .insert(candidatesTable)
+    .values([
+      {
+        name: "Sadjad Fallah",
+        email: "m.sadjad.fallah@gmail.com",
+        about:
+          "I am a staff backend software engineer at Emma with more than 15 years of experience. \
+           I have a software engineering degree for my bachelor's and for my master's I have a computer science degree with the focus of AI.\
+           Most of my career I had my own startups and I worked with many stacks. In the past 4 years, I worked for others as an employee. \
+           Currently I'm building my own startup again",
+        organizationId: user[0].organizationId,
+      },
+      {
+        organizationId: user[0].organizationId,
+      },
+    ])
+    .returning({
+      id: candidatesTable.id,
+      name: candidatesTable.name,
+      email: candidatesTable.email,
+    });
+
   const interview = await db
     .insert(interviewsTable)
-    .values({
-      title: "Interview 1",
-      hash: "dpv-yhep-xer",
-      organizationId: user[0].organizationId,
-      problemId: problem[0].id,
-    })
+    .values([
+      {
+        title: "Interview Mehdi <> Sadjad",
+        hash: "dpv-yhep-xer",
+        organizationId: user[0].organizationId,
+        languageId: languages[0].id,
+        jobAdId: jobAds[0].id,
+        candidateId: candidates[0].id,
+        createdAt: new Date(interview1Transcription[0].createdAt),
+        updatedAt: new Date(interview1Transcription[0].createdAt),
+      },
+      {
+        title: "Interview online",
+        hash: "ime-dxge-aaz",
+        organizationId: user[0].organizationId,
+        jobAdId: jobAds[1].id,
+        candidateId: candidates[1].id,
+        createdAt: calculateDatePlusTime(interview2Transcription[0].createdAt),
+        updatedAt: calculateDatePlusTime(interview2Transcription[0].createdAt),
+      },
+    ])
     .returning({
       id: interviewsTable.id,
       title: interviewsTable.title,
       hash: interviewsTable.hash,
       organizationId: interviewsTable.organizationId,
-      problemId: interviewsTable.problemId,
     });
+
+  await db.insert(transcriptionsTable).values([
+    ...interview1Transcription.map((interviewTranscription, index) => ({
+      interviewId: interview[0].id,
+      speaker: interviewTranscription.speaker,
+      transcription: interviewTranscription.transcription,
+      createdAt: new Date(interviewTranscription.createdAt),
+      updatedAt: new Date(interviewTranscription.createdAt),
+      userId: user[0].id,
+      order: index + 1,
+    })),
+    ...interview2Transcription.map((interviewTranscription, index) => ({
+      interviewId: interview[1].id,
+      speaker: interviewTranscription.speaker,
+      transcription: interviewTranscription.transcription,
+      createdAt: calculateDatePlusTime(interviewTranscription.createdAt),
+      updatedAt: calculateDatePlusTime(interviewTranscription.createdAt),
+      userId: user[0].id,
+      order: index + 1,
+    })),
+  ]);
+
+  await db.insert(submissionsTable).values(
+    interview1Submission.map((interviewSubmission, index) => ({
+      interviewId: interview[1].id,
+      programmingLanguageId: 62,
+      code: interviewSubmission.code.join("\n"),
+      result: interviewSubmission.result.join("\n"),
+      createdAt: calculateDatePlusTime(interviewSubmission.createdAt),
+      userId: user[0].id,
+      order: index + 1,
+    }))
+  );
+
+  await db.insert(evaluationMetricsTable).values([
+    {
+      name: "Highlights",
+      description: "All the highlights of the interview",
+      prompt:
+        "You are a highly skilled AI technical interviewer that is an expert in assessing candidates. \
+         You have amazing judgement and want to optimize for not having false positives and false negatives hires. \
+         I would like you to read the interview plus the codes from the candidate if there are any, \
+         and list all the highlights of the interview that showed the candidates strengths.\
+         Please be concise and clear on every points of your answer.",
+    },
+    {
+      name: "Lowlights",
+      description: "All the lowlights of the interview",
+      prompt:
+        "You are a highly skilled AI technical interviewer that is an expert in assessing candidates. \
+         You have amazing judgement and want to optimize for not having false positives and false negatives hires. \
+         I would like you to read the interview plus the codes from the candidate if there are any, \
+         and list all the lowlights of the interview that showed the candidates weaknesses and risks.\
+         Please be concise and clear on every points of your answer.",
+    },
+    {
+      name: "Considerations",
+      description: "What was noticable about the candidate",
+      prompt:
+        "You are a highly skilled AI technical interviewer that is an expert in assessing candidates. \
+         You have amazing judgement and want to optimize for not having false positives and false negatives hires. \
+         I would like you to read the interview plus the codes from the candidate if there are any, \
+         and list all the considerations that we should have about this candidate.\
+         Please be concise and clear on every points of your answer.",
+    },
+  ]);
+}
+
+function calculateDatePlusTime(timeToAdd: string): Date {
+  const now = new Date();
+
+  const [hours, minutes, seconds] = timeToAdd.split(":").map(Number);
+
+  const createdAt = new Date(now.getTime());
+  createdAt.setHours(createdAt.getHours() + hours);
+  createdAt.setMinutes(createdAt.getMinutes() + minutes);
+  createdAt.setSeconds(createdAt.getSeconds() + seconds);
+
+  return createdAt;
 }
 
 resetDB().then(() => {

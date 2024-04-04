@@ -65,7 +65,7 @@ async function createTranscription(
     return NextResponse.json({ error: "Interview not found" }, { status: 404 });
   }
 
-  insertTranscriptions(db, requestParsed.transcriptions, interview.id, user.id);
+  await insertTranscriptions(db, requestParsed.transcriptions, interview.id, user.id);
 
   return NextResponse.json({ status: "Successful" });
 }

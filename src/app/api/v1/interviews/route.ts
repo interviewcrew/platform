@@ -10,13 +10,14 @@ import {
   insertInterview,
 } from "@/db/repositories/interviewRepository";
 import * as schema from "@/db/schema";
+import { withErrorHandler } from "@/lib/api-helpers/error-handler";
 import {
-  withErrorHandler,
-} from "@/lib/api-helpers/error-handler";
-import {
-  getOrganizationWithErrorHandling, getUserWithErrorHandling,
+  getOrganizationWithErrorHandling,
+  getUserWithErrorHandling,
 } from "@/lib/api-helpers/auth";
 import { OptionsHandler } from "@/lib/api-helpers/shared";
+import { insertJobAd } from "@/db/repositories/jobAdRepository";
+import { insertCandidate } from "@/db/repositories/candidateRepository";
 
 export const POST = withErrorHandler(createInterview);
 
@@ -67,10 +68,14 @@ async function getOrInsertInterview(
     return NextResponse.json(interview, { status: 200 });
   }
 
+  const jobAd = (await insertJobAd(db, { organizationId }))[0];
+  const candidate = (await insertCandidate(db, { organizationId }))[0];
   const interviews = await insertInterview(
     db,
     interviewDto,
-    organizationId
+    organizationId,
+    jobAd.id,
+    candidate.id
   );
 
   interview = interviews[0];

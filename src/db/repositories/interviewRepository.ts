@@ -36,7 +36,7 @@ export async function getInterviewByHashIdWithFields(
       problem: true,
       submissions: {
         with: {
-          language: true,
+          programmingLanguage: true,
         },
       },
       transcriptions: true,
@@ -50,14 +50,17 @@ export async function getInterviewByHashIdWithFields(
 export async function insertInterview(
   db: VercelPgDatabase<typeof schema>,
   interview: Interview,
-  organizationId: number
+  organizationId: number,
+  jobAdId: number,
+  candidateId: number
 ) {
   return await db
     .insert(interviewsTable)
     .values({
       ...interview,
       organizationId: organizationId,
-      problemId: null,
+      jobAdId: jobAdId,
+      candidateId: candidateId,
     })
     .onConflictDoNothing()
     .returning({
@@ -66,7 +69,39 @@ export async function insertInterview(
       hash: interviewsTable.hash,
       organizationId: interviewsTable.organizationId,
       problemId: interviewsTable.problemId,
+      jobAdId: interviewsTable.jobAdId,
+      candidateId: interviewsTable.candidateId,
+      languageId: interviewsTable.languageId,
       createdAt: interviewsTable.createdAt,
       updatedAt: interviewsTable.updatedAt,
     });
 }
+
+export async function getAllInterviews(
+  db: VercelPgDatabase<typeof schema>,
+  organiaztionId: number
+) {
+  return db.query.interviewsTable.findMany({
+    where: eq(interviewsTable.organizationId, organiaztionId),
+    with: {
+      organization: true,
+      problem: true,
+      transcriptions: true,
+      jobAd: true,
+      candidate: true,
+      language: true,
+      evaluations: {
+        with: {
+          evaluationMetric: true,
+        },
+      },
+      submissions: {
+        with: {
+          programmingLanguage: true,
+        },
+      },
+    },
+  });
+}
+
+export type InterviewWithItems = Awaited<ReturnType<typeof getAllInterviews>>[0];

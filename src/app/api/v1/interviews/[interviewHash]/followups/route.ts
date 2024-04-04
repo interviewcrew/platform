@@ -60,8 +60,6 @@ async function getFollowupQuestion(
 
   const interviewDetails = mergeByCreatedAt(transcriptions, submissions);
 
-  console.log(interviewDetails);
-
   const openai = new OpenAI({
     apiKey: process.env.OPEN_AI_API_KEY,
   });
@@ -70,7 +68,7 @@ async function getFollowupQuestion(
     if (item.type === "transcription") {
       interviewSoFar += `${item.value.speaker}: ${item.value.transcription}\n`;
     } else if (item.type === "submission") {
-      interviewSoFar += `Code of the candidate in ${item.value.language.name}: ${item.value.code}\n \
+      interviewSoFar += `Code of the candidate in ${item.value.programmingLanguage.name}: ${item.value.code}\n \
                          execution results: ${item.value.result}\n`
     }
 

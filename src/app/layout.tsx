@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   },
   description:
     "Interviewing is an art, technical interviewing is a skill. \
-    Whatever skill you are, with our AI you would nail it everytime."
+    Whatever skill you are, with our AI you would nail it everytime.",
 };
 
 const inter = Inter({
@@ -32,17 +32,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-        <html
-          lang="en"
-          className={clsx(
-            "h-full scroll-smooth bg-white antialiased",
-            inter.variable,
-            lexend.variable
-          )}
-        >
-          <body className="flex h-full flex-col">{children}</body>
-        </html>
-      </ClerkProvider>
+    <html
+      lang="en"
+      className={clsx(
+        "h-full scroll-smooth bg-white antialiased",
+        inter.variable,
+        lexend.variable
+      )}
+    >
+      <body className="flex h-full flex-col">
+        <ClerkProvider>{children}</ClerkProvider>
+      </body>
+    </html>
   );
 }
