@@ -1,0 +1,39 @@
+"use server";
+
+import { insertJobListing } from "@/db/repositories/jobListingRepository";
+import { JobListing, NewJobListing, jobListingsTable } from "@/db/schema";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+
+export async function createJobListing(
+  JobListing: NewJobListing | { error: JobListing }
+): Promise<
+  | JobListing
+  | {
+      errors: {
+        title?: string[];
+        description?: string[];
+        organizationId?: string[];
+        position?: string[];
+        seniority?: string[];
+      };
+    }
+> {
+  console.log(JobListing)
+  const requestSchema = createInsertSchema(jobListingsTable, {
+    title: z.string().trim().min(1, "Title must be at least 1 character long"),
+    description: z.string().trim().min(1),
+  }).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  });
+
+  const validatedFields = requestSchema.safeParse(JobListing);
+
+  if (!validatedFields.success) {
+    return { errors: validatedFields.error.flatten().fieldErrors };
+  }
+
+  return (await insertJobListing(validatedFields.data))[0];
+}

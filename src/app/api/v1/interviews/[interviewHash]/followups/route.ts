@@ -8,9 +8,7 @@ import {
   getOrganizationWithErrorHandling,
   getUserWithErrorHandling,
 } from "@/lib/api-helpers/auth";
-import {
-  getInterviewByHashIdWithFields,
-} from "@/db/repositories/interviewRepository";
+import { getInterviewByHashIdWithFields } from "@/db/repositories/interviewRepository";
 import { mergeByCreatedAt } from "@/lib/utils";
 import { withErrorHandler } from "@/lib/api-helpers/error-handler";
 
@@ -29,17 +27,13 @@ async function getFollowupQuestion(
     );
   }
 
-  const db = drizzle(sql, { schema });
-
-  const user = await getUserWithErrorHandling(db, userExternalId);
+  const user = await getUserWithErrorHandling(userExternalId);
 
   const organization = await getOrganizationWithErrorHandling(
-    db,
     user.organizationId
   );
 
   const interview = await getInterviewByHashIdWithFields(
-    db,
     params.interviewHash,
     organization.id
   );
@@ -53,14 +47,15 @@ async function getFollowupQuestion(
     value: schema.Transcription[];
   } = { type: "transcription", value: interview.transcriptions };
 
-  const submissions: { type: "submission"; value: typeof interview.submissions[0][] } = {
+  const submissions: {
+    type: "submission";
+    value: (typeof interview.submissions)[0][];
+  } = {
     type: "submission",
     value: interview.submissions,
   };
 
   const interviewDetails = mergeByCreatedAt(transcriptions, submissions);
-
-  console.log(interviewDetails);
 
   const openai = new OpenAI({
     apiKey: process.env.OPEN_AI_API_KEY,
@@ -70,8 +65,8 @@ async function getFollowupQuestion(
     if (item.type === "transcription") {
       interviewSoFar += `${item.value.speaker}: ${item.value.transcription}\n`;
     } else if (item.type === "submission") {
-      interviewSoFar += `Code of the candidate in ${item.value.language.name}: ${item.value.code}\n \
-                         execution results: ${item.value.result}\n`
+      interviewSoFar += `Code of the candidate in ${item.value.programmingLanguage.name}: ${item.value.code}\n \
+                         execution results: ${item.value.result}\n`;
     }
 
     return interviewSoFar;
@@ -91,5 +86,5 @@ async function getFollowupQuestion(
     ],
   });
 
-  return NextResponse.json({ followup: followup.choices[0].message.content});
+  return NextResponse.json({ followup: followup.choices[0].message.content });
 }

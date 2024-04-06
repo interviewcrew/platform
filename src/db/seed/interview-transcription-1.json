@@ -1,0 +1,67 @@
+[
+  {
+    "speaker": "You",
+    "transcription": "Hello, Sadjad. Thank you for joining me today. Could you please introduce yourself?",
+    "createdAt": "2024-03-31T01:50:34.000Z"
+  },
+  {
+    "speaker": "Sadjad Fallah",
+    "transcription": "Yeah, sure. So. a nice for having me I'm sadjad as you said and I'm working at Emma right now. I'm a stats offer engineer there and we are we differentiate between front and back end. So I'm a officially a staff engineer and what t I do is I'm part of the transport team, which we call TMS.  two months . And yeah. ",
+    "createdAt": "2024-03-31T01:50:55.456Z"
+  },
+  {
+    "speaker": "You",
+    "transcription": "So in  any of your  experiences, have you been involved in? designing? a big system? ",
+    "createdAt": "2024-03-31T01:51:03.514Z"
+  },
+  {
+    "speaker": "Sadjad Fallah",
+    "transcription": "Okay, so  yes,  but I really  want to know your  understand  your definition of   the scope of and size of the   big  like , what do you call Big?  maybe e I could help you better. er. ",
+    "createdAt": "2024-03-31T01:51:19.010Z"
+  },
+  {
+    "speaker": "You",
+    "transcription": "I'm talking about. both the code base and also  the user  base like  ",
+    "createdAt": "2024-03-31T01:51:25.100Z"
+  },
+  {
+    "speaker": "Sadjad Fallah",
+    "transcription": "Yep. ",
+    "createdAt": "2024-03-31T01:51:26.163Z"
+  },
+  {
+    "speaker": "You",
+    "transcription": "to handle a lot of traffic and also a scale and you know for a high traffic ",
+    "createdAt": "2024-03-31T01:51:41.786Z"
+  },
+  {
+    "speaker": "Sadjad Fallah",
+    "transcription": "yep, so basically   in terms of  a huge code base, Emma has a huge coordinate because we are 150 Engineers working on the same. technology that the e-commerce and basically nobody has  the  entire  entire code AS. a use most companies do we e separated using microservices? and And And  And  each team owns set of microservices, but t regarding the number of f requests, my biggest experience was when I was creating of Google meet in Iran when covid hits d that we're going to have an alternative to Google meet and our own and covers our and there. we had 1,000 concurrent video was a huge challenge for us compared to like the now are high but not as ",
+    "createdAt": "2024-03-31T01:52:47.291Z"
+  },
+  {
+    "speaker": "You",
+    "transcription": "So given your experience in.  Emma and  our conversation about handling high traffic on the scale. Could you describe a specific project project? where you were directly responsible for addressing a scalability challenges? t? ",
+    "createdAt": "2024-03-31T01:53:16.690Z"
+  },
+  {
+    "speaker": "Sadjad Fallah",
+    "transcription": "so Emma is a unique situation because we're using a mock architecture MCH and with that architecture usually y download  is s as much as load that the providers that we are consuming. can handle. usually our traffic is proxy. through. a certain services. so So t t we always to o consider distribution distribution that architecture and we e have our set of queues and we have to make sure that we don't create a strongly coupled services Everything should be Loosely Evolution. olution. and easy to hook to one another there's events basically as  ",
+    "createdAt": "2024-03-31T01:54:15.243Z"
+  },
+  {
+    "speaker": "You",
+    "transcription": "considering your role in developing  an alternative to Google  meet and  your specific  your experience  with High Traffic Systems at  Emma . Could you elaborate on the specific technical strategies or Technologies you o successfully manage the scalability challenge? as you mentioned in handling. 1,000 streams. ",
+    "createdAt": "2024-03-31T01:54:53.279Z"
+  },
+  {
+    "speaker": "Sadjad Fallah",
+    "transcription": "if so  one challenge that we  had when  the alternative of Google  meet was that we had one vertically scaled machine at the beginning because when we started developing  the  the two we just acted as a startup inside every and we really wanted to be as fast as we could create a of concept, but then we had lots of traffic on what we created. So it was hard to maintain. we started scaling virtually as much as we could . I got as much resources as we but then n there was one point. that we figured out. how much course of the CPUs were. e allocating to is crashing on  a cap of certain  users  and the reason that it capping was that?  there was a  module which usually   MCU architecture  of the video conferencing applications. usually when that we call it the contract controller the meeting called, but it did the tool was using.   that That ed on a That le That ad. So    regardless  of the number, of , there e was only one core always. in. engaged  in the  processes  and   we had to that technology that piece of technology. for example to we could scale it better and then that was one type of things did but overall. . Yeah, just making sure that the underlying that she Have you have enough obserability and  on all of that then you would.   consider What's the e band that we might hit and then you have to based on those e bands. ",
+    "createdAt": "2024-03-31T01:56:44.629Z"
+  },
+  {
+    "speaker": "You",
+    "transcription": "Okay. Thank you. ",
+    "createdAt": "2024-03-31T01:56:55.642Z"
+  }
+]
