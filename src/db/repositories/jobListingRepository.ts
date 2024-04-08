@@ -4,6 +4,8 @@ import { JobListing, jobListingsTable, NewJobListing } from "@/db/schema";
 import * as schema from "@/db/schema";
 import { count, eq } from "drizzle-orm";
 
+export type JobListingListItem = Awaited<ReturnType<typeof getJobListings>>[0];
+
 export async function getJobListings(organizationId: number) {
   const db = drizzle(sql, { schema });
 
@@ -29,13 +31,36 @@ export async function getJobListingCount(organizationId: number) {
     .where(eq(jobListingsTable.organizationId, organizationId));
 }
 
-export async function insertJobListing(jobListing: NewJobListing): Promise<JobListing[]> {
+export async function insertJobListing(
+  jobListing: NewJobListing
+): Promise<JobListing[]> {
   const db = drizzle(sql, { schema });
 
   return db
     .insert(jobListingsTable)
     .values(jobListing)
     .onConflictDoNothing()
+    .returning({
+      id: jobListingsTable.id,
+      title: jobListingsTable.title,
+      description: jobListingsTable.description,
+      organizationId: jobListingsTable.organizationId,
+      position: jobListingsTable.position,
+      seniority: jobListingsTable.seniority,
+      createdAt: jobListingsTable.createdAt,
+      updatedAt: jobListingsTable.updatedAt,
+    });
+}
+
+export async function updateJobListing(
+  jobListing: JobListing
+): Promise<JobListing[]> {
+  const db = drizzle(sql, { schema });
+
+  return db
+    .update(jobListingsTable)
+    .set(jobListing)
+    .where(eq(jobListingsTable.id, jobListing.id))
     .returning({
       id: jobListingsTable.id,
       title: jobListingsTable.title,

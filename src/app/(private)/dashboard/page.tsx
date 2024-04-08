@@ -108,11 +108,9 @@ export default async function DashboardPage({
                               "bg-gray-200": stat.isActive,
                             }
                           )}
-                          href={getUpdatedSearchParams(
-                            {},
-                            "status",
-                            stat.label.toLowerCase()
-                          )}
+                          href={getUpdatedSearchParams({}, [
+                            { key: "status", value: stat.label.toLowerCase() },
+                          ])}
                         >
                           <span className="text-gray-700">{stat.label}:</span>{" "}
                           <span className="text-gray-600">

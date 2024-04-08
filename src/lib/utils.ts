@@ -130,10 +130,13 @@ export function humanizeDuration(from: Date, to: Date): string {
 
 export function getUpdatedSearchParams(
   searchParams: { [key: string]: string | string[] | undefined },
-  key: string,
-  value: string | string[] | undefined
+  newQueryParams?: { key: string; value: string | string[] | undefined }[]
 ) {
-  const updatedSearchParams = { ...searchParams, [key]: value };
+  let updatedSearchParams = searchParams;
+
+  newQueryParams?.forEach(({ key, value }) => {
+    updatedSearchParams = { ...updatedSearchParams, [key]: value };
+  });
 
   return Object.entries(updatedSearchParams).reduce((acc, [key, value]) => {
     if (value) {

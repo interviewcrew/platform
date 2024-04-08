@@ -9,9 +9,7 @@ import EmptyInterviewDetails from "./EmptyInterviewDetails";
 import { ArrowLeft } from "lucide-react";
 import { Suspense } from "react";
 import { EvaluationSection } from "./EvaluationSection";
-import {
-  getEvaluationMetrics,
-} from "@/db/repositories/evaluationRepository";
+import { getEvaluationMetrics } from "@/db/repositories/evaluationRepository";
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
 import * as schema from "@/db/schema";
@@ -56,7 +54,7 @@ export default async function InterviewEvaluationDetails({
     <div className="bg-white shadow sm:rounded-lg p-5">
       <div className="flex">
         <Link
-          href={getUpdatedSearchParams(searchParams, "", "")}
+          href={getUpdatedSearchParams(searchParams)}
           className="text-cyan-100 rounded-md bg-white bg-opacity-0 px-3 py-2 text-sm font-medium hover:bg-opacity-10"
         >
           <ArrowLeft className="text-gray-600 h-6 w-6" />

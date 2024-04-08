@@ -115,7 +115,7 @@ export default function Header({
                   <div className="lg:grid lg:grid-cols-3 lg:items-center lg:gap-8">
                     {/* Left nav */}
                     <div className="hidden lg:col-span-2 lg:block">
-                      <nav className="flex space-x-4">
+                      <nav className="flex space-x-1">
                         {current &&
                           navigation.map((item, index: number) => (
                             <span key={item.name}>
@@ -131,7 +131,7 @@ export default function Header({
                               </Link>
                               {index > 0 && index < navigation.length - 1 && (
                                 <span
-                                  className="text-cyan-100 py-2"
+                                  className="text-cyan-100"
                                 >
                                   {">"}
                                 </span>

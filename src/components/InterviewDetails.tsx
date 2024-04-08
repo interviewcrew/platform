@@ -80,11 +80,9 @@ export default async function InterviewDetails({
           </div>
           <div className="border-t border-gray-100 px-4 py-6 sm:col-span-3 sm:px-0">
             <Link
-              href={getUpdatedSearchParams(
-                searchParams,
-                "evaluation",
-                "true"
-              )}
+              href={getUpdatedSearchParams(searchParams, [
+                { key: "evaluation", value: "true" },
+              ])}
               className="flex gap-x-2"
             >
               <button

@@ -1,11 +1,13 @@
 "use client";
 
+import { JobListing } from "@/db/schema";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 
 export type CreatorComponentProps = {
   organizationId: number;
-  onClose: () => void;
+  jobListing?: JobListing;
+  searchParams: { [key: string]: string | string[] | undefined };
 };
 
 export default function EmptyState({
@@ -15,6 +17,7 @@ export default function EmptyState({
   callToAction,
   creatorComponent: CreatorComponent,
   icon,
+  searchParams,
 }: {
   organizationId: number;
   title: string;
@@ -22,18 +25,16 @@ export default function EmptyState({
   callToAction: string;
   icon: React.ReactNode;
   creatorComponent: React.ComponentType<CreatorComponentProps>;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const [isCreatorOpen, setIsCreatorOpen] = useState(false);
+  const [isCreatorOpen, setIsCreatorOpen] = useState(
+    searchParams.steps !== undefined
+  );
 
   return (
     <>
       {isCreatorOpen ? (
-        <CreatorComponent
-          organizationId={organizationId}
-          onClose={() => {
-            setIsCreatorOpen(false);
-          }}
-        />
+        <CreatorComponent organizationId={organizationId} searchParams={searchParams} />
       ) : (
         <div className="text-center">
           {icon}
