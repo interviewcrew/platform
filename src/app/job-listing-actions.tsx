@@ -10,18 +10,7 @@ import { z } from "zod";
 
 export async function createJobListing(
   JobListing: NewJobListing | { error: JobListing }
-): Promise<
-  | JobListing
-  | {
-      errors: {
-        title?: string[];
-        description?: string[];
-        organizationId?: string[];
-        position?: string[];
-        seniority?: string[];
-      };
-    }
-> {
+): Promise<JobListing> {
   const requestSchema = createInsertSchema(jobListingsTable, {
     title: z.string().trim().min(1, "Title must be at least 1 character long"),
     description: z.string().trim().min(1),
@@ -31,29 +20,14 @@ export async function createJobListing(
     updatedAt: true,
   });
 
-  const validatedFields = requestSchema.safeParse(JobListing);
+  const validatedFields = requestSchema.parse(JobListing);
 
-  if (!validatedFields.success) {
-    return { errors: validatedFields.error.flatten().fieldErrors };
-  }
-
-  return (await insertJobListing(validatedFields.data))[0];
+  return (await insertJobListing(validatedFields))[0];
 }
 
-export async function editJobListing(jobListing: JobListing): Promise<
-  | JobListing
-  | {
-      errors: {
-        title?: string[];
-        description?: string[];
-        organizationId?: string[];
-        position?: string[];
-        seniority?: string[];
-      };
-    }
-> {
-  console.log("Inside Function: ", jobListing);
-
+export async function editJobListing(
+  jobListing: JobListing
+): Promise<JobListing> {
   if (jobListingsTable.id === undefined) {
     throw new Error("Job Listing ID is required");
   }
@@ -67,15 +41,11 @@ export async function editJobListing(jobListing: JobListing): Promise<
     updatedAt: true,
   });
 
-  const validatedFields = requestSchema.safeParse(jobListing);
-
-  if (!validatedFields.success) {
-    return { errors: validatedFields.error.flatten().fieldErrors };
-  }
+  const validatedFields = requestSchema.parse(jobListing);
 
   return (
     await updateJobListing({
-      ...validatedFields.data,
+      ...validatedFields,
       id: jobListing.id,
       createdAt: jobListing.createdAt,
       updatedAt: new Date(),

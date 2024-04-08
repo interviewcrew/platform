@@ -5,48 +5,76 @@ import { CreatorComponentProps } from "./EmptyState";
 import JobListingForm from "./JobListingForm";
 import { JobListing } from "@/db/schema";
 import { useEffect, useState } from "react";
-import { createJobListing, editJobListing} from "@/app/job-listing-actions";
+import { createJobListing, editJobListing } from "@/app/job-listing-actions";
 import { getUpdatedSearchParams } from "@/lib/utils";
 import Link from "next/link";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 export default function JobListingManager(props: CreatorComponentProps) {
   const [jobListing, setJobListing] = useState(
     props.jobListing ?? ({} as JobListing)
   );
-  const [shouldUpdateJobListing, setShouldUpdateJobListing] = useState(false);
-  const [createdJobListing, setCreatedJobListing] = useState<JobListing | null>(
-    props.jobListing ?? null
-  );
-
-  const [creationErrors, setCreationErrors] = useState<{
+  const [shouldApplyJobListing, setShouldApplyJobListing] = useState(false);
+  const [creationErrors, setActionErrors] = useState<{
     title?: string[] | undefined;
     description?: string[] | undefined;
     organizationId?: string[] | undefined;
     position?: string[] | undefined;
     seniority?: string[] | undefined;
   }>({});
+  const [step, setStep] = useState<string>(
+    typeof props.searchParams.step == "string" ? props.searchParams.step : "1"
+  );
   const [steps, setSteps] = useState<Step[]>([
     {
       id: "Step 1",
       name: "Create job listing",
-      status: "current",
+      status: step == "1" ? "current" : "complete",
       onClick: () => {
-        setShouldUpdateJobListing(true);
+        setShouldApplyJobListing(true);
       },
     },
     {
       id: "Step 2",
       name: "Get questions",
-      status: "upcoming",
+      status: step == "2" ? "current" : step == "1" ? "upcoming" : "complete",
       onClick: () => {},
     },
     {
       id: "Step 3",
       name: "Edit questions",
-      status: "upcoming",
+      status: step == "3" ? "current" : "upcoming",
       onClick: () => {},
     },
   ]);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    setSteps([
+      {
+        id: "Step 1",
+        name: "Create job listing",
+        status: step == "1" ? "current" : "complete",
+        onClick: () => {
+          setShouldApplyJobListing(true);
+        },
+      },
+      {
+        id: "Step 2",
+        name: "Get questions",
+        status: step == "2" ? "current" : step == "1" ? "upcoming" : "complete",
+        onClick: () => {},
+      },
+      {
+        id: "Step 3",
+        name: "Edit questions",
+        status: step == "3" ? "current" : "upcoming",
+        onClick: () => {},
+      },
+    ]);
+  }, [step]);
 
   useEffect(() => {
     const create = async () => {
@@ -56,71 +84,63 @@ export default function JobListingManager(props: CreatorComponentProps) {
           organizationId: props.organizationId,
         });
 
-        if ("errors" in result) {
-          setCreationErrors(result.errors);
-          setShouldUpdateJobListing(false);
-          return;
-        }
+        setJobListing(result);
 
-        setCreatedJobListing(result);
-        setShouldUpdateJobListing(false);
-        setSteps([
-          { ...steps[0], status: "complete" },
-          { ...steps[1], status: "current" },
-          { ...steps[2], status: "upcoming" },
-        ]);
+        router.push(
+          getUpdatedSearchParams(props.searchParams, [
+            { key: "step", value: "2" },
+          ])
+        );
+        setStep("2");
       } catch (error) {
-        setShouldUpdateJobListing(false);
-        console.error("Failed to create job listing catch:", error);
+        if (error instanceof z.ZodError) {
+          setActionErrors(error.flatten().fieldErrors);
+        }
+      } finally {
+        setShouldApplyJobListing(false);
       }
     };
 
     const update = async () => {
       try {
-        console.log("Updating job listing", jobListing);
         const result = await editJobListing({
           ...jobListing,
           organizationId: props.organizationId,
         });
 
-        if ("errors" in result) {
-          setCreationErrors(result.errors);
-          setShouldUpdateJobListing(false);
-          return;
-        }
+        setJobListing(result);
 
-        setCreatedJobListing(result);
-        setShouldUpdateJobListing(false);
-        setSteps([
-          { ...steps[0], status: "complete" },
-          { ...steps[1], status: "current" },
-          { ...steps[2], status: "upcoming" },
-        ]);
+        router.push(
+          getUpdatedSearchParams(props.searchParams, [
+            { key: "step", value: "2" },
+          ])
+        );
+        setStep("2");
       } catch (error) {
-        setShouldUpdateJobListing(false);
-        console.error("Failed to create job listing catch:", error);
+        if (error instanceof z.ZodError) {
+          setActionErrors(error.flatten().fieldErrors);
+        }
+      } finally {
+        setShouldApplyJobListing(false);
       }
     };
 
-    if (shouldUpdateJobListing && props.jobListing == undefined) {
+    if (shouldApplyJobListing && props.jobListing == undefined) {
       create();
-    } else if (shouldUpdateJobListing && props.jobListing != undefined) {
+    } else if (shouldApplyJobListing && props.jobListing != undefined) {
       update();
     }
-  }, [
-    jobListing,
-    props.organizationId,
-    shouldUpdateJobListing,
-    createdJobListing,
-    creationErrors,
-    steps,
-    props.jobListing,
-    props.searchParams,
-  ]);
+  }, [jobListing, shouldApplyJobListing, creationErrors, router]);
 
   return (
     <>
-      <Steps steps={steps} />
+      <Steps
+        steps={steps}
+        searchParams={props.searchParams}
+        onClickCallBack={(step: string) => {
+          setStep(step);
+        }}
+      />
       <JobListingForm
         jobListing={jobListing}
         setJobListing={setJobListing}
