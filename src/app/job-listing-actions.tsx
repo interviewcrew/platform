@@ -88,8 +88,7 @@ export async function editJobListing(
 }
 
 export async function getQuestionsForJobListing(
-  jobListing: JobListing,
-  userId: number
+  jobListing: JobListingListItem,
 ): Promise<string[]> {
   return getJobListingQuestions(jobListing);
 }
