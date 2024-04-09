@@ -25,7 +25,7 @@ export async function getInterviewByHashId(
 export async function getInterviewByHashIdWithFields(
   interviewHash: string,
   organiaztionId: number
-) {
+): Promise<InterviewWithItems | undefined> {
   const db = drizzle(sql, { schema });
 
   return db.query.interviewsTable.findFirst({
@@ -34,14 +34,22 @@ export async function getInterviewByHashIdWithFields(
       eq(interviewsTable.organizationId, organiaztionId)
     ),
     with: {
+      organization: true,
       problem: true,
+      transcriptions: true,
+      jobListing: true,
+      candidate: true,
+      language: true,
+      evaluations: {
+        with: {
+          evaluationMetric: true,
+        },
+      },
       submissions: {
         with: {
           programmingLanguage: true,
         },
       },
-      transcriptions: true,
-      organization: true,
     },
   });
 }

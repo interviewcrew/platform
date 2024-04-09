@@ -2,12 +2,20 @@
 
 import {
   JobListingListItem,
+  addQuestionsToJobListing,
   getJobListingById,
   getJobListings,
   insertJobListing,
   updateJobListing,
 } from "@/db/repositories/jobListingRepository";
-import { JobListing, NewJobListing, jobListingsTable } from "@/db/schema";
+import { getUserByExternalId } from "@/db/repositories/userRepository";
+import {
+  JobListing,
+  NewJobListing,
+  Question,
+  jobListingsTable,
+} from "@/db/schema";
+import { getJobListingQuestions } from "@/lib/openai/client";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -77,4 +85,23 @@ export async function editJobListing(
   }
 
   return jobListingListItem;
+}
+
+export async function getQuestionsForJobListing(
+  jobListing: JobListing,
+  userId: number
+): Promise<string[]> {
+  return getJobListingQuestions(jobListing);
+}
+
+export async function saveQuestionsForJobListing(
+  jobListing: JobListing,
+  userId: number,
+  questions: Question[]
+): Promise<JobListingListItem | undefined> {
+  return addQuestionsToJobListing(
+    jobListing,
+    userId,
+    questions.map((question) => question.question)
+  );
 }

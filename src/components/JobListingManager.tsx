@@ -3,7 +3,6 @@
 import Steps, { Step } from "./Steps";
 import { CreatorComponentProps } from "./EmptyState";
 import JobListingForm from "./JobListingForm";
-import { JobListing } from "@/db/schema";
 import { useEffect, useState } from "react";
 import { createJobListing, editJobListing } from "@/app/job-listing-actions";
 import { getUpdatedSearchParams } from "@/lib/utils";
@@ -41,13 +40,13 @@ export default function JobListingManager(props: CreatorComponentProps) {
     },
     {
       id: "Step 2",
-      name: "Get questions",
+      name: "Manage questions",
       status: step === 2 ? "current" : step === 1 ? "upcoming" : "complete",
       onClick: () => {},
     },
     {
       id: "Step 3",
-      name: "Edit questions",
+      name: "Practice questions",
       status: step === 3 ? "current" : "upcoming",
       onClick: () => {},
     },
@@ -58,26 +57,19 @@ export default function JobListingManager(props: CreatorComponentProps) {
   useEffect(() => {
     setSteps([
       {
-        id: "Step 1",
-        name: "Create job listing",
+        ...steps[0],
         status: step === 1 ? "current" : "complete",
-        onClick: () => {
-          setShouldApplyJobListing(true);
-        },
       },
       {
-        id: "Step 2",
-        name: "Get questions",
+        ...steps[1],
         status: step === 2 ? "current" : step === 1 ? "upcoming" : "complete",
-        onClick: () => {},
       },
       {
-        id: "Step 3",
-        name: "Edit questions",
+        ...steps[2],
         status: step === 3 ? "current" : "upcoming",
-        onClick: () => {},
       },
     ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   useEffect(() => {
@@ -134,7 +126,15 @@ export default function JobListingManager(props: CreatorComponentProps) {
     } else if (shouldApplyJobListing && props.jobListing != undefined) {
       update();
     }
-  }, [jobListing, shouldApplyJobListing, creationErrors, router]);
+  }, [
+    jobListing,
+    shouldApplyJobListing,
+    creationErrors,
+    router,
+    props.jobListing,
+    props.organizationId,
+    props.searchParams,
+  ]);
 
   return (
     <>
@@ -152,7 +152,9 @@ export default function JobListingManager(props: CreatorComponentProps) {
           creationErrors={creationErrors}
         />
       )}
-      {step === 2 && <JobListingQuestions jobListing={jobListing} />}
+      {step === 2 && (
+        <JobListingQuestions jobListing={jobListing} userId={props.userId} />
+      )}
       <div className="mt-6 flex items-center justify-end gap-x-4">
         <Link
           href={`/dashboard/job-listings`}

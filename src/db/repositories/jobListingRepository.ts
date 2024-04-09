@@ -22,7 +22,10 @@ export async function getJobListings(organizationId: number) {
   });
 }
 
-export async function getJobListingById(organizationId: number, id: number): Promise<JobListingListItem | undefined> {
+export async function getJobListingById(
+  organizationId: number,
+  id: number
+): Promise<JobListingListItem | undefined> {
   const db = drizzle(sql, { schema });
 
   return db.query.jobListingsTable.findFirst({
@@ -90,4 +93,26 @@ export async function updateJobListing(
       createdAt: jobListingsTable.createdAt,
       updatedAt: jobListingsTable.updatedAt,
     });
+}
+
+export async function addQuestionsToJobListing(
+  jobListing: JobListing,
+  userId: number,
+  questions: string[]
+): Promise<JobListingListItem | undefined> {
+  const db = drizzle(sql, { schema });
+
+  await db
+    .insert(schema.questionsTable)
+    .values(
+      questions.map((question: string) => ({
+        question: question,
+        isGenerated: true,
+        jobListingId: jobListing.id,
+        userId: userId,
+      }))
+    )
+    .onConflictDoNothing();
+
+  return getJobListingById(jobListing.organizationId, jobListing.id);
 }

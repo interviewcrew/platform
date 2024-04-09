@@ -1,50 +1,43 @@
-import { Evaluation, EvaluationMetric, Transcription} from "@/db/schema";
+import { EvaluationMetric, Transcription } from "@/db/schema";
 import { mergeByCreatedAt } from "@/lib/utils";
 import OpenAI from "openai";
-import {
-  getEvaluationMetricByName,
-  insertEvaluation,
-} from "@/db/repositories/evaluationRepository";
-import { drizzle } from "drizzle-orm/vercel-postgres";
-import { sql } from "@vercel/postgres";
 import * as schema from "@/db/schema";
-import { getAllInterviews } from "@/db/repositories/interviewRepository";
+import {
+  InterviewWithItems,
+  getAllInterviews,
+} from "@/db/repositories/interviewRepository";
 
-export async function getEvaluationAndStoreInDB(evaluationMetric: EvaluationMetric, interview: Awaited<ReturnType<typeof getAllInterviews>>[0]) {
-  const transcriptions: {
-    type: "transcription";
-    value: Transcription[];
-  } = { type: "transcription", value: interview.transcriptions };
-
-  const submissions: {
-    type: "submission";
-    value: (typeof interview.submissions)[0][];
-  } = {
-    type: "submission",
-    value: interview.submissions,
-  };
-
-  const interviewDetails = mergeByCreatedAt(transcriptions, submissions);
-
+export async function getFollowupQuestion(
+  interview: InterviewWithItems
+): Promise<string | null> {
   const openai = new OpenAI({
     apiKey: process.env.OPEN_AI_API_KEY,
   });
 
-  const interviewText: string = interviewDetails.reduce(
-    (interviewSoFar, item) => {
-      if (item.type === "transcription") {
-        interviewSoFar += `${item.value.speaker}: ${item.value.transcription}\n`;
-      } else if (item.type === "submission") {
-        interviewSoFar += `Code of the candidate in ${item.value.programmingLanguage.name}: ${item.value.code}\n \
-                         execution results: ${item.value.result}\n`;
-      }
+  const followup = await openai.chat.completions.create({
+    model: "gpt-4-turbo-preview",
+    messages: [
+      {
+        role: "system",
+        content: `You are a highly skilled AI technical interviewer that is an expert in asking follow up questions. \
+                  I would like you to read the interview so far plus the codes from the candidate if there are any, and come up with a great follow up question to ask so that we learn more about the candidates skills. \
+                  Please consider the level of seniority of the candidate, based on the answers given so far and come up with a follow up question that is suitable for that level of competence.
+                  Be concise and clear in your question.`,
+      },
+      { role: "user", content: getInterviewDetailAsString(interview) },
+    ],
+  });
 
-      return interviewSoFar;
-    },
-    ""
-  );
+  return followup.choices[0].message.content;
+}
 
-  const db = drizzle(sql, { schema });
+export async function getEvaluationAndStoreInDB(
+  evaluationMetric: EvaluationMetric,
+  interview: Awaited<ReturnType<typeof getAllInterviews>>[0]
+): Promise<string> {
+  const openai = new OpenAI({
+    apiKey: process.env.OPEN_AI_API_KEY,
+  });
 
   if (evaluationMetric === undefined) {
     throw new Error("Evaluation metric not found");
@@ -57,21 +50,86 @@ export async function getEvaluationAndStoreInDB(evaluationMetric: EvaluationMetr
         role: "system",
         content: evaluationMetric?.prompt ?? "",
       },
-      { role: "user", content: interviewText },
+      { role: "user", content: getInterviewDetailAsString(interview) },
     ],
   });
 
-  const evalationText = evaluation.choices[0].message.content;
+  const evaluationText = evaluation.choices[0].message.content;
 
-  if (!evalationText) {
+  if (!evaluationText) {
     throw new Error("No highlights found");
   }
 
-  return (
-    await insertEvaluation(db, {
-      evaluationMetricId: evaluationMetric.id,
-      interviewId: interview.id,
-      value: evalationText,
-    })
-  )[0];
+  return evaluationText;
+}
+
+export async function getJobListingQuestions(
+  jobListing: schema.JobListing
+): Promise<string[]> {
+  const openai = new OpenAI({
+    apiKey: process.env.OPEN_AI_API_KEY,
+  });
+
+  const questions = await openai.chat.completions.create({
+    model: "gpt-4-turbo-preview",
+    messages: [
+      {
+        role: "system",
+        content: `You are a highly skilled AI hiring manager that knows what are the best questions to ask based on a job ad. \
+                  Read the job ad that is passed, and come up with a all the questions that should be asked for initial filtering of the candidate. \
+                  Ask about the technologies mentioned in the job ad in the level of the seniority level mentioned in the job a\
+                  The questions should be very short, and to the point. and should be returned in a valid json list of strings. For example ["What is Node.js", "How is concurrency handled in Node.js"]`,
+      },
+      {
+        role: "user",
+        content: `Job title: ${jobListing.title} \n Seniority: ${
+          jobListing.seniority ?? "Any"
+        } \n Position: ${
+          jobListing.position ?? "Specified in the job title"
+        } \n Job description: ${jobListing.description}`,
+      },
+    ],
+  });
+
+  let questionText = questions.choices[0].message.content;
+
+  if (!questionText) {
+    throw new Error("No questions found");
+  }
+
+  questionText = questionText.replace(/^```json/, "").replace(/```$/, "");
+
+  try {
+    return JSON.parse(questionText);
+  } catch (e) {
+    throw new Error("No questions found");
+  }
+}
+
+function getInterviewDetailAsString(interview: InterviewWithItems): string {
+  const transcriptions: {
+    type: "transcription";
+    value: schema.Transcription[];
+  } = { type: "transcription", value: interview.transcriptions };
+
+  const submissions: {
+    type: "submission";
+    value: (typeof interview.submissions)[0][];
+  } = {
+    type: "submission",
+    value: interview.submissions,
+  };
+
+  const interviewDetails = mergeByCreatedAt(transcriptions, submissions);
+
+  return interviewDetails.reduce((interviewSoFar, item) => {
+    if (item.type === "transcription") {
+      interviewSoFar += `${item.value.speaker}: ${item.value.transcription}\n`;
+    } else if (item.type === "submission") {
+      interviewSoFar += `Code of the candidate in ${item.value.programmingLanguage.name}: ${item.value.code}\n \
+                         execution results: ${item.value.result}\n`;
+    }
+
+    return interviewSoFar;
+  }, "");
 }

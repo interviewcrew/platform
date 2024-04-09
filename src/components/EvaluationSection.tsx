@@ -1,8 +1,9 @@
 "use client";
 
+import { insertEvaluation } from "@/db/repositories/evaluationRepository";
 import { InterviewWithItems } from "@/db/repositories/interviewRepository";
 import { Evaluation, EvaluationMetric } from "@/db/schema";
-import { getEvaluationAndStoreInDB as evaluateInterview } from "@/lib/openai/client";
+import { getEvaluationAndStoreInDB as getInterviewEvaluation } from "@/lib/openai/client";
 import * as HeroIcons from "@heroicons/react/20/solid";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import React from "react";
@@ -81,7 +82,19 @@ export async function EvaluationSection({
 
   if (!evaluation) {
     try {
-      evaluation = await evaluateInterview(evaluationMetric, interview);
+      const evaluationText = await getInterviewEvaluation(
+        evaluationMetric,
+        interview
+      );
+
+      evaluation = (
+        await insertEvaluation({
+          evaluationMetricId: evaluationMetric.id,
+          interviewId: interview.id,
+          value: evaluationText,
+        })
+      )[0];
+
     } catch (e) {
       if (e instanceof Error) return <div>Error: {e.message}</div>;
       return <div>Error: Something went wrong. We are working on it.</div>;

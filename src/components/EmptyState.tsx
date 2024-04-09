@@ -5,6 +5,7 @@ import { PlusIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 
 export type CreatorComponentProps = {
+  userId: number;
   organizationId: number;
   jobListing?: JobListingListItem;
   searchParams: { [key: string]: string | string[] | undefined };
@@ -18,6 +19,7 @@ export default function EmptyState({
   jobListingManagerComponent: CreatorComponent,
   icon,
   searchParams,
+  userId,
 }: {
   organizationId: number;
   title: string;
@@ -26,6 +28,7 @@ export default function EmptyState({
   icon: React.ReactNode;
   jobListingManagerComponent: React.ComponentType<CreatorComponentProps>;
   searchParams: { [key: string]: string | string[] | undefined };
+  userId: number;
 }) {
   const [isCreatorOpen, setIsCreatorOpen] = useState(
     searchParams.steps !== undefined
@@ -34,7 +37,11 @@ export default function EmptyState({
   return (
     <>
       {isCreatorOpen ? (
-        <CreatorComponent organizationId={organizationId} searchParams={searchParams} />
+        <CreatorComponent
+          userId={userId}
+          organizationId={organizationId}
+          searchParams={searchParams}
+        />
       ) : (
         <div className="text-center">
           {icon}

@@ -1,6 +1,5 @@
 import { auth, currentUser } from "@clerk/nextjs";
 import Header from "@/components/DashboardHeader";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getOrganizationByExternalId } from "@/db/repositories/organizationRepository";
 import { User } from "@/store/schemas";
@@ -10,6 +9,7 @@ import EmptyState from "@/components/EmptyState";
 import JobListingManager from "@/components/JobListingManager";
 import { BriefcaseIcon } from "@heroicons/react/24/outline";
 import JobListingsList from "@/components/JobListingsList";
+import { getUserByExternalId } from "@/db/repositories/userRepository";
 
 export default async function JobListingPage({
   params,
@@ -21,8 +21,7 @@ export default async function JobListingPage({
   const loadedUser = await currentUser();
   const { orgId: organizationExternalId } = auth();
 
-  if (!organizationExternalId) {
-    console.log("OrganizationId not there", organizationExternalId);
+  if (!organizationExternalId || !loadedUser) {
     return redirect("/login");
   }
 
@@ -30,7 +29,9 @@ export default async function JobListingPage({
     organizationExternalId
   );
 
-  if (!loadedUser || !organization) {
+  const loggedInUser = await getUserByExternalId(loadedUser.id);
+
+  if (!loggedInUser || !organization) {
     return redirect("/login");
   }
 
@@ -61,6 +62,7 @@ export default async function JobListingPage({
                       <JobListingManager
                         organizationId={organization.id}
                         searchParams={searchParams}
+                        userId={loggedInUser.id}
                         jobListing={jobListings.find(
                           (jobListing) =>
                             String(jobListing.id) ===
@@ -75,6 +77,7 @@ export default async function JobListingPage({
                         jobListingManagerComponent={JobListingManager}
                         organizationId={organization.id}
                         searchParams={searchParams}
+                        userId={loggedInUser.id}
                         icon={
                           <BriefcaseIcon className="mx-auto h-12 w-12 text-gray-400" />
                         }
