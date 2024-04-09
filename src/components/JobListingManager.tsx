@@ -10,10 +10,12 @@ import { getUpdatedSearchParams } from "@/lib/utils";
 import Link from "next/link";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
+import JobListingQuestions from "./JobListingQuestions";
+import { JobListingListItem } from "@/db/repositories/jobListingRepository";
 
 export default function JobListingManager(props: CreatorComponentProps) {
-  const [jobListing, setJobListing] = useState(
-    props.jobListing ?? ({} as JobListing)
+  const [jobListing, setJobListing] = useState<JobListingListItem>(
+    props.jobListing ?? ({} as JobListingListItem)
   );
   const [shouldApplyJobListing, setShouldApplyJobListing] = useState(false);
   const [creationErrors, setActionErrors] = useState<{
@@ -23,14 +25,16 @@ export default function JobListingManager(props: CreatorComponentProps) {
     position?: string[] | undefined;
     seniority?: string[] | undefined;
   }>({});
-  const [step, setStep] = useState<string>(
-    typeof props.searchParams.step == "string" ? props.searchParams.step : "1"
+  const [step, setStep] = useState<number>(
+    typeof props.searchParams.step == "string"
+      ? parseInt(props.searchParams.step)
+      : 1
   );
   const [steps, setSteps] = useState<Step[]>([
     {
       id: "Step 1",
       name: "Create job listing",
-      status: step == "1" ? "current" : "complete",
+      status: step === 1 ? "current" : "complete",
       onClick: () => {
         setShouldApplyJobListing(true);
       },
@@ -38,13 +42,13 @@ export default function JobListingManager(props: CreatorComponentProps) {
     {
       id: "Step 2",
       name: "Get questions",
-      status: step == "2" ? "current" : step == "1" ? "upcoming" : "complete",
+      status: step === 2 ? "current" : step === 1 ? "upcoming" : "complete",
       onClick: () => {},
     },
     {
       id: "Step 3",
       name: "Edit questions",
-      status: step == "3" ? "current" : "upcoming",
+      status: step === 3 ? "current" : "upcoming",
       onClick: () => {},
     },
   ]);
@@ -56,7 +60,7 @@ export default function JobListingManager(props: CreatorComponentProps) {
       {
         id: "Step 1",
         name: "Create job listing",
-        status: step == "1" ? "current" : "complete",
+        status: step === 1 ? "current" : "complete",
         onClick: () => {
           setShouldApplyJobListing(true);
         },
@@ -64,13 +68,13 @@ export default function JobListingManager(props: CreatorComponentProps) {
       {
         id: "Step 2",
         name: "Get questions",
-        status: step == "2" ? "current" : step == "1" ? "upcoming" : "complete",
+        status: step === 2 ? "current" : step === 1 ? "upcoming" : "complete",
         onClick: () => {},
       },
       {
         id: "Step 3",
         name: "Edit questions",
-        status: step == "3" ? "current" : "upcoming",
+        status: step === 3 ? "current" : "upcoming",
         onClick: () => {},
       },
     ]);
@@ -91,7 +95,7 @@ export default function JobListingManager(props: CreatorComponentProps) {
             { key: "step", value: "2" },
           ])
         );
-        setStep("2");
+        setStep(2);
       } catch (error) {
         if (error instanceof z.ZodError) {
           setActionErrors(error.flatten().fieldErrors);
@@ -115,7 +119,7 @@ export default function JobListingManager(props: CreatorComponentProps) {
             { key: "step", value: "2" },
           ])
         );
-        setStep("2");
+        setStep(2);
       } catch (error) {
         if (error instanceof z.ZodError) {
           setActionErrors(error.flatten().fieldErrors);
@@ -137,15 +141,18 @@ export default function JobListingManager(props: CreatorComponentProps) {
       <Steps
         steps={steps}
         searchParams={props.searchParams}
-        onClickCallBack={(step: string) => {
+        onClickCallBack={(step: number) => {
           setStep(step);
         }}
       />
-      <JobListingForm
-        jobListing={jobListing}
-        setJobListing={setJobListing}
-        creationErrors={creationErrors}
-      />
+      {step === 1 && (
+        <JobListingForm
+          jobListing={jobListing}
+          setJobListing={setJobListing}
+          creationErrors={creationErrors}
+        />
+      )}
+      {step === 2 && <JobListingQuestions jobListing={jobListing} />}
       <div className="mt-6 flex items-center justify-end gap-x-4">
         <Link
           href={`/dashboard/job-listings`}
@@ -157,7 +164,7 @@ export default function JobListingManager(props: CreatorComponentProps) {
         <button
           type="submit"
           className="rounded-md bg-gradient-to-r from-blue-600 to-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          onClick={steps[0].onClick}
+          onClick={steps[step - 1].onClick}
         >
           Save and Continue
         </button>

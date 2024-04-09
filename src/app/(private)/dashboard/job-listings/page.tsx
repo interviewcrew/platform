@@ -72,7 +72,7 @@ export default async function JobListingPage({
                         title="No job listings created"
                         description="To start using interviewcrew, create a new job listing"
                         callToAction="New Job Listing"
-                        creatorComponent={JobListingManager}
+                        jobListingManagerComponent={JobListingManager}
                         organizationId={organization.id}
                         searchParams={searchParams}
                         icon={

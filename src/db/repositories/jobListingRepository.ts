@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
 import { JobListing, jobListingsTable, NewJobListing } from "@/db/schema";
 import * as schema from "@/db/schema";
-import { count, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 
 export type JobListingListItem = Awaited<ReturnType<typeof getJobListings>>[0];
 
@@ -11,6 +11,25 @@ export async function getJobListings(organizationId: number) {
 
   return db.query.jobListingsTable.findMany({
     where: eq(jobListingsTable.organizationId, organizationId),
+    with: {
+      questions: true,
+      interviews: {
+        with: {
+          candidate: true,
+        },
+      },
+    },
+  });
+}
+
+export async function getJobListingById(organizationId: number, id: number): Promise<JobListingListItem | undefined> {
+  const db = drizzle(sql, { schema });
+
+  return db.query.jobListingsTable.findFirst({
+    where: and(
+      eq(jobListingsTable.organizationId, organizationId),
+      eq(jobListingsTable.id, id)
+    ),
     with: {
       questions: true,
       interviews: {

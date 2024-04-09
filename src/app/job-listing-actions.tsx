@@ -1,6 +1,9 @@
 "use server";
 
 import {
+  JobListingListItem,
+  getJobListingById,
+  getJobListings,
   insertJobListing,
   updateJobListing,
 } from "@/db/repositories/jobListingRepository";
@@ -10,7 +13,7 @@ import { z } from "zod";
 
 export async function createJobListing(
   JobListing: NewJobListing | { error: JobListing }
-): Promise<JobListing> {
+): Promise<JobListingListItem> {
   const requestSchema = createInsertSchema(jobListingsTable, {
     title: z.string().trim().min(1, "Title must be at least 1 character long"),
     description: z.string().trim().min(1),
@@ -22,12 +25,22 @@ export async function createJobListing(
 
   const validatedFields = requestSchema.parse(JobListing);
 
-  return (await insertJobListing(validatedFields))[0];
+  const insertedJobListing = (await insertJobListing(validatedFields))[0];
+  const jobListingListItem = await getJobListingById(
+    insertedJobListing.organizationId,
+    insertedJobListing.id
+  );
+
+  if (!jobListingListItem) {
+    throw new Error("Job Listing not found");
+  }
+
+  return jobListingListItem;
 }
 
 export async function editJobListing(
   jobListing: JobListing
-): Promise<JobListing> {
+): Promise<JobListingListItem> {
   if (jobListingsTable.id === undefined) {
     throw new Error("Job Listing ID is required");
   }
@@ -43,7 +56,7 @@ export async function editJobListing(
 
   const validatedFields = requestSchema.parse(jobListing);
 
-  return (
+  const updatedJobListing = (
     await updateJobListing({
       ...validatedFields,
       id: jobListing.id,
@@ -53,4 +66,15 @@ export async function editJobListing(
       seniority: jobListing.seniority ?? "",
     })
   )[0];
+
+  const jobListingListItem = await getJobListingById(
+    updatedJobListing.organizationId,
+    updatedJobListing.id
+  );
+
+  if (!jobListingListItem) {
+    throw new Error("Job Listing not found");
+  }
+
+  return jobListingListItem;
 }

@@ -1,21 +1,14 @@
 import { JobListingListItem } from "@/db/repositories/jobListingRepository";
-import { JobListing } from "@/db/schema";
+import { Question } from "@/db/schema";
+import { useState } from "react";
 
 export default function JobListingForm({
   jobListing,
-  setJobListing,
-  creationErrors,
 }: {
   jobListing: JobListingListItem;
-  setJobListing: (jobListing: JobListingListItem) => void;
-  creationErrors: {
-    title?: string[] | undefined;
-    description?: string[] | undefined;
-    organizationId?: string[] | undefined;
-    position?: string[] | undefined;
-    seniority?: string[] | undefined;
-  };
 }) {
+  const [questions, setQuestions] = useState<Question[]>(jobListing.questions);
+
   return (
     <form>
       <div className="mt-6 space-y-12">

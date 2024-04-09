@@ -1,12 +1,12 @@
 "use client";
 
-import { JobListing } from "@/db/schema";
+import { JobListingListItem } from "@/db/repositories/jobListingRepository";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 
 export type CreatorComponentProps = {
   organizationId: number;
-  jobListing?: JobListing;
+  jobListing?: JobListingListItem;
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
@@ -15,7 +15,7 @@ export default function EmptyState({
   title,
   description,
   callToAction,
-  creatorComponent: CreatorComponent,
+  jobListingManagerComponent: CreatorComponent,
   icon,
   searchParams,
 }: {
@@ -24,7 +24,7 @@ export default function EmptyState({
   description: string;
   callToAction: string;
   icon: React.ReactNode;
-  creatorComponent: React.ComponentType<CreatorComponentProps>;
+  jobListingManagerComponent: React.ComponentType<CreatorComponentProps>;
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const [isCreatorOpen, setIsCreatorOpen] = useState(
