@@ -54,7 +54,7 @@ export default function JobListingsList({
               { key: "jobListingId", value: "" },
             ])}
             type="button"
-            className="block rounded-md bg-gradient-to-r from-blue-600 to-cyan-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="block rounded-md bg-sky-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
             Create Job Listing
           </Link>
@@ -136,7 +136,7 @@ export default function JobListingsList({
                       { key: "jobListingId", value: String(jobListing.id) },
                       { key: "step", value: "1" },
                     ])}
-                    className="text-indigo-600 hover:text-indigo-900"
+                    className="text-sky-600 hover:text-sky-700"
                   >
                     Edit <span className="sr-only">, {jobListing.title}</span>
                   </Link>
@@ -147,7 +147,7 @@ export default function JobListingsList({
                       { key: "jobListingId", value: String(jobListing.id) },
                       { key: "step", value: "2" },
                     ])}
-                    className="text-indigo-600 hover:text-indigo-900"
+                    className="text-sky-600 hover:text-sky-700"
                   >
                     questions
                     <span className="sr-only">, {jobListing.title}</span>
