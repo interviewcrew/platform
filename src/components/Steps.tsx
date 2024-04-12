@@ -6,7 +6,6 @@ import Link from "next/link";
 export type Step = {
   id: string;
   name: string;
-  onClick: () => void;
   status: "complete" | "current" | "upcoming";
 };
 

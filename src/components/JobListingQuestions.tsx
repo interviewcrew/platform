@@ -49,30 +49,18 @@ export default function JobListingQuestions({
     );
   };
 
-  useEffect(() => {
-    const generateQuestions = async () => {
-      const questions = await getQuestionsForJobListing(jobListing);
+  const generateQuestions = async () => {
+    const questions = await getQuestionsForJobListing(jobListing);
 
-      const generatedQuestionsFromOpenAI = questions.map((question, index) => ({
-        question,
-        index,
-        added: false,
-      }));
+    const generatedQuestionsFromOpenAI = questions.map((question, index) => ({
+      question,
+      index,
+      added: false,
+    }));
 
-      setGeneratedQuestions(generatedQuestionsFromOpenAI);
-      setShouldGenerateQuestions(false);
-    };
-
-    if (shouldGenerateQuestions) {
-      generateQuestions();
-    }
-  }, [
-    questions,
-    shouldGenerateQuestions,
-    jobListing,
-    userId,
-    generatedQuestions,
-  ]);
+    setGeneratedQuestions(generatedQuestionsFromOpenAI);
+    setShouldGenerateQuestions(false);
+  };
 
   return (
     <>
@@ -130,6 +118,7 @@ export default function JobListingQuestions({
             )}
             onClick={() => {
               setShouldGenerateQuestions(true);
+              generateQuestions();
             }}
             disabled={shouldGenerateQuestions}
           >
