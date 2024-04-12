@@ -99,12 +99,14 @@ export async function getJobListingQuestions(
     ],
   });
 
+  // TODO: handle the case when there are no questions
   let questionText = questions.choices[0].message.content;
 
   if (!questionText) {
     throw new Error("No questions found");
   }
 
+  console.log("questionText", questionText);
   questionText = questionText.replace(/^```json/, "").replace(/```$/, "");
 
   try {

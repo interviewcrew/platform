@@ -50,6 +50,43 @@ export default async function DashboardPage({
       )?.emailAddress ?? "",
   };
 
+  const allInterviews = await getAllInterviews(organization.id);
+  const doneInterviews = allInterviews.filter(
+    (interview) => interview.transcriptions.length > 0
+  );
+  const upcomingInterviews = allInterviews.filter(
+    (interview) => interview.transcriptions.length == 0
+  );
+
+  let interview = null;
+
+  if (
+    searchParams.interviewId &&
+    typeof searchParams.interviewId === "string"
+  ) {
+    interview = allInterviews.filter(
+      (interview) => interview.id == Number(searchParams.interviewId)
+    )[0];
+  }
+
+  let showEvaluation = interview && searchParams.evaluation;
+
+  const status = searchParams?.status ?? "all";
+
+  const stats = [
+    { label: "All", value: allInterviews, isActive: status === "all" },
+    {
+      label: "Done",
+      value: doneInterviews,
+      isActive: status === "done",
+    },
+    {
+      label: "Upcoming",
+      value: upcomingInterviews,
+      isActive: status === "upcoming",
+    },
+  ];
+
   return (
     <>
       <div className="min-h-full">
@@ -91,7 +128,7 @@ export default async function DashboardPage({
                         <div className="mt-5 flex justify-center sm:mt-0">
                           <button
                             type="button"
-                            className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 hover:cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            className="rounded-md bg-sky-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 hover:cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                           >
                             Create Interview
                           </button>

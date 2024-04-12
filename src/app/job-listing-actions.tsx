@@ -90,7 +90,8 @@ export async function editJobListing(
 export async function getQuestionsForJobListing(
   jobListing: JobListingListItem,
 ): Promise<string[]> {
-  return getJobListingQuestions(jobListing);
+  const response = await getJobListingQuestions(jobListing);
+  return response;
 }
 
 export async function saveQuestionsForJobListing(

@@ -1,5 +1,6 @@
 import { JobListingListItem } from "@/db/repositories/jobListingRepository";
 import { getUpdatedSearchParams } from "@/lib/utils";
+import { WandIcon } from "lucide-react";
 import Link from "next/link";
 
 const people = [

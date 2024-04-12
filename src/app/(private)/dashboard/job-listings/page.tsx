@@ -10,6 +10,7 @@ import JobListingManager from "@/components/JobListingManager";
 import { BriefcaseIcon } from "@heroicons/react/24/outline";
 import JobListingsList from "@/components/JobListingsList";
 import { getUserByExternalId } from "@/db/repositories/userRepository";
+import { getUpdatedSearchParams } from "@/lib/utils";
 
 export default async function JobListingPage({
   params,
@@ -36,6 +37,19 @@ export default async function JobListingPage({
   }
 
   const jobListings = await getJobListings(organization.id);
+  const jobListing = jobListings.find(
+    (jobListing) => String(jobListing.id) === searchParams["jobListingId"]
+  );
+
+  if (!jobListing && searchParams["jobListingId"]) {
+    return redirect(
+      "/dashboard/job-listings" +
+        getUpdatedSearchParams(searchParams, [
+          { key: "jobListingId", value: undefined },
+          { key: "step", value: undefined},
+        ])
+    );
+  }
 
   const user: User = {
     fullName: `${loadedUser.firstName} ${loadedUser.lastName}`,
@@ -58,16 +72,12 @@ export default async function JobListingPage({
               <div className="grid grid-cols-1 col-span-6 gap-4">
                 <section aria-labelledby="profile-overview-title">
                   <div className="overflow-hidden rounded-lg bg-white shadow grid grid-cols-1 col-span-6 gap-4 p-10">
-                    {searchParams["step"] && searchParams["jobListingId"] ? (
+                    {searchParams["step"] ? (
                       <JobListingManager
                         organizationId={organization.id}
                         searchParams={searchParams}
                         userId={loggedInUser.id}
-                        jobListing={jobListings.find(
-                          (jobListing) =>
-                            String(jobListing.id) ===
-                            searchParams["jobListingId"]
-                        )}
+                        jobListing={jobListing}
                       />
                     ) : jobListings.length === 0 ? (
                       <EmptyState
