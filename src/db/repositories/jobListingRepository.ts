@@ -1,6 +1,12 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
-import { JobListing, jobListingsTable, NewJobListing } from "@/db/schema";
+import {
+  Question,
+  JobListing,
+  jobListingsTable,
+  questionsTable,
+  NewJobListing,
+} from "@/db/schema";
 import * as schema from "@/db/schema";
 import { and, count, eq } from "drizzle-orm";
 
@@ -98,21 +104,56 @@ export async function updateJobListing(
 export async function addQuestionsToJobListing(
   jobListing: JobListing,
   userId: number,
-  questions: string[]
-): Promise<JobListingListItem | undefined> {
+  questions: Question[]
+): Promise<Question[]> {
   const db = drizzle(sql, { schema });
 
-  await db
-    .insert(schema.questionsTable)
-    .values(
-      questions.map((question: string) => ({
-        question: question,
-        isGenerated: true,
-        jobListingId: jobListing.id,
-        userId: userId,
-      }))
+  const updatedQuestions = (
+    await Promise.all(
+      questions
+        .filter((question: Question) => question.id)
+        .map((question: Question) =>
+          db
+            .update(questionsTable)
+            .set(question)
+            .where(eq(questionsTable.id, question.id))
+            .returning({
+              id: questionsTable.id,
+              createdAt: questionsTable.createdAt,
+              updatedAt: questionsTable.updatedAt,
+              jobListingId: questionsTable.jobListingId,
+              interviewId: questionsTable.interviewId,
+              userId: questionsTable.userId,
+              question: questionsTable.question,
+              isGenerated: questionsTable.isGenerated,
+            })
+        )
     )
-    .onConflictDoNothing();
+  ).map((updatedQuestion) => updatedQuestion[0]);
 
-  return getJobListingById(jobListing.organizationId, jobListing.id);
+  const insertedQuestions = await db
+    .insert(questionsTable)
+    .values(
+      questions
+        .filter((question: Question) => !question.id)
+        .map((question: Question) => ({
+          question: question.question,
+          isGenerated: true,
+          jobListingId: jobListing.id,
+          userId: userId,
+        }))
+    )
+    .onConflictDoNothing()
+    .returning({
+      id: questionsTable.id,
+      createdAt: questionsTable.createdAt,
+      updatedAt: questionsTable.updatedAt,
+      jobListingId: questionsTable.jobListingId,
+      interviewId: questionsTable.interviewId,
+      userId: questionsTable.userId,
+      question: questionsTable.question,
+      isGenerated: questionsTable.isGenerated,
+    });
+
+  return [...insertedQuestions, ...updatedQuestions];
 }

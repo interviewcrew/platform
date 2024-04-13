@@ -93,7 +93,6 @@ export default function JobListingManager(props: CreatorComponentProps) {
                 { key: "step", value: "" },
               ])
             );
-            setStep(1);
           }}
         />
       )}

@@ -64,7 +64,7 @@ export async function getEvaluationAndStoreInDB(
   return evaluationText;
 }
 
-export async function getJobListingQuestions(
+export async function generateJobListingQuestions(
   jobListing: JobListingListItem
 ): Promise<string[]> {
   const openai = new OpenAI({
