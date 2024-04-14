@@ -18,7 +18,7 @@ import {
   Question,
   jobListingsTable,
 } from "@/db/schema";
-import { getJobListingQuestions } from "@/lib/openai/client";
+import { generateJobListingQuestions } from "@/lib/openai/client";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -93,7 +93,7 @@ export async function editJobListing(
 export async function generateQuestionsForJobListing(
   jobListing: JobListingListItem
 ): Promise<string[]> {
-  const response = await getJobListingQuestions(jobListing);
+  const response = await generateJobListingQuestions(jobListing);
   return response;
 }
 

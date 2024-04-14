@@ -10,7 +10,13 @@ import {
 import { Question } from "@/db/schema";
 import { cn } from "@/lib/utils";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import { EditIcon, SparklesIcon, Trash2Icon, Undo2Icon } from "lucide-react";
+import {
+  CheckIcon,
+  EditIcon,
+  SparklesIcon,
+  Trash2Icon,
+  Undo2Icon,
+} from "lucide-react";
 import { useState } from "react";
 
 function DeletedQuestions({
@@ -65,54 +71,207 @@ function DeletedQuestions({
   );
 }
 
-function UnchangedQuestions({
+function SavedQuestions({
   questions,
   deleteQuestion,
   editQuestion,
+  undoDelete,
 }: {
   questions: QuestionWithChange[];
   deleteQuestion: (index: number) => void;
-  editQuestion: (index: number) => void;
+  editQuestion: (questions: QuestionWithChange[], index: number) => void;
+  undoDelete: (index: number) => void;
 }) {
-  const isUnchanged = (question: QuestionWithChange) =>
-    question.status == "unchanged";
+  type EditableQuestionsWithStatus = QuestionWithChange & {
+    isEditing: boolean;
+  };
+
+  const [questionsWithEditable, setQuestionsWithEditable] = useState<
+    EditableQuestionsWithStatus[]
+  >(questions.map((question) => ({ ...question, isEditing: false })));
+
+  const isSaved = (question: QuestionWithChange) =>
+    question.status == "unchanged" ||
+    question.status == "updated" ||
+    question.status == "deleted";
+
+  const isDeleted = (question: QuestionWithChange) =>
+    question.status == "deleted";
+
+  const isChanged = (question: QuestionWithChange) =>
+    question.status == "updated" || question.status == "deleted";
+
+  const toggleToEditable = (
+    editableQuestions: EditableQuestionsWithStatus[],
+    index: number
+  ) => {
+    const editedQuestion = questions[index];
+
+    const updatedQuestions = editableQuestions.map((question, i) => {
+      if (index === i) {
+        return {
+          ...question,
+          question: editedQuestion.question,
+          isEditing: !question.isEditing,
+        };
+      }
+
+      return question;
+    });
+
+    setQuestionsWithEditable(updatedQuestions);
+  };
+
+  const undoChange = (index: number) => {
+    const undoQuestion = questionsWithEditable.find(
+      (question) => question.id === questions[index].id
+    );
+
+    if (!undoQuestion) {
+      return;
+    }
+
+    setQuestionsWithEditable(
+      questionsWithEditable.map((question: QuestionWithChange) => {
+        if (
+          question.id === undoQuestion.id &&
+          (question.status === "deleted" || question.status === "updated")
+        ) {
+          return {
+            ...question,
+            question: undoQuestion.question,
+            status: "unchanged",
+          };
+        }
+
+        return question;
+      })
+    );
+
+    undoDelete(index);
+  };
+
+  const saveTextChange = (
+    questions: EditableQuestionsWithStatus[],
+    index: number
+  ) => {
+    const updatedQuestions = questions.map((question, i) => {
+      if (index === i) {
+        return {
+          ...question,
+          isEditing: false,
+        };
+      }
+
+      return question;
+    });
+
+    setQuestionsWithEditable(updatedQuestions);
+    editQuestion(updatedQuestions, index);
+  };
 
   return (
     <>
       <legend className="text-base font-semibold leading-6 text-gray-900">
         Already saved questions
         <span className="text-sm text-gray-500">
-          {" (" + questions.filter(isUnchanged).length + ")"}
+          {" (" + questionsWithEditable.filter(isSaved).length + ")"}
         </span>
       </legend>
       <div className="mt-4 divide-y divide-gray-200">
-        {questions.map(
+        {questionsWithEditable.map(
           (question, index) =>
-            isUnchanged(question) && (
+            isSaved(question) && (
               <div
                 key={index + 1}
-                className="relative flex items-start p-4 odd:bg-gray-100"
+                className={cn("relative flex items-start p-4 odd:bg-gray-100", {
+                  "odd:bg-white border-2": question.isEditing,
+                })}
               >
-                <div className="min-w-0 flex-1 text-sm leading-6">
-                  <label
-                    htmlFor={`generatedQuestion-${index + 1}`}
-                    className="select-none font-medium text-gray-900"
-                  >
-                    {question.question}
-                  </label>
+                <div className="min-w-0 flex-1 text-sm leading-6 ">
+                  {!question.isEditing ? (
+                    <label
+                      htmlFor={`generatedQuestion-${index + 1}`}
+                      className={cn("select-none font-medium text-gray-900", {
+                        "line-through text-gray-500": isDeleted(question),
+                      })}
+                    >
+                      {question.question}
+                    </label>
+                  ) : (
+                    <textarea
+                      className="-m-4 p-4  w-full border-0 text-gray-900 shadow-sm ring-0 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
+                      value={question.question}
+                      onChange={(e) => {
+                        const updatedQuestions = questionsWithEditable.map(
+                          (q, i) => {
+                            if (index === i) {
+                              return {
+                                ...q,
+                                question: e.target.value,
+                              };
+                            }
+
+                            return q;
+                          }
+                        );
+
+                        setQuestionsWithEditable(updatedQuestions);
+                      }}
+                    />
+                  )}
                 </div>
                 <div className="ml-3 flex h-6 items-center">
-                  <button onClick={() => editQuestion(index)}>
-                    <EditIcon className="h-5 w-5 text-sky-600 font-bold" />
-                  </button>
-                  <button onClick={() => deleteQuestion(index)}>
-                    <Trash2Icon className="h-5 w-5 text-sky-600 font-bold" />
-                  </button>
+                  {isChanged(question) && !question.isEditing && (
+                    <button
+                      onClick={() => {
+                        if (isDeleted(question)) {
+                          undoDelete(index);
+                        } else {
+                          toggleToEditable(questionsWithEditable, index);
+                        }
+                      }}
+                    >
+                      <Undo2Icon className="h-5 w-5 text-sky-600 font-bold" />
+                    </button>
+                  )}
+                  {!isDeleted(question) &&
+                    (question.isEditing ? (
+                      <button
+                        onClick={() =>
+                          toggleToEditable(questionsWithEditable, index)
+                        }
+                      >
+                        <XMarkIcon className="h-5 w-5 text-sky-600 font-bold" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() =>
+                          toggleToEditable(questionsWithEditable, index)
+                        }
+                      >
+                        <EditIcon className="h-5 w-5 text-sky-600 font-bold" />
+                      </button>
+                    ))}
+                  {!isDeleted(question) &&
+                    (question.isEditing ? (
+                      <button
+                        onClick={() =>
+                          saveTextChange(questionsWithEditable, index)
+                        }
+                      >
+                        <CheckIcon className="h-5 w-5 text-sky-600 font-bold" />
+                      </button>
+                    ) : (
+                      <button onClick={() => deleteQuestion(index)}>
+                        <Trash2Icon className="h-5 w-5 text-sky-600 font-bold" />
+                      </button>
+                    ))}
                 </div>
               </div>
             )
         )}
-        {questions.filter(isUnchanged).length === 0 && (
+        {questions.filter(isSaved).length === 0 && (
           <div className="p-4 text-sm text-gray-500 border-dashed rounded-lg border-2">
             No unchanged questions
           </div>
@@ -193,6 +352,29 @@ export default function JobListingQuestions({
           return {
             ...question,
             status: "deleted",
+          };
+        }
+
+        return question;
+      })
+    );
+  };
+
+  const editQuestion = async (
+    editedQuestions: QuestionWithChange[],
+    index: number
+  ) => {
+    setQuestions(
+      editedQuestions.map((question: QuestionWithChange, i) => {
+        if (
+          (question.status === "unchanged" ||
+            question.status === "deleted" ||
+            question.status == "updated") &&
+          index === i
+        ) {
+          return {
+            ...question,
+            status: "updated",
           };
         }
 
@@ -345,10 +527,11 @@ export default function JobListingQuestions({
             </div>
           </div>
           <div className="mt-4">
-            <UnchangedQuestions
+            <SavedQuestions
               questions={questions}
               deleteQuestion={deleteQuestion}
-              editQuestion={() => {}}
+              editQuestion={editQuestion}
+              undoDelete={undoQuestionStatus}
             />
           </div>
           <div className="mt-4">
