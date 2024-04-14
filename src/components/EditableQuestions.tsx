@@ -230,7 +230,7 @@ export function EditableQuestions({
         )}
         {questions.filter(isSaved).length === 0 && (
           <div className="p-4 text-sm text-gray-500 border-dashed rounded-lg border-2">
-            No unchanged questions
+            There are no already saved questions
           </div>
         )}
       </div>

@@ -117,13 +117,17 @@ export async function saveQuestionsForJobListing(
     ).map(async (question: UpdatedQuestion) => updateQuestion(question))
   );
 
-  await deleteQuestions(
-    (
-      questions.filter(
-        (question) => question.status === "deleted"
-      ) as UpdatedQuestion[]
-    ).map((question) => question.id)
-  );
+  if (
+    questions.filter((question) => question.status === "deleted").length > 0
+  ) {
+    await deleteQuestions(
+      (
+        questions.filter(
+          (question) => question.status === "deleted"
+        ) as UpdatedQuestion[]
+      ).map((question) => question.id)
+    );
+  }
 
   if (
     questions.filter((question) => question.status === "selected").length > 0

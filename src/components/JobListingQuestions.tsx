@@ -13,6 +13,7 @@ import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { SparklesIcon } from "lucide-react";
 import { useState } from "react";
 import { EditableQuestions } from "@/components/EditableQuestions";
+import { get } from "http";
 
 function GeneratedQuestions({
   questions,
@@ -93,15 +94,18 @@ export default function JobListingQuestions({
     index: number
   ) => {
     setQuestions(
-      editedQuestions.map((question: QuestionWithChange, i) => {
+      questions.map((question: QuestionWithChange, i) => {
+        const editedQuestion = editedQuestions[index];
+
         if (
-          (question.status === "unchanged" ||
-            question.status === "deleted" ||
-            question.status == "updated") &&
+          editedQuestion &&
+          (editedQuestion.status === "unchanged" ||
+            editedQuestion.status === "deleted" ||
+            editedQuestion.status == "updated") &&
           index === i
         ) {
           return {
-            ...question,
+            ...editedQuestion,
             status: "updated",
           };
         }
@@ -138,7 +142,7 @@ export default function JobListingQuestions({
     );
   };
 
-  const updateSelectedQuestions = (
+  const toggleGeneratedQuestionStatus = (
     questions: QuestionWithChange[],
     checkedIndex: number
   ) => {
@@ -263,18 +267,59 @@ export default function JobListingQuestions({
               undoQuestionCallback={undoQuestionStatus}
             />
           </div>
+          <legend className="mt-4 text-base font-semibold leading-6 text-gray-900">
+            Generated questions added to interview
+            <span className="text-sm text-gray-500">
+              {" (" + getQuestions(["selected"]).length + ")"}
+            </span>
+          </legend>
+          <div className="mt-4 divide-y divide-gray-200">
+            {getQuestions(["selected"]).length === 0 && (
+              <div className="p-4 text-sm text-gray-500 border-dashed rounded-lg border-2">
+                There are no generated questions that were added
+              </div>
+            )}
+            {questions.map(
+              (question, index) =>
+                question.status === "selected" && (
+                  <div
+                    key={index + 1}
+                    className="relative flex items-start p-4 odd:bg-gray-100"
+                  >
+                    <div className="min-w-0 flex-1 text-sm leading-6">
+                      <label
+                        htmlFor={`generatedQuestion-${index + 1}`}
+                        className="select-none font-medium text-gray-900"
+                      >
+                        {question.question}
+                      </label>
+                    </div>
+                    <div className="ml-3 flex h-6 items-center">
+                      <button
+                        onClick={() => {
+                          toggleGeneratedQuestionStatus(questions, index);
+                        }}
+                      >
+                        <XMarkIcon className="h-5 w-5 text-red-400 font-bold" />
+                      </button>
+                    </div>
+                  </div>
+                )
+            )}
+          </div>
         </div>
         <div className="pl-2">
           <div>
             <legend className="text-base font-semibold leading-6 text-gray-900">
-              Generated questions not added
+              Generated questions
               <span className="text-sm text-gray-500">
                 {" (" + getQuestions(["generated"]).length + ")"}
               </span>
             </legend>
             <div className="text-sm text-gray-500">
-              The questions in this column are not going to be saved. Add the
-              ones you want by clicking on the plus sign
+              The questions in this column are generated, but not selected to be
+              added to the interview. Add the ones you want by clicking on the
+              plus sign
             </div>
           </div>
           <div className="flex justify-center mt-2">
@@ -313,86 +358,55 @@ export default function JobListingQuestions({
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
+                  {"Generating questions"}
                 </>
               ) : (
-                <SparklesIcon className="h-5 w-5 mr-2" />
+                <>
+                  <SparklesIcon className="h-5 w-5 mr-2" />
+                  {"Generate questions"}
+                </>
               )}
-              Generate questions
             </button>
           </div>
-          {getQuestions(["generated"]).length > 0 && (
-            <div className="mt-8">
-              <legend className="text-base font-semibold leading-6 text-gray-900">
-                Questions to ask in the interview
-              </legend>
-              <div className="text-sm text-gray-500">
-                Check the checkbox to add the question and use save and continue
-                to save the changes
+          <legend className="mt-4 text-base font-semibold leading-6 text-gray-900">
+            Generated questions that can be added
+            <span className="text-sm text-gray-500">
+              {" (" + getQuestions(["generated"]).length + ")"}
+            </span>
+          </legend>
+          <div className="mt-4 divide-y divide-gray-200">
+            {getQuestions(["generated"]).length === 0 && (
+              <div className="p-4 text-sm text-gray-500 border-dashed rounded-lg border-2">
+                There are no generated questions to be added
               </div>
-            </div>
-          )}
-          <div className="mt-8 divide-y divide-gray-200 border-b border-t border-gray-200">
-            {getQuestions(["selected"]).map((question, index) => (
-              <div
-                key={index + 1}
-                className="relative flex items-start p-4 odd:bg-gray-100"
-              >
-                <div className="min-w-0 flex-1 text-sm leading-6">
-                  <label
-                    htmlFor={`generatedQuestion-${index + 1}`}
-                    className="select-none font-medium text-gray-900"
+            )}
+            {questions.map(
+              (question, index) =>
+                question.status === "generated" && (
+                  <div
+                    key={index + 1}
+                    className="relative flex items-start p-4 odd:bg-gray-100"
                   >
-                    {question.question}
-                  </label>
-                </div>
-                <div className="ml-3 flex h-6 items-center">
-                  <button
-                    onClick={() => {
-                      updateSelectedQuestions(questions, index);
-                    }}
-                  >
-                    <XMarkIcon className="h-5 w-5 text-red-400 font-bold" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-          {getQuestions(["generated"]).length > 0 && (
-            <div className="mt-8">
-              <legend className="text-base font-semibold leading-6 text-gray-900">
-                Generated questions not added
-              </legend>
-              <div className="text-sm text-gray-500">
-                Check the checkbox to add the question and use save and continue
-                to save the changes
-              </div>
-            </div>
-          )}
-          <div className="mt-8 divide-y divide-gray-200 border-b border-t border-gray-200">
-            {getQuestions(["generated"]).map((question, index) => (
-              <div
-                key={index + 1}
-                className="relative flex items-start p-4 odd:bg-gray-100"
-              >
-                <div className="min-w-0 flex-1 text-sm leading-6">
-                  <label
-                    htmlFor={`generatedQuestion-${index + 1}`}
-                    className="select-none font-medium text-gray-900"
-                  >
-                    {question.question}
-                  </label>
-                </div>
-                <div className="ml-3 flex h-6 items-center">
-                  <button
-                    onClick={() => {
-                      updateSelectedQuestions(questions, index);
-                    }}
-                  >
-                    <PlusIcon className="h-5 w-5 text-sky-600 focus:ring-sky-600 font-bold" />
-                  </button>
-                </div>
-              </div>
-            ))}
+                    <div className="min-w-0 flex-1 text-sm leading-6">
+                      <label
+                        htmlFor={`generatedQuestion-${index + 1}`}
+                        className="select-none font-medium text-gray-900"
+                      >
+                        {question.question}
+                      </label>
+                    </div>
+                    <div className="ml-3 flex h-6 items-center">
+                      <button
+                        onClick={() => {
+                          toggleGeneratedQuestionStatus(questions, index);
+                        }}
+                      >
+                        <PlusIcon className="h-5 w-5 text-sky-600 focus:ring-sky-600 font-bold" />
+                      </button>
+                    </div>
+                  </div>
+                )
+            )}
           </div>
         </div>
       </div>
