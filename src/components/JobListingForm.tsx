@@ -7,12 +7,14 @@ import { cn } from "@/lib/utils";
 export default function JobListingForm({
   jobListing,
   organizationId,
+  step,
   doneCallback,
   cancelCallback,
 }: {
   jobListing: JobListingListItem;
   organizationId: number;
-  doneCallback: (jobListing: JobListingListItem) => void;
+  step: number;
+  doneCallback: (jobListing: JobListingListItem, step: number) => void;
   cancelCallback: () => void;
 }) {
   type CreationErrors = {
@@ -49,7 +51,7 @@ export default function JobListingForm({
       }
 
       setJobListingDto(result);
-      doneCallback(result);
+      doneCallback(result, step);
     } catch (error) {
       if (error instanceof z.ZodError) {
         setCreationErrors(error.flatten().fieldErrors);

@@ -8,6 +8,7 @@ import {
 } from "@/db/repositories/jobListingRepository";
 import {
   addQuestionsToJobListing,
+  deleteQuestions,
   updateQuestion,
 } from "@/db/repositories/questionRepository";
 
@@ -104,21 +105,38 @@ type UpdatedQuestion = Question & {
 export type QuestionWithChange = GeneratedQuestion | UpdatedQuestion;
 
 export async function saveQuestionsForJobListing(
+  jobListing: JobListingListItem,
   questions: QuestionWithChange[]
 ): Promise<Question[]> {
-  const updatedQuestions = (
-    await Promise.all(
-      (
-        questions.filter(
-          (question) => question.status === "updated"
-        ) as UpdatedQuestion[]
-      ).map(async (question: UpdatedQuestion) => updateQuestion(question))
-    )
-  ).filter((question) => question !== undefined) as Question[];
-
-  const newQuestions = await addQuestionsToJobListing(
-    questions.filter((question) => question.status === "selected")
+  console.log(jobListing, questions);
+  await Promise.all(
+    (
+      questions.filter(
+        (question) => question.status === "updated"
+      ) as UpdatedQuestion[]
+    ).map(async (question: UpdatedQuestion) => updateQuestion(question))
   );
 
-  return [...newQuestions, ...updatedQuestions];
+  await deleteQuestions(
+    (
+      questions.filter(
+        (question) => question.status === "deleted"
+      ) as UpdatedQuestion[]
+    ).map((question) => question.id)
+  );
+
+  if (
+    questions.filter((question) => question.status === "selected").length > 0
+  ) {
+    await addQuestionsToJobListing(
+      questions.filter((question) => question.status === "selected")
+    );
+  }
+
+  const jobListingWithQuestions = await getJobListingById(
+    jobListing.organizationId,
+    jobListing.id
+  );
+
+  return jobListingWithQuestions?.questions ?? [];
 }

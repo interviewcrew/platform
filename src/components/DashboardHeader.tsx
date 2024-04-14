@@ -16,9 +16,9 @@ import { User } from "@/store/schemas";
 
 const navigation: { name: string; href: string; current: boolean }[] = [
   { name: "Dashboard", href: "/dashboard", current: false },
-  { name: "Job Listings", href: "/dashboard/job-listings/", current: false },
-  { name: "Candidates", href: "/dashboard/candidates/", current: false },
-  { name: "Interviews", href: "/dashboard/interviews", current: false },
+  // { name: "Job Listings", href: "/dashboard/job-listings/", current: false },
+  // { name: "Candidates", href: "/dashboard/candidates/", current: false },
+  // { name: "Interviews", href: "/dashboard/interviews", current: false },
   // { name: "Problems", href: "/dashboard/problems", current: false },
 ];
 

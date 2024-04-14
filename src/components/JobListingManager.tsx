@@ -13,13 +13,7 @@ export default function JobListingManager(props: CreatorComponentProps) {
   const [jobListing, setJobListing] = useState<JobListingListItem>(
     props.jobListing ?? ({} as JobListingListItem)
   );
-  const [creationErrors, setActionErrors] = useState<{
-    title?: string[] | undefined;
-    description?: string[] | undefined;
-    organizationId?: string[] | undefined;
-    position?: string[] | undefined;
-    seniority?: string[] | undefined;
-  }>({});
+
   const [step, setStep] = useState<number>(
     typeof props.searchParams.step == "string"
       ? parseInt(props.searchParams.step)
@@ -44,6 +38,26 @@ export default function JobListingManager(props: CreatorComponentProps) {
   ]);
 
   const router = useRouter();
+
+  const cancelCallback = () => {
+    router.push(
+      getUpdatedSearchParams(props.searchParams, [
+        { key: "jobListingId", value: "" },
+        { key: "step", value: "" },
+      ])
+    );
+  };
+
+  const doneCallback = async (jobListing: JobListingListItem, step: number) => {
+    setJobListing(jobListing);
+    router.push(
+      getUpdatedSearchParams(props.searchParams, [
+        { key: "jobListingId", value: String(jobListing.id) },
+        { key: "step", value: String(step + 1) },
+      ])
+    );
+    setStep(step + 1);
+  };
 
   useEffect(() => {
     setSteps([
@@ -76,28 +90,19 @@ export default function JobListingManager(props: CreatorComponentProps) {
         <JobListingForm
           jobListing={jobListing}
           organizationId={props.organizationId}
-          doneCallback={async (jobListing: JobListingListItem) => {
-            setJobListing(jobListing);
-            router.push(
-              getUpdatedSearchParams(props.searchParams, [
-                { key: "jobListingId", value: String(jobListing.id) },
-                { key: "step", value: "2" },
-              ])
-            );
-            setStep(2);
-          }}
-          cancelCallback={() => {
-            router.push(
-              getUpdatedSearchParams(props.searchParams, [
-                { key: "jobListingId", value: "" },
-                { key: "step", value: "" },
-              ])
-            );
-          }}
+          doneCallback={doneCallback}
+          cancelCallback={cancelCallback}
+          step={step}
         />
       )}
       {step === 2 && (
-        <JobListingQuestions jobListing={jobListing} userId={props.userId} />
+        <JobListingQuestions
+          jobListing={jobListing}
+          userId={props.userId}
+          doneCallback={doneCallback}
+          cancelCallback={cancelCallback}
+          step={step}
+        />
       )}
     </>
   );

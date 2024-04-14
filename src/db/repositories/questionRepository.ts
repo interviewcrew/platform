@@ -2,12 +2,14 @@ import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
 import { Question, NewQuestion, questionsTable } from "@/db/schema";
 import * as schema from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
-export async function deleteQuestion(questionId: number): Promise<boolean> {
+export async function deleteQuestions(questionIds: number[]): Promise<boolean> {
   const db = drizzle(sql, { schema });
 
-  await db.delete(questionsTable).where(eq(questionsTable.id, questionId));
+  await db
+    .delete(questionsTable)
+    .where(inArray(questionsTable.id, questionIds));
 
   return true;
 }

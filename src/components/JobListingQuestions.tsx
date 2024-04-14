@@ -10,9 +10,7 @@ import {
 import { Question } from "@/db/schema";
 import { cn } from "@/lib/utils";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import {
-  SparklesIcon,
-} from "lucide-react";
+import { SparklesIcon } from "lucide-react";
 import { useState } from "react";
 import { EditableQuestions } from "@/components/EditableQuestions";
 
@@ -52,30 +50,25 @@ function GeneratedQuestions({
 export default function JobListingQuestions({
   jobListing,
   userId,
+  step,
   doneCallback,
   cancelCallback,
 }: {
   userId: number;
   jobListing: JobListingListItem;
-  doneCallback: (jobListing: JobListingListItem) => void;
+  step: number;
+  doneCallback: (jobListing: JobListingListItem, step: number) => void;
   cancelCallback: () => void;
 }) {
   const [questions, setQuestions] = useState<QuestionWithChange[]>(
-    jobListing.questions.map((question, index) => ({
+    jobListing.questions.map((question) => ({
       ...question,
-      status: index == 0 ? "unchanged" : index == 1 ? "deleted" : "updated",
+      status: "unchanged",
     }))
-    // []
   );
 
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
   const [isSavingQuestions, setIsSavingQuestions] = useState(false);
-
-  const saveQuestions = async (questions: Question[]) => {
-    setIsSavingQuestions(true);
-    await addQuestionsToJobListing(jobListing, userId, questions);
-    setIsSavingQuestions(false);
-  };
 
   const deleteQuestion = async (index: number) => {
     setQuestions(
@@ -191,13 +184,14 @@ export default function JobListingQuestions({
 
   const handleSave = async (questions: QuestionWithChange[]) => {
     setIsSavingQuestions(true);
+
     const updatedJobListing = {
       ...jobListing,
-      questions: await saveQuestionsForJobListing(questions),
+      questions: await saveQuestionsForJobListing(jobListing, questions),
     };
 
     setIsSavingQuestions(false);
-    doneCallback(updatedJobListing);
+    doneCallback(updatedJobListing, step);
   };
 
   return (
