@@ -81,7 +81,6 @@ export default function ManageInterviews({
       let result: Candidate;
 
       if (candidate.id !== undefined) {
-        console.log("Editing candidate", candidate);
         result = (await editCandidate(candidate))[0];
         setCandidates(
           candidates.map((c) =>
@@ -89,7 +88,6 @@ export default function ManageInterviews({
           )
         );
       } else {
-        console.log("Creating candidate", candidate);
         result = (await createCandidate(candidate))[0];
         candidate.interviews = [];
         setCandidates([...candidates, { ...candidate, ...result }]);
@@ -340,7 +338,7 @@ export default function ManageInterviews({
                 }}
                 disabled={isSavingCandidate}
               >
-                Save and Continue
+                {candidate.id ? "Update Candidate" : "Create Candidate"}
               </button>
             </div>
           </form>
