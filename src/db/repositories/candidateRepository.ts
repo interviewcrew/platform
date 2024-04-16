@@ -7,7 +7,7 @@ import {
 } from "@/db/schema";
 import * as schema from "@/db/schema";
 import { sql } from "@vercel/postgres";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, like, or } from "drizzle-orm";
 
 export type CandidateWithInterviews = Candidate & { interviews: Interview[] };
 
@@ -35,7 +35,12 @@ export async function updateCandidate(candidate: Candidate) {
 
   return db
     .update(candidatesTable)
-    .set(candidate)
+    .set({
+      name: candidate.name,
+      email: candidate.email,
+      about: candidate.about,
+      updatedAt: new Date(),
+    })
     .where(eq(candidatesTable.id, candidate.id))
     .returning({
       id: candidatesTable.id,
@@ -60,5 +65,40 @@ export async function getCandidateById(
       eq(candidatesTable.organizationId, organizationId),
       eq(candidatesTable.id, id)
     ),
+  });
+}
+
+export async function getCandidates(organizationId: number, search: string) {
+  const db = drizzle(sql, { schema });
+
+  return db.query.candidatesTable.findMany({
+    where: and(
+      or(
+        like(candidatesTable.name, `%${search}%`),
+        isNull(candidatesTable.name),
+        like(candidatesTable.email, `%${search}%`),
+        isNull(candidatesTable.email)
+      ),
+      eq(candidatesTable.organizationId, organizationId)
+    ),
+    with: {
+      interviews: {
+        with: {
+          jobListing: true,
+          problem: true,
+          language: true,
+          evaluations: {
+            with: {
+              evaluationMetric: true,
+            },
+          },
+          submissions: {
+            with: {
+              programmingLanguage: true,
+            },
+          },
+        },
+      },
+    },
   });
 }

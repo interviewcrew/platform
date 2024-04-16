@@ -20,6 +20,16 @@ export default function JobListingManager(props: CreatorComponentProps) {
       ? parseInt(props.searchParams.step)
       : 1
   );
+  const [candidateId, setCandidateId] = useState<number | undefined>(
+    typeof props.searchParams.candidateId == "string"
+      ? parseInt(props.searchParams.candidateId)
+      : undefined
+  )
+  const [interviewId, setInterviewId] = useState<number | undefined>(
+    typeof props.searchParams.interviewId == "string"
+      ? parseInt(props.searchParams.interviewId)
+      : undefined
+  )
   const [steps, setSteps] = useState<Step[]>([
     {
       id: "Step 1",
@@ -112,6 +122,11 @@ export default function JobListingManager(props: CreatorComponentProps) {
           doneCallback={doneCallback}
           cancelCallback={cancelCallback}
           step={step}
+          searchParams={props.searchParams}
+          userId={props.userId}
+          allCandidates={props.allCandidates}
+          candidateId={candidateId}
+          interviewId={interviewId}
         />
       )}
     </>

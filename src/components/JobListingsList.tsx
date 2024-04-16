@@ -150,8 +150,19 @@ export default function JobListingsList({
                     ])}
                     className="text-sky-600 hover:text-sky-700"
                   >
-                    questions
+                    Questions
                     <span className="sr-only">, {jobListing.title}</span>
+                  </Link>
+                </td>
+                <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                  <Link
+                    href={getUpdatedSearchParams(searchParams, [
+                      { key: "jobListingId", value: String(jobListing.id) },
+                      { key: "step", value: "3" },
+                    ])}
+                    className="text-sky-600 hover:text-sky-700"
+                  >
+                    Interviews <span className="sr-only">, {jobListing.title}</span>
                   </Link>
                 </td>
               </tr>

@@ -11,6 +11,7 @@ import { BriefcaseIcon } from "@heroicons/react/24/outline";
 import JobListingsList from "@/components/JobListingsList";
 import { getUserByExternalId } from "@/db/repositories/userRepository";
 import { getUpdatedSearchParams } from "@/lib/utils";
+import { getCandidates } from "@/db/repositories/candidateRepository";
 
 export default async function JobListingPage({
   params,
@@ -60,6 +61,8 @@ export default async function JobListingPage({
       )?.emailAddress ?? "",
   };
 
+  const allCandidates = await getCandidates(organization.id, "");
+
   return (
     <>
       <div className="min-h-full">
@@ -78,13 +81,14 @@ export default async function JobListingPage({
                         searchParams={searchParams}
                         userId={loggedInUser.id}
                         jobListing={jobListing}
+                        allCandidates={allCandidates}
                       />
                     ) : jobListings.length === 0 ? (
                       <EmptyState
                         title="No job listings created"
                         description="To start using interviewcrew, create a new job listing"
                         callToAction="New Job Listing"
-                        jobListingManagerComponent={JobListingManager}
+                        CreatorComponent={JobListingManager}
                         organizationId={organization.id}
                         searchParams={searchParams}
                         userId={loggedInUser.id}

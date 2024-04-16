@@ -1,7 +1,15 @@
 "use server";
 
-import { CandidateWithInterviews, insertCandidate, updateCandidate } from "@/db/repositories/candidateRepository";
-import { insertInterview, updateInterview } from "@/db/repositories/interviewRepository";
+import {
+  CandidateWithInterviews,
+  getCandidates,
+  insertCandidate,
+  updateCandidate,
+} from "@/db/repositories/candidateRepository";
+import {
+  insertInterview,
+  updateInterview,
+} from "@/db/repositories/interviewRepository";
 import {
   JobListingListItem,
   getJobListingById,
@@ -23,6 +31,8 @@ import {
   NewJobListing,
   NewQuestion,
   Question,
+  candidatesTable,
+  interviewsTable,
   jobListingsTable,
 } from "@/db/schema";
 import { generateJobListingQuestions } from "@/lib/openai/client";
@@ -151,21 +161,65 @@ export async function saveQuestionsForJobListing(
 }
 
 export async function createCandidate(candidate: NewCandidate) {
-  // TODO: add zod validation
-  return insertCandidate(candidate); 
+  if (candidate.organizationId === undefined) {
+    throw new Error("Organization ID is required");
+  }
+
+  return await insertCandidate(candidate);
 }
 
 export async function editCandidate(candidate: Candidate) {
-  //TODO: add zod validation
+  if (candidate.id === undefined) {
+    throw new Error("Candidate ID is required");
+  }
+
   return updateCandidate(candidate);
 }
 
 export async function createInterview(interview: NewInterview) {
-  //TODO: add zod validation
-  return insertInterview(interview);
+  if (interview.jobListingId === undefined) {
+    throw new Error("Job Listing ID is required");
+  }
+
+  if (interview.candidateId === undefined) {
+    throw new Error("Candidate ID is required");
+  }
+
+  const requestSchema = createInsertSchema(interviewsTable, {
+    hash: z.string().trim().min(5, "Hash must be at least 5 characters long"),
+  }).omit({
+    createdAt: true,
+    updatedAt: true,
+  });
+
+  const validatedFields = requestSchema.parse(interview);
+  return insertInterview(validatedFields);
 }
 
 export async function editInterview(interview: Interview) {
-  //TODO: add zod validation
+  if (interview.id === undefined) {
+    throw new Error("Interview ID is required");
+  }
+
+  if (interview.candidateId === undefined) {
+    throw new Error("Candidate ID is required");
+  }
+
+  if (interview.jobListingId === undefined) {
+    throw new Error("Job Listing ID is required");
+  }
+
+  const requestSchema = createInsertSchema(interviewsTable, {
+    hash: z.string().trim().min(5, "Hash must be at least 5 characters long"),
+  });
+
+  requestSchema.parse(interview);
+
+  interview.updatedAt = new Date();
+
   return updateInterview(interview);
+}
+
+export async function getCandidatesList(search: string) {
+  return getCandidates(search);
 }
