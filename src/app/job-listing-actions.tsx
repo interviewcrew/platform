@@ -1,5 +1,7 @@
 "use server";
 
+import { CandidateWithInterviews, insertCandidate, updateCandidate } from "@/db/repositories/candidateRepository";
+import { insertInterview, updateInterview } from "@/db/repositories/interviewRepository";
 import {
   JobListingListItem,
   getJobListingById,
@@ -13,7 +15,11 @@ import {
 } from "@/db/repositories/questionRepository";
 
 import {
+  Candidate,
+  Interview,
   JobListing,
+  NewCandidate,
+  NewInterview,
   NewJobListing,
   NewQuestion,
   Question,
@@ -108,7 +114,6 @@ export async function saveQuestionsForJobListing(
   jobListing: JobListingListItem,
   questions: QuestionWithChange[]
 ): Promise<Question[]> {
-  console.log(jobListing, questions);
   await Promise.all(
     (
       questions.filter(
@@ -143,4 +148,24 @@ export async function saveQuestionsForJobListing(
   );
 
   return jobListingWithQuestions?.questions ?? [];
+}
+
+export async function createCandidate(candidate: NewCandidate) {
+  // TODO: add zod validation
+  return insertCandidate(candidate); 
+}
+
+export async function editCandidate(candidate: Candidate) {
+  //TODO: add zod validation
+  return updateCandidate(candidate);
+}
+
+export async function createInterview(interview: NewInterview) {
+  //TODO: add zod validation
+  return insertInterview(interview);
+}
+
+export async function editInterview(interview: Interview) {
+  //TODO: add zod validation
+  return updateInterview(interview);
 }

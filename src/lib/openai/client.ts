@@ -3,13 +3,13 @@ import { mergeByCreatedAt } from "@/lib/utils";
 import OpenAI from "openai";
 import * as schema from "@/db/schema";
 import {
-  InterviewWithItems,
+  InterviewWithRelations,
   getAllInterviews,
 } from "@/db/repositories/interviewRepository";
 import { JobListingListItem } from "@/db/repositories/jobListingRepository";
 
 export async function getFollowupQuestion(
-  interview: InterviewWithItems
+  interview: InterviewWithRelations
 ): Promise<string | null> {
   const openai = new OpenAI({
     apiKey: process.env.OPEN_AI_API_KEY,
@@ -116,7 +116,7 @@ export async function generateJobListingQuestions(
   }
 }
 
-function getInterviewDetailAsString(interview: InterviewWithItems): string {
+function getInterviewDetailAsString(interview: InterviewWithRelations): string {
   const transcriptions: {
     type: "transcription";
     value: schema.Transcription[];

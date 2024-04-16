@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { interviewsTable } from "@/db/schema";
 import { createInsertSchema } from "drizzle-zod";
 import {
-  Interview,
   getInterviewByHashId,
   insertInterview,
 } from "@/db/repositories/interviewRepository";
@@ -13,8 +12,14 @@ import {
   getUserWithErrorHandling,
 } from "@/lib/api-helpers/auth";
 import { OptionsHandler } from "@/lib/api-helpers/shared";
-import { insertJobListing } from "@/db/repositories/jobListingRepository";
-import { insertCandidate } from "@/db/repositories/candidateRepository";
+import {
+  getJobListingById,
+  insertJobListing,
+} from "@/db/repositories/jobListingRepository";
+import {
+  getCandidateById,
+  insertCandidate,
+} from "@/db/repositories/candidateRepository";
 
 export const POST = withErrorHandler(createInterview);
 
@@ -49,7 +54,9 @@ async function createInterview(request: NextRequest) {
 
 async function getOrInsertInterview(
   interviewDto: Interview,
-  organizationId: number
+  organizationId: number,
+  jobListingId: number,
+  candidateId: number
 ) {
   let interview = await getInterviewByHashId(interviewDto.hash, organizationId);
 
@@ -57,14 +64,25 @@ async function getOrInsertInterview(
     return NextResponse.json(interview, { status: 200 });
   }
 
-  const jobListing = (await insertJobListing({ organizationId }))[0];
-  const candidate = (await insertCandidate({ organizationId }))[0];
-  const interviews = await insertInterview(
-    interviewDto,
+  const jobListing = await getJobListingById(organizationId, jobListingId);
+  const candidate = await getCandidateById(organizationId, candidateId);
+
+  if (!jobListing) {
+    return NextResponse.json(
+      { error: "Job Listing not found" },
+      { status: 404 }
+    );
+  }
+
+  if (!candidate) {
+    return NextResponse.json({ error: "Candidate not found" }, { status: 404 });
+  }
+  const interviews = await insertInterview({
+    ...interviewDto,
     organizationId,
-    jobListing.id,
-    candidate.id
-  );
+    jobListingId: jobListing.id,
+    candidateId: candidate.id,
+  });
 
   interview = interviews[0];
 

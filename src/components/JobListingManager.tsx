@@ -5,9 +5,10 @@ import { CreatorComponentProps } from "./EmptyState";
 import JobListingForm from "./JobListingForm";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import JobListingQuestions from "./JobListingQuestions";
+import JobListingQuestions from "@/components/JobListingQuestions";
 import { JobListingListItem } from "@/db/repositories/jobListingRepository";
 import { getUpdatedSearchParams } from "@/lib/utils";
+import ManageInterviews from "@/components/ManageInterviews";
 
 export default function JobListingManager(props: CreatorComponentProps) {
   const [jobListing, setJobListing] = useState<JobListingListItem>(
@@ -32,7 +33,7 @@ export default function JobListingManager(props: CreatorComponentProps) {
     },
     {
       id: "Step 3",
-      name: "Practice questions",
+      name: "Manage Interviews",
       status: step === 3 ? "current" : "upcoming",
     },
   ]);
@@ -99,6 +100,15 @@ export default function JobListingManager(props: CreatorComponentProps) {
         <JobListingQuestions
           jobListing={jobListing}
           userId={props.userId}
+          doneCallback={doneCallback}
+          cancelCallback={cancelCallback}
+          step={step}
+        />
+      )}
+      {step === 3 && (
+        <ManageInterviews
+          jobListing={jobListing}
+          organizationId={props.organizationId}
           doneCallback={doneCallback}
           cancelCallback={cancelCallback}
           step={step}

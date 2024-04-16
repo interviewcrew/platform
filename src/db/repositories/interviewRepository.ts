@@ -1,13 +1,15 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
-import { interviewsTable } from "@/db/schema";
+import { Interview, NewInterview, interviewsTable } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import * as schema from "@/db/schema";
+import { JobListingListItem } from "./jobListingRepository";
 
-export type Interview = {
+export type InterviewFields = {
   title: string;
   hash: string;
 };
+
 export async function getInterviewByHashId(
   interviewHash: string,
   organiaztionId: number
@@ -25,7 +27,7 @@ export async function getInterviewByHashId(
 export async function getInterviewByHashIdWithFields(
   interviewHash: string,
   organiaztionId: number
-): Promise<InterviewWithItems | undefined> {
+): Promise<InterviewWithRelations | undefined> {
   const db = drizzle(sql, { schema });
 
   return db.query.interviewsTable.findFirst({
@@ -54,23 +56,34 @@ export async function getInterviewByHashIdWithFields(
   });
 }
 
-export async function insertInterview(
-  interview: Interview,
-  organizationId: number,
-  jobListingId: number,
-  candidateId: number
-) {
+export async function insertInterview(interview: NewInterview) {
   const db = drizzle(sql, { schema });
 
   return db
     .insert(interviewsTable)
-    .values({
-      ...interview,
-      organizationId: organizationId,
-      jobListingId: jobListingId,
-      candidateId: candidateId,
-    })
+    .values(interview)
     .onConflictDoNothing()
+    .returning({
+      id: interviewsTable.id,
+      title: interviewsTable.title,
+      hash: interviewsTable.hash,
+      organizationId: interviewsTable.organizationId,
+      problemId: interviewsTable.problemId,
+      jobListingId: interviewsTable.jobListingId,
+      candidateId: interviewsTable.candidateId,
+      languageId: interviewsTable.languageId,
+      createdAt: interviewsTable.createdAt,
+      updatedAt: interviewsTable.updatedAt,
+    });
+}
+
+export async function updateInterview(interview: Interview) {
+  const db = drizzle(sql, { schema });
+
+  return db
+    .update(interviewsTable)
+    .set(interview)
+    .where(eq(interviewsTable.id, interview.id))
     .returning({
       id: interviewsTable.id,
       title: interviewsTable.title,
@@ -111,6 +124,6 @@ export async function getAllInterviews(organiaztionId: number) {
   });
 }
 
-export type InterviewWithItems = Awaited<
+export type InterviewWithRelations = Awaited<
   ReturnType<typeof getAllInterviews>
 >[0];

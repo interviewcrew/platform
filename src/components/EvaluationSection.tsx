@@ -1,7 +1,7 @@
 "use client";
 
 import { insertEvaluation } from "@/db/repositories/evaluationRepository";
-import { InterviewWithItems } from "@/db/repositories/interviewRepository";
+import { InterviewWithRelations } from "@/db/repositories/interviewRepository";
 import { Evaluation, EvaluationMetric } from "@/db/schema";
 import { getEvaluationAndStoreInDB as getInterviewEvaluation } from "@/lib/openai/client";
 import * as HeroIcons from "@heroicons/react/20/solid";
@@ -76,7 +76,7 @@ export async function EvaluationSection({
 }: {
   evaluationMetric: EvaluationMetric;
   evaluation: Evaluation | undefined;
-  interview: InterviewWithItems;
+  interview: InterviewWithRelations;
 }) {
   const { ...icons } = HeroIcons;
 
