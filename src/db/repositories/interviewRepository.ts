@@ -39,7 +39,11 @@ export async function getInterviewByHashIdWithFields(
       organization: true,
       problem: true,
       transcriptions: true,
-      jobListing: true,
+      jobListing: {
+        with: {
+          questions: true,
+        }
+      },
       candidate: true,
       language: true,
       evaluations: {
@@ -107,7 +111,11 @@ export async function getAllInterviews(organiaztionId: number) {
       organization: true,
       problem: true,
       transcriptions: true,
-      jobListing: true,
+      jobListing: {
+        with: {
+          questions: true,
+        }
+      },
       candidate: true,
       language: true,
       evaluations: {
