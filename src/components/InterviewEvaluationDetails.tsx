@@ -1,18 +1,15 @@
-import { getAllInterviews } from "@/db/repositories/interviewRepository";
 import {
-  getUpdatedSearchParams,
+  InterviewWithRelations,
+  getAllInterviews,
+} from "@/db/repositories/interviewRepository";
+import {
   humanizeDuration,
   toHumanTime,
 } from "@/lib/utils";
-import Link from "next/link";
-import EmptyInterviewDetails from "./EmptyInterviewDetails";
-import { ArrowLeft } from "lucide-react";
 import { Suspense } from "react";
 import { EvaluationSection } from "./EvaluationSection";
 import { getEvaluationMetrics } from "@/db/repositories/evaluationRepository";
-import { drizzle } from "drizzle-orm/vercel-postgres";
-import { sql } from "@vercel/postgres";
-import * as schema from "@/db/schema";
+import BackButton from "@/components/BackButton";
 
 function getInterviewDuration(
   interview: Awaited<ReturnType<typeof getAllInterviews>>[0]
@@ -32,17 +29,11 @@ export default async function InterviewEvaluationDetails({
   interview,
   searchParams,
 }: {
-  interview: Awaited<ReturnType<typeof getAllInterviews>>[0] | null;
+  interview: InterviewWithRelations;
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const db = drizzle(sql, { schema });
-
-  if (!interview) {
-    return <EmptyInterviewDetails />;
-  }
-
   searchParams["evaluation"] = undefined;
-  const evaluationsMetrics = await getEvaluationMetrics(db);
+  const evaluationsMetrics = await getEvaluationMetrics();
 
   const evaluations = evaluationsMetrics.map((evaluationMetric) => {
     return interview.evaluations.filter(
@@ -53,15 +44,12 @@ export default async function InterviewEvaluationDetails({
   return (
     <div className="bg-white shadow sm:rounded-lg p-5">
       <div className="flex">
-        <Link
-          href={getUpdatedSearchParams(searchParams)}
-          className="text-cyan-100 rounded-md bg-white bg-opacity-0 px-3 py-2 text-sm font-medium hover:bg-opacity-10"
-        >
-          <ArrowLeft className="text-gray-600 h-6 w-6" />
-        </Link>
+        <BackButton />
         <div className="sm:px-0">
           <h3 className="text-2xl font-bold leading-7 text-gray-600">
-            {interview.title}
+            {interview.title?.length > 0
+              ? interview.title
+              : `Untitled Interview with ${interview.candidate.name}`}
           </h3>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
             {toHumanTime(interview.createdAt)} - Duration:{" "}

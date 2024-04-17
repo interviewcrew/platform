@@ -277,26 +277,26 @@ Copyright ©️ 2023 LeetCode All rights reserved
   // );
 
   await db.insert(evaluationMetricsTable).values([
-    {
-      name: "Highlights",
-      description: "All the highlights of the interview",
-      prompt:
-        "You are a highly skilled AI technical interviewer that is an expert in assessing candidates. \
-         You have amazing judgement and want to optimize for not having false positives and false negatives hires. \
-         I would like you to read the interview plus the codes from the candidate if there are any, \
-         and list all the highlights of the interview that showed the candidates strengths.\
-         Please be concise and clear on every points of your answer.",
-    },
-    {
-      name: "Lowlights",
-      description: "All the lowlights of the interview",
-      prompt:
-        "You are a highly skilled AI technical interviewer that is an expert in assessing candidates. \
-         You have amazing judgement and want to optimize for not having false positives and false negatives hires. \
-         I would like you to read the interview plus the codes from the candidate if there are any, \
-         and list all the lowlights of the interview that showed the candidates weaknesses and risks.\
-         Please be concise and clear on every points of your answer.",
-    },
+    // {
+    //   name: "Highlights",
+    //   description: "All the highlights of the interview",
+    //   prompt:
+    //     "You are a highly skilled AI technical interviewer that is an expert in assessing candidates. \
+    //      You have amazing judgement and want to optimize for not having false positives and false negatives hires. \
+    //      I would like you to read the interview plus the codes from the candidate if there are any, \
+    //      and list all the highlights of the interview that showed the candidates strengths.\
+    //      Please be concise and clear on every points of your answer.",
+    // },
+    // {
+    //   name: "Lowlights",
+    //   description: "All the lowlights of the interview",
+    //   prompt:
+    //     "You are a highly skilled AI technical interviewer that is an expert in assessing candidates. \
+    //      You have amazing judgement and want to optimize for not having false positives and false negatives hires. \
+    //      I would like you to read the interview plus the codes from the candidate if there are any, \
+    //      and list all the lowlights of the interview that showed the candidates weaknesses and risks.\
+    //      Please be concise and clear on every points of your answer.",
+    // },
     {
       name: "Considerations",
       description: "What was noticable about the candidate",

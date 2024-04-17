@@ -1,7 +1,6 @@
-"use server";
+'use server'
 
 import {
-  CandidateWithInterviews,
   getCandidates,
   insertCandidate,
   updateCandidate,
@@ -220,6 +219,6 @@ export async function editInterview(interview: Interview) {
   return updateInterview(interview);
 }
 
-export async function getCandidatesList(search: string) {
-  return getCandidates(search);
+export async function getCandidatesList(organizationId: number, search: string) {
+  return getCandidates(organizationId, search);
 }

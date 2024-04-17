@@ -28,7 +28,7 @@ export default function JobListingForm({
   const [creationErrors, setCreationErrors] = useState<CreationErrors>({});
   const [isRunning, setIsRunning] = useState(false);
   const [jobListingDto, setJobListingDto] = useState<JobListingListItem>(
-    jobListing ?? ({} as JobListingListItem)
+    jobListing ?? ({ organizationId } as JobListingListItem)
   );
   const handleSave = async (
     jobListing: JobListingListItem,
@@ -217,7 +217,7 @@ export default function JobListingForm({
               "cursor-not-allowed": isRunning,
             }
           )}
-          onClick={async () => await handleSave(jobListingDto, !jobListing)}
+          onClick={async () => await handleSave(jobListingDto, !jobListing.id)}
           disabled={isRunning}
         >
           Save and Continue

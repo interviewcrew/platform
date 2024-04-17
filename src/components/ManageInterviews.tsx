@@ -5,17 +5,15 @@ import {
   createInterview,
   editCandidate,
   editInterview,
-  getCandidatesList,
 } from "@/app/job-listing-actions";
 import { z } from "zod";
 import { cn, getUpdatedSearchParams } from "@/lib/utils";
 import { CandidateWithInterviews } from "@/db/repositories/candidateRepository";
 import { Candidate, Interview, NewInterview } from "@/db/schema";
-import { EditIcon, ChevronRightIcon } from "lucide-react";
+import { EditIcon, ChevronRightIcon, ExternalLinkIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { EnvelopeIcon, UsersIcon } from "@heroicons/react/20/solid";
-
-const getCandidateWithInterviews = () => getCandidatesList("");
+import Link from "next/link";
 
 export default function ManageInterviews({
   jobListing,
@@ -242,7 +240,7 @@ export default function ManageInterviews({
                 </div>
               ))
             ) : (
-              <div className="h-full w-full flex justify-center items-center rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2">
+              <div className="p-24 h-full w-full flex justify-center items-center rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2">
                 <div className="text-center">
                   <UsersIcon className="mx-auto h-12 w-12 text-gray-400" />
                   <span className="mt-2 block text-sm font-semibold text-gray-900">
@@ -424,12 +422,19 @@ export default function ManageInterviews({
                       id="hash"
                       className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                       placeholder="https://meet.google.com/xxx-xxxx-xxx"
-                      value={newInterview.hash}
+                      value={
+                        newInterview.hash
+                          ? `https://meet.google.com/${newInterview.hash}`
+                          : ""
+                      }
                       onChange={(e) => {
                         console.log("e.target.value", e.target.value);
+                        const hash =
+                          e.target.value.split("/").pop()?.split("?")[0] ?? "";
+                        console.log("hash", hash);
                         setNewInterview({
                           ...newInterview,
-                          hash: e.target.value,
+                          hash,
                         });
                       }}
                     />
@@ -449,7 +454,7 @@ export default function ManageInterviews({
             </div>
           )}
           <div className="mt-8 h-full">
-            {candidate.interviews.length > 0 && (
+            {candidate?.interviews?.length > 0 && (
               <legend className="my-4 text-base font-semibold leading-6 text-gray-900">
                 Interviews
                 <span className="text-sm text-gray-500">
@@ -458,8 +463,8 @@ export default function ManageInterviews({
               </legend>
             )}
             <div className="">
-              {candidate.interviews.length > 0 &&
-                candidate.interviews.map((interview) => (
+              {candidate?.interviews?.length > 0 &&
+                candidate?.interviews.map((interview) => (
                   <div
                     key={interview.id}
                     className={cn(
@@ -477,21 +482,9 @@ export default function ManageInterviews({
                       </label>
                     </div>
                     <div className="ml-3 flex h-6 items-center">
-                      <button
-                        onClick={() => {
-                          setInterview(interview);
-                          router.push(
-                            getUpdatedSearchParams(searchParams, [
-                              {
-                                key: "interviewId",
-                                value: interview.id.toString(),
-                              },
-                            ])
-                          );
-                        }}
-                      >
-                        <EditIcon className="h-5 w-5 text-gray-400 font-bold" />
-                      </button>
+                      <Link href={`/dashboard/interviews/${interview.hash}`}>
+                        <ExternalLinkIcon className="h-5 w-5 text-gray-400 font-bold" />
+                      </Link>
                     </div>
                   </div>
                 ))}

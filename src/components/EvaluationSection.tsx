@@ -1,19 +1,17 @@
-"use client";
-
 import { insertEvaluation } from "@/db/repositories/evaluationRepository";
 import { InterviewWithRelations } from "@/db/repositories/interviewRepository";
 import { Evaluation, EvaluationMetric } from "@/db/schema";
 import { getEvaluationAndStoreInDB as getInterviewEvaluation } from "@/lib/openai/client";
 import * as HeroIcons from "@heroicons/react/20/solid";
-import MarkdownPreview from "@uiw/react-markdown-preview";
 import React from "react";
+import { EvaluationMarkdown } from "@/components/EvaluationMarkdown";
 
-type ComponentStyle = {
+export type ComponentStyle = {
   backgroundColor: string;
   color: string;
 };
 
-const colors: {
+export const colors: {
   [key: string]: {
     style: ComponentStyle;
     icon: {
@@ -54,21 +52,6 @@ const colors: {
   },
 };
 
-export function EvaluationMarkdown({
-  value,
-  type,
-}: {
-  value: string;
-  type: string;
-}) {
-  const style: ComponentStyle = colors[type].style ?? {};
-  return (
-    <>
-      <MarkdownPreview style={style} source={value} />
-    </>
-  );
-}
-
 export async function EvaluationSection({
   evaluationMetric,
   evaluation,
@@ -94,7 +77,6 @@ export async function EvaluationSection({
           value: evaluationText,
         })
       )[0];
-
     } catch (e) {
       if (e instanceof Error) return <div>Error: {e.message}</div>;
       return <div>Error: Something went wrong. We are working on it.</div>;
