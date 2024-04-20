@@ -12,6 +12,7 @@ export async function EvaluationSection({
   evaluationMetric,
   evaluation,
   interview,
+  isDefaultOpen,
 }: {
   evaluationMetric: EvaluationMetric;
   evaluation: Evaluation | undefined;
@@ -120,7 +121,7 @@ export async function EvaluationSection({
           </div>
         </div>
       )}
-      <EvaluationWithMarkdown value={evaluation.value} />
+      <EvaluationWithMarkdown value={evaluation.value} isDefaultOpen={evaluationJson == undefined} />
     </div>
   );
 }

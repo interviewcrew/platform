@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import JobListingQuestions from "@/components/JobListingQuestions";
 import { JobListingListItem } from "@/db/repositories/jobListingRepository";
 import { getUpdatedSearchParams } from "@/lib/utils";
-import ManageInterviews from "@/components/ManageInterviews";
+import ManageCandidates from "@/components/ManageCandidates";
 
 export default function JobListingManager(props: CreatorComponentProps) {
   const [jobListing, setJobListing] = useState<JobListingListItem>(
@@ -116,7 +116,7 @@ export default function JobListingManager(props: CreatorComponentProps) {
         />
       )}
       {step === 3 && (
-        <ManageInterviews
+        <ManageCandidates
           jobListing={jobListing}
           organizationId={props.organizationId}
           doneCallback={doneCallback}

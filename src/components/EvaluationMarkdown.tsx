@@ -3,8 +3,8 @@
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { useState } from "react";
 
-export function EvaluationWithMarkdown({ value }: { value: string }) {
-  const [isOpen, setIsOpen] = useState(false);
+export function EvaluationWithMarkdown({ value, isDefaultOpen }: { value: string, isDefaultOpen?: boolean}) {
+  const [isOpen, setIsOpen] = useState(isDefaultOpen);
 
   return (
     <>
