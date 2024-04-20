@@ -2,6 +2,7 @@ import { type Config } from 'tailwindcss'
 import typographyStyles from './typography'
 import typographyPlugin from '@tailwindcss/typography'
 import headlessuiPlugin from '@headlessui/tailwindcss'
+import formPlugin from '@tailwindcss/forms'
 
 export default {
   content: [
@@ -78,6 +79,7 @@ export default {
   plugins: [
     typographyPlugin, 
     headlessuiPlugin, 
+    formPlugin,
     // tailwindcssAnimatePlugin
   ],
 } satisfies Config
