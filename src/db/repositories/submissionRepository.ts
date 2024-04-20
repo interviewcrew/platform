@@ -1,7 +1,8 @@
-import { VercelPgDatabase } from "drizzle-orm/vercel-postgres";
+import { drizzle } from "drizzle-orm/vercel-postgres";
 import { submissionsTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import * as schema from "@/db/schema";
+import { sql } from "@vercel/postgres";
 
 export type Submission = {
   code: string;
@@ -10,33 +11,35 @@ export type Submission = {
 };
 
 export async function insertSubmissions(
-  db: VercelPgDatabase<typeof schema>,
   submission: Submission,
-  interviewId: number,
+  interviewId: number
 ) {
-  await db
+  const db = drizzle(sql, { schema });
+
+  return db
     .insert(submissionsTable)
     .values({
       code: submission.code,
       result: submission.result,
       interviewId: interviewId,
-      languageId: submission.languageId,
+      programmingLanguageId: submission.languageId,
     })
     .onConflictDoNothing();
 }
 
 export async function getSubmissionsByInterviewId(
-  db: VercelPgDatabase<typeof schema>,
   interviewId: number
 ) {
-  return await db.query.submissionsTable.findMany({
+  const db = drizzle(sql, { schema });
+
+  return db.query.submissionsTable.findMany({
     where: eq(submissionsTable.interviewId, interviewId),
     with: {
-      language: {
+      programmingLanguage: {
         columns: {
           id: true,
           name: true,
-        }
+        },
       },
     },
   });
