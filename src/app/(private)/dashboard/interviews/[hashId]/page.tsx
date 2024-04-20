@@ -48,6 +48,7 @@ export default async function DashboardPage({
     return redirect("/app/not-found");
   }
 
+
   return (
     <>
       <div className="min-h-full">

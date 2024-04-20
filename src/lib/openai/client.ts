@@ -1,11 +1,8 @@
-import { EvaluationMetric, Transcription } from "@/db/schema";
+import { Evaluation, EvaluationMetric, Transcription } from "@/db/schema";
 import { mergeByCreatedAt } from "@/lib/utils";
 import OpenAI from "openai";
 import * as schema from "@/db/schema";
-import {
-  InterviewWithRelations,
-  getAllInterviews,
-} from "@/db/repositories/interviewRepository";
+import { InterviewWithRelations } from "@/db/repositories/interviewRepository";
 import { JobListingListItem } from "@/db/repositories/jobListingRepository";
 
 export async function getFollowupQuestion(
@@ -24,7 +21,9 @@ export async function getFollowupQuestion(
                   I would like you to read the interview so far plus the codes from the candidate if there are any, \
                   and come up with a great follow up question to ask so that we learn more about the candidates skills. \
                   Please consider the level of seniority of the candidate based on the interview so far \
-                  The position that the interview is ${interview.jobListing.seniority ?? "any seniority"}.\
+                  The position that the interview is ${
+                    interview.jobListing.seniority ?? "any seniority"
+                  }.\
                   come up with a follow up question that is suitable for that level of competence. 
                   The followup question should be very short`,
       },
@@ -37,7 +36,7 @@ export async function getFollowupQuestion(
 
 export async function getEvaluationAndStoreInDB(
   evaluationMetric: EvaluationMetric,
-  interview: Awaited<ReturnType<typeof getAllInterviews>>[0]
+  interview: InterviewWithRelations
 ): Promise<string> {
   const openai = new OpenAI({
     apiKey: process.env.OPEN_AI_API_KEY,
@@ -67,6 +66,50 @@ export async function getEvaluationAndStoreInDB(
   return evaluationText;
 }
 
+export async function getFormatedEvaluation(
+  evaluation: string
+): Promise<string> {
+  const openai = new OpenAI({
+    apiKey: process.env.OPEN_AI_API_KEY,
+  });
+
+  const evaluationFormated = await openai.chat.completions.create({
+    model: "gpt-4-turbo-preview",
+    response_format: { type: "json_object" },
+    messages: [
+      {
+        role: "system",
+        content: `You are an expert extractor bot. Given the interview evaluation, \
+                extract it exactly as it was mentioned in the report to a json with the following structure: \
+                {
+                    "summary": string,
+                    "upsides": {
+                          "title": string,
+                          "value": string,
+                    }[],
+                    "downsides": {
+                          "title": string,
+                          "value": string,
+                      }[],
+                    "areas_for_exploration": {
+                          "title": string,
+                          "value": string,
+                      }[],
+                }`,
+      },
+      { role: "user", content: evaluation },
+    ],
+  });
+
+  const evaluationText = evaluationFormated.choices[0].message.content;
+
+  if (!evaluationText) {
+    throw new Error("No highlights found");
+  }
+
+  return evaluationText;
+}
+
 export async function generateJobListingQuestions(
   jobListing: JobListingListItem
 ): Promise<string[]> {
@@ -80,6 +123,7 @@ export async function generateJobListingQuestions(
 
   const questions = await openai.chat.completions.create({
     model: "gpt-4-turbo-preview",
+    response_format: { type: "json_object" },
     messages: [
       {
         role: "system",

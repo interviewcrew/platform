@@ -9,14 +9,12 @@ import { eq } from "drizzle-orm";
 import { sql } from "@vercel/postgres";
 
 export async function getEvaluationMetrics() {
-  const db = drizzle(sql, { schema })
+  const db = drizzle(sql, { schema });
 
   return db.query.evaluationMetricsTable.findMany();
 }
 
-export async function getEvaluationMetricByName(
-  evaluationMetricTitle: string
-) {
+export async function getEvaluationMetricByName(evaluationMetricTitle: string) {
   const db = drizzle(sql, { schema });
 
   return db.query.evaluationMetricsTable.findFirst({
@@ -24,9 +22,7 @@ export async function getEvaluationMetricByName(
   });
 }
 
-export async function insertEvaluation(
-  evaluation: NewEvaluation
-) {
+export async function insertEvaluation(evaluation: NewEvaluation) {
   const db = drizzle(sql, { schema });
 
   return db.insert(evaluationsTable).values(evaluation).returning({
@@ -35,6 +31,8 @@ export async function insertEvaluation(
     evaluationMetricId: evaluationsTable.evaluationMetricId,
     interviewId: evaluationsTable.interviewId,
     createdAt: evaluationsTable.createdAt,
-    updatedAt: evaluationsTable.updatedAt, 
+    updatedAt: evaluationsTable.updatedAt,
+    valueFormatted: evaluationsTable.valueFormatted,
+    questionId: evaluationsTable.questionId,
   });
 }

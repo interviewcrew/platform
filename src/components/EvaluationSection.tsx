@@ -1,56 +1,12 @@
 import { insertEvaluation } from "@/db/repositories/evaluationRepository";
 import { InterviewWithRelations } from "@/db/repositories/interviewRepository";
 import { Evaluation, EvaluationMetric } from "@/db/schema";
-import { getEvaluationAndStoreInDB as getInterviewEvaluation } from "@/lib/openai/client";
-import * as HeroIcons from "@heroicons/react/20/solid";
+import {
+  getFormatedEvaluation,
+  getEvaluationAndStoreInDB as getInterviewEvaluation,
+} from "@/lib/openai/client";
 import React from "react";
-import { EvaluationMarkdown } from "@/components/EvaluationMarkdown";
-
-export type ComponentStyle = {
-  backgroundColor: string;
-  color: string;
-};
-
-export const colors: {
-  [key: string]: {
-    style: ComponentStyle;
-    icon: {
-      name: "CheckCircleIcon" | "XCircleIcon" | "ExclamationTriangleIcon";
-      color: string;
-    };
-  };
-} = {
-  Highlights: {
-    style: {
-      backgroundColor: "#f0fdf4",
-      color: "#30754a",
-    },
-    icon: {
-      name: "CheckCircleIcon",
-      color: "#49de80",
-    },
-  },
-  Lowlights: {
-    style: {
-      backgroundColor: "#fef2f2",
-      color: "#9d2524",
-    },
-    icon: {
-      name: "XCircleIcon",
-      color: "#f87171",
-    },
-  },
-  Considerations: {
-    style: {
-      backgroundColor: "#fefce8",
-      color: "#895418",
-    },
-    icon: {
-      name: "ExclamationTriangleIcon",
-      color: "#facc15",
-    },
-  },
-};
+import { EvaluationWithMarkdown } from "@/components/EvaluationMarkdown";
 
 export async function EvaluationSection({
   evaluationMetric,
@@ -61,7 +17,23 @@ export async function EvaluationSection({
   evaluation: Evaluation | undefined;
   interview: InterviewWithRelations;
 }) {
-  const { ...icons } = HeroIcons;
+  let evaluationJson:
+    | {
+        summary: string;
+        upsides: {
+          title: string;
+          value: string;
+        }[];
+        downsides: {
+          title: string;
+          value: string;
+        }[];
+        areas_for_exploration: {
+          title: string;
+          value: string;
+        }[];
+      }
+    | undefined;
 
   if (!evaluation) {
     try {
@@ -70,11 +42,14 @@ export async function EvaluationSection({
         interview
       );
 
+      const evaluationFormatted = await getFormatedEvaluation(evaluationText);
+
       evaluation = (
         await insertEvaluation({
           evaluationMetricId: evaluationMetric.id,
           interviewId: interview.id,
           value: evaluationText,
+          valueFormatted: evaluationFormatted,
         })
       )[0];
     } catch (e) {
@@ -83,36 +58,69 @@ export async function EvaluationSection({
     }
   }
 
-  const Icon = icons[colors[evaluationMetric.name]?.icon.name];
+  if (evaluation.valueFormatted) {
+    try {
+      evaluationJson = JSON.parse(evaluation.valueFormatted);
+    } catch (e) {
+      console.log(
+        "Error parsing evaluation json",
+        e,
+        evaluation.valueFormatted,
+        evaluation
+      );
+    }
+  }
 
   return (
-    <div
-      className="rounded-md p-4"
-      style={colors[evaluationMetric.name]?.style}
-    >
-      <div className="flex">
-        <div className="flex-shrink-0">
-          <Icon
-            className="h-7 w-7"
-            style={{ color: colors[evaluationMetric.name]?.icon.color }}
-            aria-hidden="true"
-          />
-        </div>
-        <div className="ml-3">
-          <h3
-            className="text-xl font-bold "
-            style={colors[evaluationMetric.name]?.style}
-          >
-            {evaluationMetric?.name}
-          </h3>
-          <div className="-ml-4 pr-3 mt-2 text-sm">
-            <EvaluationMarkdown
-              type={evaluationMetric.name}
-              value={evaluation.value}
-            />
+    <div className="text-gray-600">
+      {evaluationJson && (
+        <div>
+          <div className="rounded-md p-4 mb-4 border-grey-100 border-2 shadow-md">
+            <h3 className="text-2xl font-bold">📝 Summary</h3>
+            <div className="mt-4 text-md pl-8 pr-6 text-justify">
+              {evaluationJson.summary}
+            </div>
+          </div>
+          <div className="rounded-md p-4 mb-4 border-grey-100 border-2 shadow-md">
+            <h3 className="text-2xl font-bold">✅ Positives</h3>
+            <div className="mt-4 text-md pl-8 pr-6 text-justify">
+              {evaluationJson.upsides.map((upside, index) => (
+                <div key={index}>
+                  <h4 className="text-lg font-bold mt-2">{upside.title}</h4>
+                  <p className="mt-2">{upside.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-md p-4 mb-4 border-grey-100 border-2 shadow-md">
+            <h3 className="text-2xl font-bold">🤔 Considerations</h3>
+            <div className="mt-4 text-md pl-8 pr-6 text-justify">
+              {evaluationJson.downsides.map((downside, index) => (
+                <div key={index}>
+                  <h4 className="text-lg font-bold mt-2">{downside.title}</h4>
+                  <p className="mt-2">{downside.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-md p-4 mb-4 border-grey-100 border-2 shadow-md">
+            <h3 className="text-2xl font-bold">❓ Areas for exploration</h3>
+            <div className="mt-4 text-md pl-8 pr-6 text-justify">
+              {evaluationJson.areas_for_exploration.map(
+                (exploration, index) => (
+                  <div key={index}>
+                    <h4 className="text-lg font-bold mt-2">
+                      {exploration.title}
+                    </h4>
+                    <p className="mt-2">{exploration.value}</p>
+                  </div>
+                )
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
+      <EvaluationWithMarkdown value={evaluation.value} />
     </div>
   );
 }

@@ -38,6 +38,7 @@ export default async function InterviewEvaluationDetails({
     )[0];
   });
 
+
   return (
     <div className="bg-white shadow sm:rounded-lg p-5">
       <div className="flex">
@@ -46,7 +47,7 @@ export default async function InterviewEvaluationDetails({
           <h3 className="text-2xl font-bold leading-7 text-gray-600">
             {interview.title?.length > 0
               ? interview.title
-              : `Untitled Interview with ${interview.candidate.name}`}
+              : `${interview.jobListing.title} - ${interview.candidate.name}`}
           </h3>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
             {toHumanTime(interview.createdAt)} - Duration:{" "}
