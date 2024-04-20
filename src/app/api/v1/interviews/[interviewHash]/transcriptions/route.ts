@@ -1,15 +1,10 @@
 import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
-import { sql } from "@vercel/postgres";
 import { transcriptionsTable } from "@/db/schema";
-import { drizzle } from "drizzle-orm/vercel-postgres";
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
-import {
-  insertTranscriptions,
-} from "@/db/repositories/transcriptionRepository";
+import { insertTranscriptions } from "@/db/repositories/transcriptionRepository";
 import { getInterviewByHashId } from "@/db/repositories/interviewRepository";
-import * as schema from "@/db/schema";
 import {
   getOrganizationWithErrorHandling,
   getUserWithErrorHandling,
@@ -46,17 +41,13 @@ async function createTranscription(
 
   let requestParsed = requestSchema.parse(await request.json());
 
-  const db = drizzle(sql, { schema });
-
-  const user = await getUserWithErrorHandling(db, userExternalId);
+  const user = await getUserWithErrorHandling(userExternalId);
 
   const organization = await getOrganizationWithErrorHandling(
-    db,
     user.organizationId
   );
 
   let interview = await getInterviewByHashId(
-    db,
     params.interviewHash,
     organization.id
   );
@@ -65,7 +56,11 @@ async function createTranscription(
     return NextResponse.json({ error: "Interview not found" }, { status: 404 });
   }
 
-  insertTranscriptions(db, requestParsed.transcriptions, interview.id, user.id);
+  await insertTranscriptions(
+    requestParsed.transcriptions,
+    interview.id,
+    user.id
+  );
 
   return NextResponse.json({ status: "Successful" });
 }
