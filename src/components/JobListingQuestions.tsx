@@ -141,9 +141,10 @@ export default function JobListingQuestions({
             <button
               type="submit"
               className={cn(
-                "min-w-48 max-h-10 flex rounded-md bg-gradient-to-r from-blue-600 to-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
+                "min-w-48 max-h-10 flex rounded-md bg-gradient-to-r from-blue-600 to-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600",
                 {
                   "cursor-not-allowed": isGeneratingQuestions,
+                  "text-sky-700 bg-gradient-to-r from-blue-100 to-cyan-100 hover:bg-sky-700": questions.length > 0,
                 }
               )}
               onClick={() => {
@@ -240,15 +241,16 @@ export default function JobListingQuestions({
               <button
                 type="submit"
                 className={cn(
-                  "rounded-md bg-gradient-to-r from-sky-600 to-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
+                  "rounded-md border-2 text-gray-600 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600",
                   {
                     "cursor-not-allowed": isSavingQuestions,
+                    "bg-sky-600 text-white hover:bg-sky-500": questions.length > 0,
                   }
                 )}
                 onClick={() => doneCallback(jobListing, 2)}
                 disabled={isSavingQuestions}
               >
-                Save and Continue
+                Continue
               </button>
             </div>
           </div>
