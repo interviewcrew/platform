@@ -63,7 +63,7 @@ export default async function JobListingPage({
 
   const allCandidates = await getCandidates(organization.id, "");
 
-  console.log(await clerkClient.sessions.getToken(sessionId, "long-term-token"))
+  // console.log(await clerkClient.sessions.getToken(sessionId, "long-term-token"))
 
   return (
     <>

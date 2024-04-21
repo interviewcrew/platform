@@ -3,9 +3,7 @@ import {
   generateQuestionsForJobListing,
   saveQuestionsForJobListing,
 } from "@/app/job-listing-actions";
-import {
-  JobListingListItem,
-} from "@/db/repositories/jobListingRepository";
+import { JobListingListItem } from "@/db/repositories/jobListingRepository";
 import { Question } from "@/db/schema";
 import { cn } from "@/lib/utils";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
@@ -213,100 +211,6 @@ export default function JobListingQuestions({
       </div>
       <div className="mt-4 grid lg:grid-cols-2 sm:grid-cols">
         <div className="pr-2 border-r border-solid">
-          <div className="">
-            <div>
-              <legend className="text-base font-semibold leading-6 text-gray-900">
-                Questions during the interview
-                <span className="text-sm text-gray-500">
-                  {" (" +
-                    getQuestions([
-                      "selected",
-                      "deleted",
-                      "unchanged",
-                      "updated",
-                    ]).length +
-                    ")"}
-                </span>
-              </legend>
-              <div className="text-sm text-gray-500">
-                The questions mentioned here are the ones that would be shown
-                during the interview. By saving and continuing, you can save the
-                changes
-              </div>
-            </div>
-            <div className="mt-2 flex justify-end items-center gap-x-4">
-              <button
-                type="button"
-                className="text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-200 py-2 px-3 rounded-md"
-                onClick={cancelCallback}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className={cn(
-                  "rounded-md bg-gradient-to-r from-sky-600 to-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
-                  {
-                    "cursor-not-allowed": isSavingQuestions,
-                  }
-                )}
-                onClick={async () => await handleSave(questions)}
-                disabled={isSavingQuestions}
-              >
-                Save and Continue
-              </button>
-            </div>
-          </div>
-          <div className="mt-4">
-            <EditableQuestions
-              questions={questions}
-              deleteQuestionCallback={deleteQuestion}
-              editQuestionCallback={editQuestion}
-              undoQuestionCallback={undoQuestionStatus}
-            />
-          </div>
-          <legend className="mt-4 text-base font-semibold leading-6 text-gray-900">
-            Generated questions added to interview
-            <span className="text-sm text-gray-500">
-              {" (" + getQuestions(["selected"]).length + ")"}
-            </span>
-          </legend>
-          <div className="mt-4 divide-y divide-gray-200">
-            {getQuestions(["selected"]).length === 0 && (
-              <div className="p-4 text-sm text-gray-500 border-dashed rounded-lg border-2">
-                There are no generated questions that were added
-              </div>
-            )}
-            {questions.map(
-              (question, index) =>
-                question.status === "selected" && (
-                  <div
-                    key={index + 1}
-                    className="relative flex items-start p-4 odd:bg-gray-100"
-                  >
-                    <div className="min-w-0 flex-1 text-sm leading-6">
-                      <label
-                        htmlFor={`generatedQuestion-${index + 1}`}
-                        className="select-none font-medium text-gray-900"
-                      >
-                        {question.question}
-                      </label>
-                    </div>
-                    <div className="ml-3 flex h-6 items-center">
-                      <button
-                        onClick={() => {
-                          toggleGeneratedQuestionStatus(questions, index);
-                        }}
-                      >
-                        <XMarkIcon className="h-5 w-5 text-red-400 font-bold" />
-                      </button>
-                    </div>
-                  </div>
-                )
-            )}
-          </div>
-        </div>
-        <div className="pl-2">
           <div>
             <legend className="text-base font-semibold leading-6 text-gray-900">
               Generated questions
@@ -400,6 +304,100 @@ export default function JobListingQuestions({
                         }}
                       >
                         <PlusIcon className="h-5 w-5 text-sky-600 focus:ring-sky-600 font-bold" />
+                      </button>
+                    </div>
+                  </div>
+                )
+            )}
+          </div>
+        </div>
+        <div className="pl-2">
+          <div className="">
+            <div>
+              <legend className="text-base font-semibold leading-6 text-gray-900">
+                Questions during the interview
+                <span className="text-sm text-gray-500">
+                  {" (" +
+                    getQuestions([
+                      "selected",
+                      "deleted",
+                      "unchanged",
+                      "updated",
+                    ]).length +
+                    ")"}
+                </span>
+              </legend>
+              <div className="text-sm text-gray-500">
+                The questions mentioned here are the ones that would be shown
+                during the interview. By saving and continuing, you can save the
+                changes
+              </div>
+            </div>
+            <div className="mt-2 flex justify-end items-center gap-x-4">
+              <button
+                type="button"
+                className="text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-200 py-2 px-3 rounded-md"
+                onClick={cancelCallback}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className={cn(
+                  "rounded-md bg-gradient-to-r from-sky-600 to-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
+                  {
+                    "cursor-not-allowed": isSavingQuestions,
+                  }
+                )}
+                onClick={async () => await handleSave(questions)}
+                disabled={isSavingQuestions}
+              >
+                Save and Continue
+              </button>
+            </div>
+          </div>
+          <div className="mt-4">
+            <EditableQuestions
+              questions={questions}
+              deleteQuestionCallback={deleteQuestion}
+              editQuestionCallback={editQuestion}
+              undoQuestionCallback={undoQuestionStatus}
+            />
+          </div>
+          {/* <legend className="mt-4 text-base font-semibold leading-6 text-gray-900">
+            Generated questions added to interview
+            <span className="text-sm text-gray-500">
+              {" (" + getQuestions(["selected"]).length + ")"}
+            </span>
+          </legend> */}
+          <div className="mt-4 divide-y divide-gray-200">
+            {/* {getQuestions(["selected"]).length === 0 && (
+              <div className="p-4 text-sm text-gray-500 border-dashed rounded-lg border-2">
+                There are no generated questions that were added
+              </div>
+            )} */}
+            {questions.map(
+              (question, index) =>
+                question.status === "selected" && (
+                  <div
+                    key={index + 1}
+                    className="relative flex items-start p-4 odd:bg-gray-100"
+                  >
+                    <div className="min-w-0 flex-1 text-sm leading-6">
+                      <label
+                        htmlFor={`generatedQuestion-${index + 1}`}
+                        className="select-none font-medium text-gray-900"
+                      >
+                        {question.question}
+                      </label>
+                    </div>
+                    <div className="ml-3 flex h-6 items-center">
+                      <button
+                        onClick={() => {
+                          toggleGeneratedQuestionStatus(questions, index);
+                        }}
+                      >
+                        <XMarkIcon className="h-5 w-5 text-red-400 font-bold" />
                       </button>
                     </div>
                   </div>

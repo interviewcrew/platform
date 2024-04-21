@@ -109,6 +109,7 @@ export async function generateQuestionsForJobListing(
   jobListing: JobListingListItem
 ): Promise<string[]> {
   const response = await generateJobListingQuestions(jobListing);
+
   return response;
 }
 

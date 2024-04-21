@@ -127,11 +127,12 @@ export async function generateJobListingQuestions(
     messages: [
       {
         role: "system",
-        content: `You are a highly skilled AI hiring manager that knows what are the best questions to ask based on a job ad. \
-                  Read the job ad that is passed, and come up with a all the questions that should be asked for initial filtering of the candidate. \
-                  Don't repeat any of the previous questions that are in the questions so far list. \
-                  Ask about the technologies mentioned in the job ad in the level of the seniority level mentioned in the job ad\
-                  The questions should be very short, and to the point. and should be returned in a valid json list of strings. For example ["What is Node.js", "How is concurrency handled in Node.js"]`,
+        content: `You are a highly skilled AI hiring manager that knows what are the best questions to ask based on a job ad.\
+                  Read the job ad that is passed, and come up with a all the questions that should be asked for initial filtering of the candidate.\
+                  Don't repeat any of the previous questions that are in the questions so far list.\
+                  Ask about the technologies mentioned in the job ad in the level of the seniority level mentioned in the job ad.\
+                  The questions should be very short, and to the point. and should be returned in a valid json list of strings.\
+                  For example {questions: ["What is Node.js", "How is concurrency handled in Node.js"]}`,
       },
       {
         role: "user",
@@ -153,10 +154,8 @@ export async function generateJobListingQuestions(
     throw new Error("No questions found");
   }
 
-  questionText = questionText.replace(/^```json/, "").replace(/```$/, "");
-
   try {
-    return JSON.parse(questionText);
+    return JSON.parse(questionText).questions;
   } catch (e) {
     throw new Error("No questions found");
   }

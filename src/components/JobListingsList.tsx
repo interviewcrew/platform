@@ -83,18 +83,6 @@ export default function JobListingsList({
               >
                 Seniority
               </th>
-              <th
-                scope="col"
-                className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 md:table-cell"
-              >
-                # of Candidates
-              </th>
-              <th
-                scope="col"
-                className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
-              >
-                # of Interviews
-              </th>
               <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
                 <span className="sr-only">Edit</span>
               </th>
@@ -106,63 +94,77 @@ export default function JobListingsList({
           <tbody className="divide-y divide-gray-200 bg-white">
             {jobListings.map((jobListing) => (
               <tr key={jobListing.id}>
-                <td className="w-full max-w-0 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0">
+                <td className="w-full max-w-0 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0 truncate">
                   {jobListing.title}
+                  <dl className="flex space-x-4 font-normal">
+                    <div>
+                      <dt className="sr-only">Interviews</dt>
+                      <dd className="mt-1 truncate text-gray-400">
+                        Interviews: {jobListing.interviews.length}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="sr-only lg:hidden">Candidates</dt>
+                      <dd className="mt-1 truncate text-gray-400">
+                        Candidates:{" "}
+                        {jobListingCandidates.get(jobListing.id) ?? 0}
+                      </dd>
+                    </div>
+                  </dl>
                   <dl className="font-normal lg:hidden">
-                    <dt className="sr-only">Position</dt>
-                    <dd className="mt-1 truncate text-gray-700">
-                      {jobListing.position ?? "Not specified"}
-                    </dd>
-                    <dt className="sr-only lg:hidden">Seniority</dt>
-                    <dd className="mt-1 truncate text-gray-500">
-                      {jobListing.seniority ?? "Not specified"}
-                    </dd>
+                    <div>
+                      <dt className="sr-only">Position</dt>
+                      <dd className="mt-1 truncate text-gray-400">
+                        Position: {jobListing.position ?? "Not specified"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="sr-only lg:hidden">Seniority</dt>
+                      <dd className="mt-1 truncate text-gray-400">
+                        Seniority: {jobListing.seniority ?? "Not specified"}
+                      </dd>
+                    </div>
                   </dl>
                 </td>
-                <td className="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell">
+                <td className="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell truncate">
                   {jobListing.position ?? "Not specified"}
                 </td>
-                <td className="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell">
+                <td className="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell truncate">
                   {jobListing.seniority ?? "Not specified"}
                 </td>
-                <td className="hidden px-3 py-4 text-sm text-gray-500 md:table-cell">
-                  {jobListing.interviews.length}
-                </td>
-                <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">
-                  {jobListingCandidates.get(jobListing.id) ?? 0}
-                </td>
-                <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                <td className="text-right text-sm font-medium">
                   <Link
                     href={getUpdatedSearchParams(searchParams, [
                       { key: "jobListingId", value: String(jobListing.id) },
                       { key: "step", value: "1" },
                     ])}
-                    className="text-sky-600 hover:text-sky-700"
+                    className="text-sky-600 hover:text-sky-800 px-2"
                   >
                     Edit <span className="sr-only">, {jobListing.title}</span>
                   </Link>
                 </td>
-                <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                <td className="ml-4 text-right text-sm font-medium">
                   <Link
                     href={getUpdatedSearchParams(searchParams, [
                       { key: "jobListingId", value: String(jobListing.id) },
                       { key: "step", value: "2" },
                     ])}
-                    className="text-sky-600 hover:text-sky-700"
+                    className="text-sky-600 hover:text-sky-800 border-l-2 px-2"
                   >
                     Questions
                     <span className="sr-only">, {jobListing.title}</span>
                   </Link>
                 </td>
-                <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                <td className="ml-4 text-right text-sm font-medium">
                   <Link
                     href={getUpdatedSearchParams(searchParams, [
                       { key: "jobListingId", value: String(jobListing.id) },
                       { key: "step", value: "3" },
                     ])}
-                    className="text-sky-600 hover:text-sky-700"
+                    className="text-sky-600 hover:text-sky-800 border-l-2 px-2"
                   >
-                    Interviews <span className="sr-only">, {jobListing.title}</span>
+                    Interviews{" "}
+                    <span className="sr-only">, {jobListing.title}</span>
                   </Link>
                 </td>
               </tr>
