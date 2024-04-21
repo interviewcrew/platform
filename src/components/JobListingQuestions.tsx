@@ -31,6 +31,7 @@ export default function JobListingQuestions({
   );
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
   const [isSavingQuestions, setIsSavingQuestions] = useState(false);
+  const [newQuestion, setNewQuestion] = useState<string>("");
 
   const deleteQuestion = async (deletedQuestion: Question) => {
     setIsSavingQuestions(true);
@@ -144,7 +145,8 @@ export default function JobListingQuestions({
                 "min-w-48 max-h-10 flex rounded-md bg-gradient-to-r from-blue-600 to-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600",
                 {
                   "cursor-not-allowed": isGeneratingQuestions,
-                  "text-sky-700 bg-gradient-to-r from-blue-100 to-cyan-100 hover:bg-sky-700": questions.length > 0,
+                  "text-sky-700 bg-gradient-to-r from-blue-100 to-cyan-100 hover:bg-sky-700":
+                    questions.length > 0,
                 }
               )}
               onClick={() => {
@@ -227,7 +229,8 @@ export default function JobListingQuestions({
               </legend>
               <div className="text-sm text-gray-500">
                 The questions mentioned here are the ones that would be shown
-                during the interview. If empty, you could generate and add those questions.{" "}
+                during the interview. If empty, you could generate and add those
+                questions.{" "}
               </div>
             </div>
             <div className="mt-2 flex justify-end items-center gap-x-4">
@@ -244,7 +247,8 @@ export default function JobListingQuestions({
                   "rounded-md border-2 text-gray-600 px-3 py-2 text-sm font-semibold shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600",
                   {
                     "cursor-not-allowed": isSavingQuestions,
-                    "bg-sky-600 text-white hover:bg-sky-500": questions.length > 0,
+                    "bg-sky-600 text-white hover:bg-sky-500":
+                      questions.length > 0,
                   }
                 )}
                 onClick={() => doneCallback(jobListing, 2)}
@@ -254,6 +258,41 @@ export default function JobListingQuestions({
               </button>
             </div>
           </div>
+          <form
+            className="w-full flex mt-5 sm:items-center"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              await addQuestion({
+                question: newQuestion,
+                isGenerated: false,
+                jobListingId: jobListing.id,
+                interviewId: null,
+                userId: userId,
+              });
+              setNewQuestion("");
+            }}
+          >
+            <div className="w-full">
+              <label htmlFor="hash" className="sr-only">
+                Add your own question
+              </label>
+              <input
+                type="hash"
+                name="hash"
+                id="hash"
+                className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                placeholder="Write your own question here"
+                onChange={(e) => setNewQuestion(e.target.value)}
+                value={newQuestion}
+              />
+            </div>
+            <button
+              type="submit"
+              className="mt-3 inline-flex min-w-36 items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-sky-800 border-2 border-sky-300 shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 sm:ml-3 sm:mt-0 sm:w-auto"
+            >
+              Add question
+            </button>
+          </form>
           <div className="mt-4">
             <EditableQuestions
               questions={questions}
