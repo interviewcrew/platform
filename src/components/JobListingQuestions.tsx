@@ -1,48 +1,16 @@
 import {
-  QuestionWithChange,
+  addQuestionToJobListing,
   generateQuestionsForJobListing,
-  saveQuestionsForJobListing,
+  updateQuestionInJobListing,
+  deleteQuestionFromJobListing,
 } from "@/app/job-listing-actions";
 import { JobListingListItem } from "@/db/repositories/jobListingRepository";
-import { Question } from "@/db/schema";
+import { Question, NewQuestion } from "@/db/schema";
 import { cn } from "@/lib/utils";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { SparklesIcon } from "lucide-react";
 import { useState } from "react";
 import { EditableQuestions } from "@/components/EditableQuestions";
-
-function GeneratedQuestions({
-  questions,
-  addQuestion,
-}: {
-  questions: Question[];
-  addQuestion: (index: number) => void;
-}) {
-  return (
-    <div className="mt-8 divide-y divide-gray-200 border-b border-t border-gray-200">
-      {questions.map((question, index) => (
-        <div
-          key={index + 1}
-          className="relative flex items-start p-4 odd:bg-gray-100"
-        >
-          <div className="min-w-0 flex-1 text-sm leading-6">
-            <label
-              htmlFor={`generatedQuestion-${index + 1}`}
-              className="select-none font-medium text-gray-900"
-            >
-              {question.question}
-            </label>
-          </div>
-          <div className="ml-3 flex h-6 items-center">
-            <button onClick={() => addQuestion(index)}>
-              <PlusIcon className="h-5 w-5 text-sky-600 focus:ring-sky-600 font-bold" />
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export default function JobListingQuestions({
   jobListing,
@@ -57,101 +25,68 @@ export default function JobListingQuestions({
   doneCallback: (jobListing: JobListingListItem, step: number) => void;
   cancelCallback: () => void;
 }) {
-  const [questions, setQuestions] = useState<QuestionWithChange[]>(
-    jobListing.questions.map((question) => ({
-      ...question,
-      status: "unchanged",
-    }))
+  const [questions, setQuestions] = useState<Question[]>(jobListing.questions);
+  const [generatedQuestions, setGeneratedQuestions] = useState<NewQuestion[]>(
+    []
   );
-
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
   const [isSavingQuestions, setIsSavingQuestions] = useState(false);
 
-  const deleteQuestion = async (index: number) => {
+  const deleteQuestion = async (deletedQuestion: Question) => {
+    setIsSavingQuestions(true);
+
+    await deleteQuestionFromJobListing(deletedQuestion);
+
     setQuestions(
-      questions.map((question: QuestionWithChange, i) => {
-        if (
-          (question.status === "unchanged" || question.status === "updated") &&
-          index === i
-        ) {
-          return {
-            ...question,
-            status: "deleted",
-          };
+      questions.filter((question: Question) => {
+        if (deletedQuestion.id === question.id) {
+          return false;
+        }
+
+        return true;
+      })
+    );
+
+    jobListing.questions = questions;
+
+    setIsSavingQuestions(false);
+  };
+
+  const updateQuestion = async (updatedQuestion: Question) => {
+    setIsSavingQuestions(true);
+
+    await updateQuestionInJobListing(updatedQuestion);
+
+    setQuestions(
+      questions.map((question: Question) => {
+        if (updatedQuestion.id === question.id) {
+          return updatedQuestion;
         }
 
         return question;
       })
     );
+
+    jobListing.questions = questions;
+
+    setIsSavingQuestions(false);
   };
 
-  const editQuestion = async (
-    editedQuestions: QuestionWithChange[],
-    index: number
-  ) => {
-    setQuestions(
-      questions.map((question: QuestionWithChange, i) => {
-        const editedQuestion = editedQuestions[index];
+  const addQuestion = async (question: NewQuestion) => {
+    setIsSavingQuestions(true);
 
-        if (
-          editedQuestion &&
-          (editedQuestion.status === "unchanged" ||
-            editedQuestion.status === "deleted" ||
-            editedQuestion.status == "updated") &&
-          index === i
-        ) {
-          return {
-            ...editedQuestion,
-            status: "updated",
-          };
-        }
+    const addedQuestion = await addQuestionToJobListing(question);
 
-        return question;
-      })
-    );
-  };
-
-  const undoQuestionStatus = async (index: number) => {
-    const undoQuestion = jobListing.questions.find(
-      (question) => question.id === questions[index].id
-    );
-
-    if (!undoQuestion) {
-      return;
-    }
-
-    setQuestions(
-      questions.map((question: QuestionWithChange) => {
-        if (
-          question.id === undoQuestion.id &&
-          (question.status === "deleted" || question.status === "updated")
-        ) {
-          return {
-            ...question,
-            question: undoQuestion.question,
-            status: "unchanged",
-          };
-        }
-
-        return question;
-      })
-    );
-  };
-
-  const toggleGeneratedQuestionStatus = (
-    questions: QuestionWithChange[],
-    checkedIndex: number
-  ) => {
-    setQuestions(
-      questions.map((question, index) =>
-        checkedIndex === index
-          ? {
-              ...question,
-              status: question.status === "selected" ? "generated" : "selected",
-            }
-          : question
+    setQuestions([...questions, addedQuestion]);
+    setGeneratedQuestions((generatedQuestions) =>
+      generatedQuestions.filter(
+        (generatedQuestion) => generatedQuestion.question !== question.question
       )
     );
+
+    jobListing.questions = questions;
+
+    setIsSavingQuestions(false);
   };
 
   const generateQuestions = async () => {
@@ -159,39 +94,19 @@ export default function JobListingQuestions({
 
     const generatedQuestions = await generateQuestionsForJobListing(jobListing);
 
-    setQuestions([
-      ...questions.filter((question) => question.status !== "generated"),
+    setGeneratedQuestions([
       ...generatedQuestions.map(
-        (generatedQuestion: string): QuestionWithChange => ({
+        (generatedQuestion: string): NewQuestion => ({
           question: generatedQuestion,
           isGenerated: true,
           jobListingId: jobListing.id,
           interviewId: null,
           userId: userId,
-          status: "generated",
         })
       ),
     ]);
 
     setIsGeneratingQuestions(false);
-  };
-
-  const getQuestions = (
-    statuses: ("generated" | "selected" | "deleted" | "updated" | "unchanged")[]
-  ) => {
-    return questions.filter((question) => statuses.includes(question.status));
-  };
-
-  const handleSave = async (questions: QuestionWithChange[]) => {
-    setIsSavingQuestions(true);
-
-    const updatedJobListing = {
-      ...jobListing,
-      questions: await saveQuestionsForJobListing(jobListing, questions),
-    };
-
-    setIsSavingQuestions(false);
-    doneCallback(updatedJobListing, step);
   };
 
   return (
@@ -201,12 +116,10 @@ export default function JobListingQuestions({
           Manage questions
         </h2>
         <p className="mt-1 text-sm leading-6 text-gray-600">
-          You can see all the questions that were added so far for the interview
-          based on the job listing. You could also use the{" "}
-          <span className="font-bold">Generate Questions</span> button. Although
-          there is no limitation to the number of questions, it is recommended
-          to keep the number of questions to less than{" "}
-          <span className="font-bold">15</span> overal!
+          Here you can add questions to see during the interview. By presseing
+          the <span className="font-bold">Generate Questions</span> button you
+          can generate new questions based on the job listing and decide which
+          one to add to display the interview.
         </p>
       </div>
       <div className="mt-4 grid lg:grid-cols-2 sm:grid-cols">
@@ -215,13 +128,13 @@ export default function JobListingQuestions({
             <legend className="text-base font-semibold leading-6 text-gray-900">
               Generated questions
               <span className="text-sm text-gray-500">
-                {" (" + getQuestions(["generated"]).length + ")"}
+                {" (" + generateQuestions.length + ")"}
               </span>
             </legend>
             <div className="text-sm text-gray-500">
-              The questions in this column are generated, but not selected to be
-              added to the interview. Add the ones you want by clicking on the
-              plus sign
+              The questions in this column are generated, but will not be
+              displayed during the interview until you add them by pressing the
+              plus sign.
             </div>
           </div>
           <div className="flex justify-center mt-2">
@@ -270,45 +183,36 @@ export default function JobListingQuestions({
               )}
             </button>
           </div>
-          <legend className="mt-4 text-base font-semibold leading-6 text-gray-900">
-            Generated questions that can be added
-            <span className="text-sm text-gray-500">
-              {" (" + getQuestions(["generated"]).length + ")"}
-            </span>
-          </legend>
           <div className="mt-4 divide-y divide-gray-200">
-            {getQuestions(["generated"]).length === 0 && (
+            {generatedQuestions.length === 0 && (
               <div className="p-4 text-sm text-gray-500 border-dashed rounded-lg border-2">
                 There are no generated questions to be added
               </div>
             )}
-            {questions.map(
-              (question, index) =>
-                question.status === "generated" && (
-                  <div
-                    key={index + 1}
-                    className="relative flex items-start p-4 odd:bg-gray-100"
+            {generatedQuestions.map((generatedQuestion, index) => (
+              <div
+                key={index + 1}
+                className="relative flex items-start p-4 odd:bg-gray-100"
+              >
+                <div className="min-w-0 flex-1 text-sm leading-6">
+                  <label
+                    htmlFor={`generatedQuestion-${index + 1}`}
+                    className="select-none font-medium text-gray-900"
                   >
-                    <div className="min-w-0 flex-1 text-sm leading-6">
-                      <label
-                        htmlFor={`generatedQuestion-${index + 1}`}
-                        className="select-none font-medium text-gray-900"
-                      >
-                        {question.question}
-                      </label>
-                    </div>
-                    <div className="ml-3 flex h-6 items-center">
-                      <button
-                        onClick={() => {
-                          toggleGeneratedQuestionStatus(questions, index);
-                        }}
-                      >
-                        <PlusIcon className="h-5 w-5 text-sky-600 focus:ring-sky-600 font-bold" />
-                      </button>
-                    </div>
-                  </div>
-                )
-            )}
+                    {generatedQuestion.question}
+                  </label>
+                </div>
+                <div className="ml-3 flex h-6 items-center">
+                  <button
+                    onClick={() => {
+                      addQuestion(generatedQuestion);
+                    }}
+                  >
+                    <PlusIcon className="h-5 w-5 text-sky-600 focus:ring-sky-600 font-bold" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
         <div className="pl-2">
@@ -317,20 +221,12 @@ export default function JobListingQuestions({
               <legend className="text-base font-semibold leading-6 text-gray-900">
                 Questions during the interview
                 <span className="text-sm text-gray-500">
-                  {" (" +
-                    getQuestions([
-                      "selected",
-                      "deleted",
-                      "unchanged",
-                      "updated",
-                    ]).length +
-                    ")"}
+                  {" (" + questions.length + ")"}
                 </span>
               </legend>
               <div className="text-sm text-gray-500">
                 The questions mentioned here are the ones that would be shown
-                during the interview. By saving and continuing, you can save the
-                changes
+                during the interview. If empty, you could generate and add those questions.{" "}
               </div>
             </div>
             <div className="mt-2 flex justify-end items-center gap-x-4">
@@ -349,7 +245,7 @@ export default function JobListingQuestions({
                     "cursor-not-allowed": isSavingQuestions,
                   }
                 )}
-                onClick={async () => await handleSave(questions)}
+                onClick={() => doneCallback(jobListing, 2)}
                 disabled={isSavingQuestions}
               >
                 Save and Continue
@@ -360,49 +256,9 @@ export default function JobListingQuestions({
             <EditableQuestions
               questions={questions}
               deleteQuestionCallback={deleteQuestion}
-              editQuestionCallback={editQuestion}
-              undoQuestionCallback={undoQuestionStatus}
+              updateQuestionCallback={updateQuestion}
+              addQuestionCallback={addQuestion}
             />
-          </div>
-          {/* <legend className="mt-4 text-base font-semibold leading-6 text-gray-900">
-            Generated questions added to interview
-            <span className="text-sm text-gray-500">
-              {" (" + getQuestions(["selected"]).length + ")"}
-            </span>
-          </legend> */}
-          <div className="mt-4 divide-y divide-gray-200">
-            {/* {getQuestions(["selected"]).length === 0 && (
-              <div className="p-4 text-sm text-gray-500 border-dashed rounded-lg border-2">
-                There are no generated questions that were added
-              </div>
-            )} */}
-            {questions.map(
-              (question, index) =>
-                question.status === "selected" && (
-                  <div
-                    key={index + 1}
-                    className="relative flex items-start p-4 odd:bg-gray-100"
-                  >
-                    <div className="min-w-0 flex-1 text-sm leading-6">
-                      <label
-                        htmlFor={`generatedQuestion-${index + 1}`}
-                        className="select-none font-medium text-gray-900"
-                      >
-                        {question.question}
-                      </label>
-                    </div>
-                    <div className="ml-3 flex h-6 items-center">
-                      <button
-                        onClick={() => {
-                          toggleGeneratedQuestionStatus(questions, index);
-                        }}
-                      >
-                        <XMarkIcon className="h-5 w-5 text-red-400 font-bold" />
-                      </button>
-                    </div>
-                  </div>
-                )
-            )}
           </div>
         </div>
       </div>

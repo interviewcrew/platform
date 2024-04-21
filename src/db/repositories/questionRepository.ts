@@ -1,25 +1,23 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
-import { sql } from "@vercel/postgres";
+import { QueryResult, sql } from "@vercel/postgres";
 import { Question, NewQuestion, questionsTable } from "@/db/schema";
 import * as schema from "@/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
-export async function deleteQuestions(questionIds: number[]): Promise<boolean> {
+export async function deleteQuestion(
+  question: Question
+): Promise<QueryResult<never>> {
   const db = drizzle(sql, { schema });
 
-  await db
-    .delete(questionsTable)
-    .where(inArray(questionsTable.id, questionIds));
-
-  return true;
+  return db.delete(questionsTable).where(eq(questionsTable.id, question.id));
 }
 
 export async function updateQuestion(
   question: Question
-): Promise<Question | undefined> {
+): Promise<Question[]> {
   const db = drizzle(sql, { schema });
 
-  const updatedQuestions = await db
+  return db
     .update(questionsTable)
     .set({
       question: question.question,
@@ -35,18 +33,14 @@ export async function updateQuestion(
       question: questionsTable.question,
       isGenerated: questionsTable.isGenerated,
     });
-
-  return updatedQuestions[0];
 }
 
-export async function addQuestionsToJobListing(
-  questions: NewQuestion[]
-): Promise<Question[]> {
+export async function addQuestion(question: NewQuestion): Promise<Question[]> {
   const db = drizzle(sql, { schema });
 
   return db
     .insert(questionsTable)
-    .values(questions)
+    .values(question)
     .onConflictDoNothing()
     .returning({
       id: questionsTable.id,

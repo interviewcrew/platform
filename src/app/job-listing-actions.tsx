@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 import {
   getCandidates,
@@ -16,8 +16,8 @@ import {
   updateJobListing,
 } from "@/db/repositories/jobListingRepository";
 import {
-  addQuestionsToJobListing,
-  deleteQuestions,
+  addQuestion,
+  deleteQuestion,
   updateQuestion,
 } from "@/db/repositories/questionRepository";
 
@@ -113,50 +113,24 @@ export async function generateQuestionsForJobListing(
   return response;
 }
 
-type GeneratedQuestion = NewQuestion & { status: "selected" | "generated" };
-type UpdatedQuestion = Question & {
-  status: "updated" | "unchanged" | "deleted";
-};
-export type QuestionWithChange = GeneratedQuestion | UpdatedQuestion;
+export async function addQuestionToJobListing(
+  question: NewQuestion
+): Promise<Question> {
+  return (await addQuestion(question))[0];
+}
 
-export async function saveQuestionsForJobListing(
-  jobListing: JobListingListItem,
-  questions: QuestionWithChange[]
-): Promise<Question[]> {
-  await Promise.all(
-    (
-      questions.filter(
-        (question) => question.status === "updated"
-      ) as UpdatedQuestion[]
-    ).map(async (question: UpdatedQuestion) => updateQuestion(question))
-  );
+export async function deleteQuestionFromJobListing(
+  question: Question
+): Promise<boolean> {
+  await deleteQuestion(question);
 
-  if (
-    questions.filter((question) => question.status === "deleted").length > 0
-  ) {
-    await deleteQuestions(
-      (
-        questions.filter(
-          (question) => question.status === "deleted"
-        ) as UpdatedQuestion[]
-      ).map((question) => question.id)
-    );
-  }
+  return true;
+}
 
-  if (
-    questions.filter((question) => question.status === "selected").length > 0
-  ) {
-    await addQuestionsToJobListing(
-      questions.filter((question) => question.status === "selected")
-    );
-  }
-
-  const jobListingWithQuestions = await getJobListingById(
-    jobListing.organizationId,
-    jobListing.id
-  );
-
-  return jobListingWithQuestions?.questions ?? [];
+export async function updateQuestionInJobListing(
+  question: Question
+): Promise<Question> {
+  return (await updateQuestion(question))[0];
 }
 
 export async function createCandidate(candidate: NewCandidate) {
@@ -219,6 +193,9 @@ export async function editInterview(interview: Interview) {
   return updateInterview(interview);
 }
 
-export async function getCandidatesList(organizationId: number, search: string) {
+export async function getCandidatesList(
+  organizationId: number,
+  search: string
+) {
   return getCandidates(organizationId, search);
 }
