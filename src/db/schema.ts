@@ -325,12 +325,17 @@ export type NewEvaluationMetric = typeof evaluationMetricsTable.$inferInsert;
 export const evaluationsTable = pgTable("evaluations", {
   id: serial("id").primaryKey(),
   value: text("value").notNull(),
-  evaluationMetricId: integer("evaluation_metric_id")
-    .references(() => evaluationMetricsTable.id, { onDelete: "cascade" })
-    .notNull(),
+  valueFormatted: text("value_formatted"),
   interviewId: integer("interview_id")
     .references(() => interviewsTable.id, { onDelete: "cascade" })
     .notNull(),
+  evaluationMetricId: integer("evaluation_metric_id").references(
+    () => evaluationMetricsTable.id,
+    { onDelete: "cascade" }
+  ),
+  questionId: integer("question_id").references(() => questionsTable.id, {
+    onDelete: "cascade",
+  }),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });
@@ -345,6 +350,10 @@ export const evaluationsTableRelations = relations(
     interview: one(interviewsTable, {
       fields: [evaluationsTable.interviewId],
       references: [interviewsTable.id],
+    }),
+    questions: one(questionsTable, {
+      fields: [evaluationsTable.questionId],
+      references: [questionsTable.id],
     }),
   })
 );
@@ -370,20 +379,24 @@ export const questionsTable = pgTable("questions", {
   }),
 });
 
-export const questionsTableRelations = relations(questionsTable, ({ one }) => ({
-  jobListing: one(jobListingsTable, {
-    fields: [questionsTable.jobListingId],
-    references: [jobListingsTable.id],
-  }),
-  interview: one(interviewsTable, {
-    fields: [questionsTable.interviewId],
-    references: [interviewsTable.id],
-  }),
-  user: one(usersTable, {
-    fields: [questionsTable.userId],
-    references: [usersTable.id],
-  }),
-}));
+export const questionsTableRelations = relations(
+  questionsTable,
+  ({ one, many }) => ({
+    jobListing: one(jobListingsTable, {
+      fields: [questionsTable.jobListingId],
+      references: [jobListingsTable.id],
+    }),
+    interview: one(interviewsTable, {
+      fields: [questionsTable.interviewId],
+      references: [interviewsTable.id],
+    }),
+    user: one(usersTable, {
+      fields: [questionsTable.userId],
+      references: [usersTable.id],
+    }),
+    evaluations: many(evaluationsTable),
+  })
+);
 
 export type Question = typeof questionsTable.$inferSelect;
 export type NewQuestion = typeof questionsTable.$inferInsert;
