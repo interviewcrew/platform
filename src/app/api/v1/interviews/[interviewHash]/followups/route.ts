@@ -7,7 +7,7 @@ import {
 import { getInterviewByHashIdWithFields } from "@/db/repositories/interviewRepository";
 import { withErrorHandler } from "@/lib/api-helpers/error-handler";
 import { getFollowupQuestion as getFollowupQuestionFromOpenAI } from "@/lib/openai/client";
-import { addQuestionsToJobListing } from "@/db/repositories/questionRepository";
+import { addQuestion } from "@/db/repositories/questionRepository";
 
 export const GET = withErrorHandler(getFollowupQuestion);
 
@@ -42,14 +42,12 @@ async function getFollowupQuestion(
   const followup = await getFollowupQuestionFromOpenAI(interview);
 
   if (followup) {
-    addQuestionsToJobListing([
-      {
-        interviewId: interview.id,
-        question: followup,
-        isGenerated: true,
-        userId: user.id,
-      },
-    ]);
+    addQuestion({
+      interviewId: interview.id,
+      question: followup,
+      isGenerated: true,
+      userId: user.id,
+    });
   }
 
   return NextResponse.json({
