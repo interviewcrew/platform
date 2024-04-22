@@ -1,0 +1,10 @@
+.cl-scrollBox + div {
+  display: none;
+}
+
+.cl-card {
+  margin-bottom: 0;
+  box-shadow: none;
+  padding: 8px;
+  margin: 2px;
+}

@@ -1,15 +1,15 @@
 import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
-import { getInterviewByHashId, getInterviewByHashIdWithFields } from "@/db/repositories/interviewRepository";
-import { withErrorHandler } from "@/lib/api-helpers/error-handler";
 import {
   getOrganizationWithErrorHandling,
   getUserWithErrorHandling,
 } from "@/lib/api-helpers/auth";
+import { getInterviewByHashIdWithFields } from "@/db/repositories/interviewRepository";
+import { withErrorHandler } from "@/lib/api-helpers/error-handler";
 
-export const GET = withErrorHandler(getInterview);
+export const GET = withErrorHandler(getQuestions);
 
-async function getInterview(
+async function getQuestions(
   _request: NextRequest,
   { params }: { params: { interviewHash: string } }
 ) {
@@ -28,7 +28,7 @@ async function getInterview(
     user.organizationId
   );
 
-  let interview = await getInterviewByHashIdWithFields(
+  const interview = await getInterviewByHashIdWithFields(
     params.interviewHash,
     organization.id
   );
@@ -37,5 +37,7 @@ async function getInterview(
     return NextResponse.json({ error: "Interview not found" }, { status: 404 });
   }
 
-  return NextResponse.json(interview);
+  return NextResponse.json({
+    questions: interview.jobListing.questions,
+  });
 }

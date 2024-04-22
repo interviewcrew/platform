@@ -1,0 +1,201 @@
+"use server";
+
+import {
+  getCandidates,
+  insertCandidate,
+  updateCandidate,
+} from "@/db/repositories/candidateRepository";
+import {
+  insertInterview,
+  updateInterview,
+} from "@/db/repositories/interviewRepository";
+import {
+  JobListingListItem,
+  getJobListingById,
+  insertJobListing,
+  updateJobListing,
+} from "@/db/repositories/jobListingRepository";
+import {
+  addQuestion,
+  deleteQuestion,
+  updateQuestion,
+} from "@/db/repositories/questionRepository";
+
+import {
+  Candidate,
+  Interview,
+  JobListing,
+  NewCandidate,
+  NewInterview,
+  NewJobListing,
+  NewQuestion,
+  Question,
+  interviewsTable,
+  jobListingsTable,
+} from "@/db/schema";
+import { generateJobListingQuestions } from "@/lib/openai/client";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+
+export async function createJobListing(
+  JobListing: NewJobListing | { error: JobListing }
+): Promise<JobListingListItem> {
+  const requestSchema = createInsertSchema(jobListingsTable, {
+    title: z.string().trim().min(1, "Title must be at least 1 character long"),
+    description: z.string().trim().min(1),
+  }).omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  });
+
+  const validatedFields = requestSchema.parse(JobListing);
+
+  const insertedJobListing = (await insertJobListing(validatedFields))[0];
+  const jobListingListItem = await getJobListingById(
+    insertedJobListing.organizationId,
+    insertedJobListing.id
+  );
+
+  if (!jobListingListItem) {
+    throw new Error("Job Listing not found");
+  }
+
+  return jobListingListItem;
+}
+
+export async function editJobListing(
+  jobListing: JobListing
+): Promise<JobListingListItem> {
+  if (jobListingsTable.id === undefined) {
+    throw new Error("Job Listing ID is required");
+  }
+
+  const requestSchema = createInsertSchema(jobListingsTable, {
+    id: z.number(),
+    title: z.string().trim().min(1, "Title must be at least 1 character long"),
+    description: z.string().trim().min(1),
+  }).omit({
+    createdAt: true,
+    updatedAt: true,
+  });
+
+  const validatedFields = requestSchema.parse(jobListing);
+
+  const updatedJobListing = (
+    await updateJobListing({
+      ...validatedFields,
+      id: jobListing.id,
+      createdAt: jobListing.createdAt,
+      updatedAt: new Date(),
+      position: jobListing.position ?? "",
+      seniority: jobListing.seniority ?? "",
+    })
+  )[0];
+
+  const jobListingListItem = await getJobListingById(
+    updatedJobListing.organizationId,
+    updatedJobListing.id
+  );
+
+  if (!jobListingListItem) {
+    throw new Error("Job Listing not found");
+  }
+
+  return jobListingListItem;
+}
+
+export async function generateQuestionsForJobListing(
+  jobListing: JobListingListItem
+): Promise<string[]> {
+  const response = await generateJobListingQuestions(jobListing);
+
+  return response;
+}
+
+export async function addQuestionToJobListing(
+  question: NewQuestion
+): Promise<Question> {
+  return (await addQuestion(question))[0];
+}
+
+export async function deleteQuestionFromJobListing(
+  question: Question
+): Promise<boolean> {
+  await deleteQuestion(question);
+
+  return true;
+}
+
+export async function updateQuestionInJobListing(
+  question: Question
+): Promise<Question> {
+  return (await updateQuestion(question))[0];
+}
+
+export async function createCandidate(candidate: NewCandidate) {
+  if (candidate.organizationId === undefined) {
+    throw new Error("Organization ID is required");
+  }
+
+  return await insertCandidate(candidate);
+}
+
+export async function editCandidate(candidate: Candidate) {
+  if (candidate.id === undefined) {
+    throw new Error("Candidate ID is required");
+  }
+
+  return updateCandidate(candidate);
+}
+
+export async function createInterview(interview: NewInterview) {
+  if (interview.jobListingId === undefined) {
+    throw new Error("Job Listing ID is required");
+  }
+
+  if (interview.candidateId === undefined) {
+    throw new Error("Candidate ID is required");
+  }
+
+  const requestSchema = createInsertSchema(interviewsTable, {
+    hash: z.string().trim().min(5, "Hash must be at least 5 characters long"),
+  }).omit({
+    createdAt: true,
+    updatedAt: true,
+  });
+
+  const validatedFields = requestSchema.parse(interview);
+  return insertInterview(validatedFields);
+}
+
+export async function editInterview(interview: Interview) {
+  if (interview.id === undefined) {
+    throw new Error("Interview ID is required");
+  }
+
+  if (interview.candidateId === undefined) {
+    throw new Error("Candidate ID is required");
+  }
+
+  if (interview.jobListingId === undefined) {
+    throw new Error("Job Listing ID is required");
+  }
+
+  const requestSchema = createInsertSchema(interviewsTable, {
+    hash: z.string().trim().min(5, "Hash must be at least 5 characters long"),
+  });
+
+  requestSchema.parse(interview);
+
+  interview.updatedAt = new Date();
+
+  return updateInterview(interview);
+}
+
+export async function getCandidatesList(
+  organizationId: number,
+  search: string
+) {
+  return getCandidates(organizationId, search);
+}

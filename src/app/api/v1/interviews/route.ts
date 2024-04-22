@@ -1,22 +1,22 @@
 import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
-import { sql } from "@vercel/postgres";
-import { interviewsTable } from "@/db/schema";
-import { VercelPgDatabase, drizzle } from "drizzle-orm/vercel-postgres";
+import { NewInterview, interviewsTable } from "@/db/schema";
 import { createInsertSchema } from "drizzle-zod";
 import {
-  Interview,
   getInterviewByHashId,
   insertInterview,
 } from "@/db/repositories/interviewRepository";
-import * as schema from "@/db/schema";
+import { withErrorHandler } from "@/lib/api-helpers/error-handler";
 import {
-  withErrorHandler,
-} from "@/lib/api-helpers/error-handler";
-import {
-  getOrganizationWithErrorHandling, getUserWithErrorHandling,
+  getOrganizationWithErrorHandling,
+  getUserWithErrorHandling,
 } from "@/lib/api-helpers/auth";
 import { OptionsHandler } from "@/lib/api-helpers/shared";
+import { getJobListingById } from "@/db/repositories/jobListingRepository";
+import {
+  getCandidateById,
+  insertCandidate,
+} from "@/db/repositories/candidateRepository";
 
 export const POST = withErrorHandler(createInterview);
 
@@ -40,38 +40,47 @@ async function createInterview(request: NextRequest) {
 
   const interviewParams = requestSchema.parse(await request.json());
 
-  const db = drizzle(sql, { schema });
-
-  const user = await getUserWithErrorHandling(db, userExternalId);
+  const user = await getUserWithErrorHandling(userExternalId);
 
   const organization = await getOrganizationWithErrorHandling(
-    db,
     user.organizationId
   );
 
-  return getOrInsertInterview(db, interviewParams, organization.id);
+  return getOrInsertInterview(
+    { ...interviewParams, organizationId: user.organizationId },
+    organization.id
+  );
 }
 
 async function getOrInsertInterview(
-  db: VercelPgDatabase<typeof schema>,
-  interviewDto: Interview,
+  interviewDto: NewInterview,
   organizationId: number
 ) {
-  let interview = await getInterviewByHashId(
-    db,
-    interviewDto.hash,
-    organizationId
-  );
+  let interview = await getInterviewByHashId(interviewDto.hash, organizationId);
 
   if (interview) {
     return NextResponse.json(interview, { status: 200 });
   }
 
-  const interviews = await insertInterview(
-    db,
-    interviewDto,
-    organizationId
-  );
+  const jobListing = await getJobListingById(organizationId, interviewDto.jobListingId);
+  const candidate = await getCandidateById(organizationId, interviewDto.candidateId);
+
+  if (!jobListing) {
+    return NextResponse.json(
+      { error: "Job Listing not found" },
+      { status: 404 }
+    );
+  }
+
+  if (!candidate) {
+    return NextResponse.json({ error: "Candidate not found" }, { status: 404 });
+  }
+  const interviews = await insertInterview({
+    ...interviewDto,
+    organizationId,
+    jobListingId: jobListing.id,
+    candidateId: candidate.id,
+  });
 
   interview = interviews[0];
 
