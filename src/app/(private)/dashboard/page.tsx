@@ -1,7 +1,10 @@
 import { auth, clerkClient, currentUser } from "@clerk/nextjs";
 import Header from "@/components/DashboardHeader";
 import { redirect } from "next/navigation";
-import { getOrganizationByExternalId } from "@/db/repositories/organizationRepository";
+import {
+  createOrganization,
+  getOrganizationByExternalId,
+} from "@/db/repositories/organizationRepository";
 import { User } from "@/store/schemas";
 import { getJobListings } from "@/db/repositories/jobListingRepository";
 import { DashboardFooter } from "@/components/DashboardFooter";
@@ -9,7 +12,10 @@ import EmptyState from "@/components/EmptyState";
 import JobListingManager from "@/components/JobListingManager";
 import { BriefcaseIcon } from "@heroicons/react/24/outline";
 import JobListingsList from "@/components/JobListingsList";
-import { getUserByExternalId } from "@/db/repositories/userRepository";
+import {
+  createUser,
+  getUserByExternalId,
+} from "@/db/repositories/userRepository";
 import { getUpdatedSearchParams } from "@/lib/utils";
 import { getCandidates } from "@/db/repositories/candidateRepository";
 
@@ -23,20 +29,31 @@ export default async function JobListingPage({
   const loadedUser = await currentUser();
   const { orgId: organizationExternalId, sessionId } = auth();
 
-  console.log(await clerkClient.sessions.getToken(sessionId ?? "", "long-term-token"));
-
   if (!organizationExternalId || !loadedUser) {
     return redirect("/login");
   }
 
-  const organization = await getOrganizationByExternalId(
-    organizationExternalId
-  );
+  let organization = await getOrganizationByExternalId(organizationExternalId);
 
-  const loggedInUser = await getUserByExternalId(loadedUser.id);
+  if (!organization) {
+    const clerkOrganization = await clerkClient.organizations.getOrganization({
+      organizationId: organizationExternalId,
+    });
 
-  if (!loggedInUser || !organization) {
-    return redirect("/login");
+    organization = await createOrganization({
+      externalId: organizationExternalId,
+      name: clerkOrganization.name,
+      slug: clerkOrganization.slug ?? clerkOrganization.name,
+    });
+  }
+
+  let loggedInUser = await getUserByExternalId(loadedUser.id);
+
+  if (!loggedInUser) {
+    loggedInUser = await createUser({
+      externalId: loadedUser.id,
+      organizationId: organization.id,
+    });
   }
 
   const jobListings = await getJobListings(organization.id);
@@ -49,7 +66,7 @@ export default async function JobListingPage({
       "/dashboard/job-listings" +
         getUpdatedSearchParams(searchParams, [
           { key: "jobListingId", value: undefined },
-          { key: "step", value: undefined},
+          { key: "step", value: undefined },
         ])
     );
   }
