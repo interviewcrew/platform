@@ -13,7 +13,7 @@ import {
 export const organizationsTable = pgTable("organizations", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
-  externaleId: varchar("external_id", { length: 256 }).notNull().unique(),
+  externalId: varchar("external_id", { length: 256 }).notNull().unique(),
   slug: varchar("slug", { length: 256 }).notNull().unique(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
