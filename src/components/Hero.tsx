@@ -17,7 +17,7 @@ export function Hero() {
           </svg>
           <span className="relative">Interviewing Costs</span>
         </span>{" "}
-        by Saving Engineers &apsos Time
+        by Saving Engineers&apos; Time
       </h1>
       <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
         Our AI-powered tool, empowers{" "}
