@@ -5,7 +5,7 @@ import {
   createOrganization,
   getOrganizationByExternalId,
 } from "@/db/repositories/organizationRepository";
-import { User } from "@/store/schemas";
+import { User, convertClerkUserToUser } from "@/store/schemas";
 import { getJobListings } from "@/db/repositories/jobListingRepository";
 import { DashboardFooter } from "@/components/DashboardFooter";
 import EmptyState from "@/components/EmptyState";
@@ -71,18 +71,8 @@ export default async function JobListingPage({
     );
   }
 
-  const user: User = {
-    fullName: `${loadedUser.firstName} ${loadedUser.lastName}`,
-    imageUrl: loadedUser.imageUrl,
-    primaryEmailAddress:
-      loadedUser.emailAddresses.find(
-        (email) => email.id == loadedUser.primaryEmailAddressId
-      )?.emailAddress ?? "",
-  };
-
+  const user: User = convertClerkUserToUser(loadedUser);
   const allCandidates = await getCandidates(organization.id, "");
-
-  // console.log(await clerkClient.sessions.getToken(sessionId, "long-term-token"))
 
   return (
     <>
