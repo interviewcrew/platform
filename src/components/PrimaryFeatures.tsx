@@ -1,63 +1,63 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Image from 'next/image'
-import { Tab } from '@headlessui/react'
-import clsx from 'clsx'
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Tab } from "@headlessui/react";
+import clsx from "clsx";
 
-import { Container } from '@/components/Container'
-import backgroundImage from '@/images/background-features.jpg'
-import screenshotExpenses from '@/images/screenshots/expenses.png'
-import screenshotPayroll from '@/images/screenshots/payroll.png'
-import screenshotReporting from '@/images/screenshots/reporting.png'
-import screenshotVatReturns from '@/images/screenshots/vat-returns.png'
+import { Container } from "@/components/Container";
+import backgroundImage from "@/images/background-features.jpg";
+import codingEnvironment from "@/images/screenshots/ide-fixed.png";
+import assessment from "@/images/screenshots/assessments-fixed.png";
+import followupQuestions from "@/images/screenshots/followup-questions-fixed.png";
+import questionGeneration from "@/images/screenshots/question-generation-fixed.png";
 
 const features = [
   {
-    title: 'Interview assessment',
+    title: "Custom question generation",
     description:
-      "Interviewcrew's AI will assess the candidate's performance and provide you with a detailed report",
-    image: screenshotPayroll,
+      "InterviewCrew's AI crafts technical questions directly from your job ad, ensuring you ask the right questions to identify the best candidates",
+    image: questionGeneration,
   },
   {
-    title: 'AI assistant during the interview',
+    title: "AI-Powered interview assistant",
     description:
-      "During the interview, Interviewcrew will provide you with the best questions to ask the candidate, and answer their questions as well",
-    image: screenshotVatReturns,
+      "During the interview, InterviewCrew serves as your AI assistant, providing the optimal follow-up questions to ask candidates.",
+    image: followupQuestions,
   },
   {
-    title: 'IDE for live coding',
+    title: "Integrated IDE for live coding",
     description:
-      "You have the perfect tools for a coding challenge, with a live code editor and a suite of programming languages",
-    image: screenshotExpenses,
+      "InterviewCrew not only facilitates real-time coding tests but also serves as a valuable data source for assessing candidate skills accurately and effectively.",
+    image: codingEnvironment,
   },
   {
-    title: 'Library of assignments',
+    title: "Interview assessment",
     description:
-      "You could select one of the many assignments available in the library for any type of business, for how much time you have for the interview",
-    image: screenshotReporting,
+      "InterviewCrew's AI analyzes candidate performance post-interview and delivers a detailed report. This enables you to make informed decisions with precision and ease.",
+    image: assessment,
   },
-]
+];
 
 export function PrimaryFeatures() {
-  let [tabOrientation, setTabOrientation] = useState<'horizontal' | 'vertical'>(
-    'horizontal',
-  )
+  let [tabOrientation, setTabOrientation] = useState<"horizontal" | "vertical">(
+    "horizontal"
+  );
 
   useEffect(() => {
-    let lgMediaQuery = window.matchMedia('(min-width: 1024px)')
+    let lgMediaQuery = window.matchMedia("(min-width: 1024px)");
 
     function onMediaQueryChange({ matches }: { matches: boolean }) {
-      setTabOrientation(matches ? 'vertical' : 'horizontal')
+      setTabOrientation(matches ? "vertical" : "horizontal");
     }
 
-    onMediaQueryChange(lgMediaQuery)
-    lgMediaQuery.addEventListener('change', onMediaQueryChange)
+    onMediaQueryChange(lgMediaQuery);
+    lgMediaQuery.addEventListener("change", onMediaQueryChange);
 
     return () => {
-      lgMediaQuery.removeEventListener('change', onMediaQueryChange)
-    }
-  }, [])
+      lgMediaQuery.removeEventListener("change", onMediaQueryChange);
+    };
+  }, []);
 
   return (
     <section
@@ -76,16 +76,18 @@ export function PrimaryFeatures() {
       <Container className="relative">
         <div className="max-w-2xl md:mx-auto md:text-center xl:max-w-none">
           <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl md:text-5xl">
-            Everyone can do technical interviews in 2024
+            Our AI Co-Pilot Supports You, Every Step of the Way
           </h2>
           <p className="mt-6 text-lg tracking-tight text-blue-100">
-            Interviewcrew, your AI interview co-pilot has everything you need to conduct the best interview ever
+            Equipped with everything you need for a successful technical
+            interview, our tool supports you before, during, and after the
+            interview.
           </p>
         </div>
         <Tab.Group
           as="div"
           className="mt-16 grid grid-cols-1 items-center gap-y-2 pt-10 sm:gap-y-6 md:mt-20 lg:grid-cols-12 lg:pt-0"
-          vertical={tabOrientation === 'vertical'}
+          vertical={tabOrientation === "vertical"}
         >
           {({ selectedIndex }) => (
             <>
@@ -95,19 +97,19 @@ export function PrimaryFeatures() {
                     <div
                       key={feature.title}
                       className={clsx(
-                        'group relative rounded-full px-4 py-1 lg:rounded-l-xl lg:rounded-r-none lg:p-6',
+                        "group relative rounded-full px-4 py-1 lg:rounded-l-xl lg:rounded-r-none lg:p-6",
                         selectedIndex === featureIndex
-                          ? 'bg-white lg:bg-white/10 lg:ring-1 lg:ring-inset lg:ring-white/10'
-                          : 'hover:bg-white/10 lg:hover:bg-white/5',
+                          ? "bg-white lg:bg-white/10 lg:ring-1 lg:ring-inset lg:ring-white/10"
+                          : "hover:bg-white/10 lg:hover:bg-white/5"
                       )}
                     >
                       <h3>
                         <Tab
                           className={clsx(
-                            'font-display text-lg ui-not-focus-visible:outline-none',
+                            "font-display text-lg ui-not-focus-visible:outline-none",
                             selectedIndex === featureIndex
-                              ? 'text-blue-600 lg:text-white'
-                              : 'text-blue-100 hover:text-white lg:text-white',
+                              ? "text-blue-600 lg:text-white"
+                              : "text-blue-100 hover:text-white lg:text-white"
                           )}
                         >
                           <span className="absolute inset-0 rounded-full lg:rounded-l-xl lg:rounded-r-none" />
@@ -116,10 +118,10 @@ export function PrimaryFeatures() {
                       </h3>
                       <p
                         className={clsx(
-                          'mt-2 hidden text-sm lg:block',
+                          "mt-2 hidden text-sm lg:block",
                           selectedIndex === featureIndex
-                            ? 'text-white'
-                            : 'text-blue-100 group-hover:text-white',
+                            ? "text-white"
+                            : "text-blue-100 group-hover:text-white"
                         )}
                       >
                         {feature.description}
@@ -154,5 +156,5 @@ export function PrimaryFeatures() {
         </Tab.Group>
       </Container>
     </section>
-  )
+  );
 }

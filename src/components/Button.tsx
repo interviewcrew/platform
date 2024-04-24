@@ -38,12 +38,14 @@ type ButtonProps = (
     | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'color'>
     | (Omit<React.ComponentPropsWithoutRef<'button'>, 'color'> & {
         href?: undefined
+        target?: undefined
       })
   )
 
 export function Button({ className, ...props }: ButtonProps) {
   props.variant ??= 'solid'
   props.color ??= 'slate'
+  props.target ??= "_self"
 
   className = clsx(
     baseStyles[props.variant],
