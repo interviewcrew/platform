@@ -4,77 +4,45 @@ import { InterviewLayout } from '@/components/IDELayout';
 import Problem from '@/components/Problem';
 
 export default function InterviewPage({ params }: { params: { organization: string, id: string } }) {
-  const baseCode = `function minCost(colors: string, neededTime: number[]): number {
-    console.log("Hello World");
-    return 0;
-};
+  const baseCode = `def calculate_total_cost(price, quantity, discount_percentage):
+  if price < 0 or quantity < 0 or discount_percentage < 0:
+      raise ValueError("Price, quantity, and discount percentage must be non-negative.")
+  total_cost = (price * quantity) * (1 - discount_percentage / 100)
+  return total_cost
 
-minCost("abaac", [1,2,3,4,5]);
+# Example usage
+total_cost = calculate_total_cost(20, 3, 15)
+print(total_cost)  # Should print 51.0
 `;
 
-const problem = `
-### [1578. Minimum Time to Make Rope Colorful](https://leetcode.com/problems/minimum-time-to-make-rope-colorful/?envType=daily-question&envId=2023-12-27)
+const problem = `### Coding Assignment: Calculate Total Order Cost with Discount
 
-Difficulty: Medium
+**Objective:** Write a function in Python that calculates the total cost of an order after applying a discount.
 
-Likes: 3.7K | Dislikes: 129
+**Background:** In e-commerce, discounts are a common way to attract customers. Being able to calculate the final price after a discount is essential for both the user interface and backend calculations.
 
----
+**Function Requirements:**
 
-Alice has \`n\` balloons arranged on a rope. You are given a **0-indexed** string \`colors\` where \`colors[i]\` is the color of the \`i^th\` balloon.
+1. **Function Name:** \`calculate_total_cost\`
+2. **Parameters:**
+   - \`price\`: A float representing the original price of the item.
+   - \`quantity\`: An integer representing the number of items.
+   - \`discount_percentage\`: A float representing the discount percentage (e.g., 10 for 10%).
+3. **Returns:** A float representing the total cost after applying the discount.
 
-Alice wants the rope to be **colorful**. She does not want **two consecutive balloons** to be of the same color, so she asks Bob for help. Bob can remove some balloons from the rope to make it **colorful**. You are given a **0-indexed** integer array \`neededTime\` where \`neededTime[i]\` is the time (in seconds) that Bob needs to remove the \`i^th\` balloon from the rope.
+**Calculation to Implement:**
+The total cost can be calculated using the formula:
+\[ \text{Total Cost} = (\text{price} \times \text{quantity}) \times (1 - \frac{\text{discount\_percentage}}{100}) \]
 
-_Return the **minimum time** Bob needs to make the rope **colorful**._
-
-### Example 1:
-
-![Balloon Example 1](https://assets.leetcode.com/uploads/2021/12/13/ballon1.jpg)
-
-\`\`\`plaintext
-Input: colors = "abaac", neededTime = [1,2,3,4,5]
-Output: 3
-Explanation: In the above image, 'a' is blue, 'b' is red, and 'c' is green.
-Bob can remove the blue balloon at index 2. This takes 3 seconds.
-There are no longer two consecutive balloons of the same color. Total time = 3.
+**Example Usage:**
+\`\`\`python
+# Calculate the cost of 3 items priced at $20 each with a 15% discount
+total_cost = calculate_total_cost(20, 3, 15)
+print(total_cost)  # Expected Output: 51.0
 \`\`\`
-### Example 2:
 
-![Balloon Example 2](https://assets.leetcode.com/uploads/2021/12/13/balloon2.jpg)
-
-\`\`\`plaintext
-Input: colors = "abc", neededTime = [1,2,3]
-Output: 0
-Explanation: The rope is already colorful. Bob does not need to remove any balloons from the rope.
-\`\`\`
-### Example 3:
-
-![Balloon Example 3](https://assets.leetcode.com/uploads/2021/12/13/balloon3.jpg)
-
-\`\`\`plaintext
-Input: colors = "aabaa", neededTime = [1,2,3,4,1]
-Output: 2
-Explanation: Bob will remove the balloons at indices 0 and 4. Each balloon takes 1 second to remove.
-There are no longer two consecutive balloons of the same color. Total time = 1 + 1 = 2.
-\`\`\`
-### Constraints:
-
-- \`n == colors.length == neededTime.length\`
-- \`1 <= n <= 10^5\`
-- \`1 <= neededTime[i] <= 10^4\`
-- \`colors\` contains only lowercase English letters.
-
----
-
-Accepted: 243.5K | Submissions: 380.4K | Acceptance Rate: 64.0%
-
----
-
-Related Topics: [Array](/tag/array/), [String](/tag/string/), [Dynamic Programming](/tag/dynamic-programming/), [Greedy](/tag/greedy/)
-
----
-
-Copyright ©️ 2023 LeetCode All rights reserved
+**Additional Challenge (Optional):**
+- Add error handling to make sure the inputs are valid (e.g., non-negative numbers).
 `;
 
   return (
