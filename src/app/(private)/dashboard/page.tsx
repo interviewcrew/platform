@@ -19,6 +19,8 @@ import {
 import { getUpdatedSearchParams } from "@/lib/utils";
 import { getCandidates } from "@/db/repositories/candidateRepository";
 
+export const maxDuration = 300;
+
 export default async function JobListingPage({
   params,
   searchParams,

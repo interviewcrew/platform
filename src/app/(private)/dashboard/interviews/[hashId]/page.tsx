@@ -8,6 +8,8 @@ import {
 import InterviewEvaluationDetails from "@/components/InterviewEvaluationDetails";
 import { User } from "@/store/schemas";
 
+export const maxDuration = 300;
+
 export default async function DashboardPage({
   params,
   searchParams,
