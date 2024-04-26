@@ -25,3 +25,17 @@ export async function createUser(user: NewUser): Promise<User> {
     })
   )[0];
 }
+
+export async function updateUser(user: User): Promise<User> {
+  const db = drizzle(sql, { schema });
+
+  return (
+    await db.update(usersTable).set(user).where(eq(usersTable.id, user.id)).returning({
+      id: usersTable.id,
+      externalId: usersTable.externalId,
+      organizationId: usersTable.organizationId,
+      createdAt: usersTable.createdAt,
+      updatedAt: usersTable.updatedAt,
+    })
+  )[0];
+}
