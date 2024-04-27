@@ -1,29 +1,29 @@
-import Image from 'next/image'
+import Image from "next/image";
 
-import { Container } from '@/components/Container'
-import avatarImage1 from '@/images/avatars/avatar-1.png'
-import avatarImage2 from '@/images/avatars/avatar-2.png'
-import avatarImage3 from '@/images/avatars/avatar-3.png'
-import avatarImage4 from '@/images/avatars/avatar-4.png'
-import avatarImage5 from '@/images/avatars/avatar-5.png'
+import { Container } from "@/components/Container";
+import avatarImage1 from "@/images/avatars/avatar-1.png";
+import avatarImage2 from "@/images/avatars/avatar-2.png";
+import avatarImage3 from "@/images/avatars/avatar-3.png";
+import avatarImage4 from "@/images/avatars/avatar-4.png";
+import avatarImage5 from "@/images/avatars/avatar-5.png";
 
 const testimonials = [
   [
     {
       content:
-        'Interviewcrew is so easy to use I can’t help but wonder if this is what engineers feel when they do the interview',
+        "InterviewCrew is so easy to use I can’t help but wonder if this is what engineers feel when they do the interview",
       author: {
-        name: 'This is you with interviewcrew',
-        role: 'Tech recruiter at Your Company',
+        name: "This is you with InterviewCrew",
+        role: "Tech recruiter at Your Company",
         image: avatarImage1,
       },
     },
     {
       content:
-        'It feels like magic, I just click a button and a follow up question pops up. I could just concentrate on the interview and not worry about the questions',
+        "It feels like magic, I just click a button and a follow up question pops up. I could just concentrate on the interview and not worry about the questions",
       author: {
-        name: 'This is you with interviewcrew',
-        role: 'Tech recruiter at Your Company',
+        name: "This is you with InterviewCrew",
+        role: "Tech recruiter at Your Company",
         image: avatarImage4,
       },
     },
@@ -31,19 +31,19 @@ const testimonials = [
   [
     {
       content:
-        'Now I don\'t have to take all those boring notes during the interview. Interviewcrew not just handles that but is also another set of eyes for me',
+        "Now I don't have to take all those boring notes during the interview. InterviewCrew not just handles that but is also another set of eyes for me",
       author: {
-        name: 'This is you with interviewcrew',
-        role: 'Software engineer at Your Company',
+        name: "This is you with InterviewCrew",
+        role: "Software engineer at Your Company",
         image: avatarImage5,
       },
     },
     {
       content:
-        'I feel way more confident that my personal biases don\'t affect the interview results. I am more confident in my hiring decisions now',
+        "I feel way more confident that my personal biases don't affect the interview results. I am more confident in my hiring decisions now",
       author: {
-        name: 'This is you with interviewcrew',
-        role: 'Software engineer at Your Company',
+        name: "This is you with InterviewCrew",
+        role: "Software engineer at Your Company",
         image: avatarImage2,
       },
     },
@@ -51,31 +51,31 @@ const testimonials = [
   [
     {
       content:
-        'Now everytime the candidate asks me a question, I don\'t have to think about it. Interviewcrew has got my back',
+        "Now everytime the candidate asks me a question, I don't have to think about it. InterviewCrew has got my back",
       author: {
-        name: 'This is you with interviewcrew',
-        role: 'Startup CEO at Your Company',
+        name: "This is you with InterviewCrew",
+        role: "Startup CEO at Your Company",
         image: avatarImage3,
       },
     },
     {
       content:
-        'I am very happy that my engineers would always be assisted in interviews and their assessments',
+        "I am very happy that my engineers would always be assisted in interviews and their assessments",
       author: {
-        name: 'This is you with interviewcrew',
-        role: 'Recruiting manager at Your Company',
+        name: "This is you with InterviewCrew",
+        role: "Recruiting manager at Your Company",
         image: avatarImage4,
       },
     },
   ],
-]
+];
 
-function QuoteIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+function QuoteIcon(props: React.ComponentPropsWithoutRef<"svg">) {
   return (
     <svg aria-hidden="true" width={105} height={78} {...props}>
       <path d="M25.086 77.292c-4.821 0-9.115-1.205-12.882-3.616-3.767-2.561-6.78-6.102-9.04-10.622C1.054 58.534 0 53.411 0 47.686c0-5.273.904-10.396 2.712-15.368 1.959-4.972 4.746-9.567 8.362-13.786a59.042 59.042 0 0 1 12.43-11.3C28.325 3.917 33.599 1.507 39.324 0l11.074 13.786c-6.479 2.561-11.677 5.951-15.594 10.17-3.767 4.219-5.65 7.835-5.65 10.848 0 1.356.377 2.863 1.13 4.52.904 1.507 2.637 3.089 5.198 4.746 3.767 2.41 6.328 4.972 7.684 7.684 1.507 2.561 2.26 5.5 2.26 8.814 0 5.123-1.959 9.19-5.876 12.204-3.767 3.013-8.588 4.52-14.464 4.52Zm54.24 0c-4.821 0-9.115-1.205-12.882-3.616-3.767-2.561-6.78-6.102-9.04-10.622-2.11-4.52-3.164-9.643-3.164-15.368 0-5.273.904-10.396 2.712-15.368 1.959-4.972 4.746-9.567 8.362-13.786a59.042 59.042 0 0 1 12.43-11.3C82.565 3.917 87.839 1.507 93.564 0l11.074 13.786c-6.479 2.561-11.677 5.951-15.594 10.17-3.767 4.219-5.65 7.835-5.65 10.848 0 1.356.377 2.863 1.13 4.52.904 1.507 2.637 3.089 5.198 4.746 3.767 2.41 6.328 4.972 7.684 7.684 1.507 2.561 2.26 5.5 2.26 8.814 0 5.123-1.959 9.19-5.876 12.204-3.767 3.013-8.588 4.52-14.464 4.52Z" />
     </svg>
-  )
+  );
 }
 
 export function Testimonials() {
@@ -88,12 +88,8 @@ export function Testimonials() {
       <Container>
         <div className="mx-auto max-w-2xl md:text-center">
           <h2 className="font-display text-3xl tracking-tight text-slate-900 sm:text-4xl">
-            Loved by businesses worldwide.
+            Loved by our customers worldwide
           </h2>
-          <p className="mt-4 text-lg tracking-tight text-slate-700">
-            With interviewcrew, everything an amazing interview needs, is a great interviewers personality. We would take care of the technical
-            parts of it. Just read the stories of our happy customers. They love us, and we love them.
-          </p>
         </div>
         <ul
           role="list"
@@ -139,5 +135,5 @@ export function Testimonials() {
         </ul>
       </Container>
     </section>
-  )
+  );
 }

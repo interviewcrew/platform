@@ -103,31 +103,33 @@ export function Pricing() {
             for everyone.
           </h2>
           <p className="mt-4 text-lg text-slate-400">
-            With a simple pay as you go pricing, start using Interviewcrew today.
-            And if you didn&apos;t like it, get your money back, risk free
+            Start using InterviewCrew today and pay-as-you-go. If it&apos;s not for you, no worries, we&apos;ll give you your money back.
           </p>
         </div>
         <div className="-mx-4 mt-16 grid max-w-2xl grid-cols-1 gap-y-10 sm:mx-auto lg:-mx-8 lg:max-w-none lg:grid-cols-3 xl:mx-0 xl:gap-x-8">
           <Plan
-            name="Just give me the tool"
+            name="Bring your own OpenAI"
             price="€5"
-            description="We provide the tools, you bring your own OpenAI API keys and pay for the tokens"
+            description="Use InterviewCrew with your own OpenAI credentials"
             callToAction="Get started, risk free"
             showPerInterview={true}
             href="/register"
             features={[
               'Candidate evaluation and feedback',
+              'Questions based on your job description',
+              'Questions based on candidates resume',
               'Generating follow up questions',
               'Answer candidates questions',
               'Online coding environment',
               'Live coding assessment',
+              'Only Google Meet',
             ]}
           />
           <Plan
             featured
             name="The most convinient"
             price="€10"
-            description="Everything is managed, you just start using"
+            description="Get started instantly with our fully managed solution"
             callToAction="Get started, risk free"
             showPerInterview={true}
             href="/register"
@@ -135,10 +137,13 @@ export function Pricing() {
               'We handle the OpenAI API keys and tokens',
               'Complete access to the problems library',
               'Candidate evaluation and feedback',
+              'Questions based on your job description',
+              'Questions based on candidates resume',
               'Generating follow up questions',
               'Answer candidates questions',
               'Online coding environment',
               'Live coding assessment',
+              'Only Google Meet',
             ]}
           />
           <Plan
@@ -150,12 +155,12 @@ export function Pricing() {
             href="/contact-us"
             features={[
               'Everything in the most convinient plan',
-              'Comparing candidates',
-              'Integration with your ATS',
+              'Check candidate against all job listings',
+              'Integration with your ATSs',
               'Your interview platform(Zoom, Teams, etc.)',
               'Total flexibility on the model',
-              'Your brand on the IDE',
-              'SSO',
+              'White label IDE during the interview',
+              'SSO with your organization',
             ]}
           />
         </div>

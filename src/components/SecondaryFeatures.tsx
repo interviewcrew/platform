@@ -20,13 +20,42 @@ interface Feature {
 
 const features: Array<Feature> = [
   {
-    name: "Comparing candidates",
-    summary: "Easily compare candidates with a press of a button.",
+    name: "Broaden your hiring funnel",
+    summary: "Evaluate the candidate against all job listings with one interview",
     description:
-      "Using Interviewcrew, you can compare the performance of different candidates in the interview and make the best choice for your company.",
+      "Using InterviewCrew, you can interview the candidate once, and then evaluate the candidate against all the job listings in your organization.",
     image: screenshotProfitLoss,
     icon: function ReportingIcon() {
+      return (
+        <>
+          <path
+            opacity=".5"
+            d="M8 17a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2Z"
+            fill="#fff"
+          />
+          <path
+            opacity=".3"
+            d="M8 24a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2Z"
+            fill="#fff"
+          />
+          <path
+            d="M8 10a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2Z"
+            fill="#fff"
+          />
+        </>
+      );
+    },
+  },
+  {
+    name: "White label IDE during the interview",
+    summary:
+      "Do the interview in our platform, with your own branding",
+    description:
+      "Using InterviewCrew, you can do the interview in our platform, with your own branded IDE. The candidate would feel like they are doing the interview in your platform.",
+    image: screenshotInventory,
+    icon: function InventoryIcon() {
       let id = useId();
+
       return (
         <>
           <defs>
@@ -54,38 +83,10 @@ const features: Array<Feature> = [
     },
   },
   {
-    name: "Position recommendation and job ad creator",
-    summary:
-      "Know what positions to hire and create the perfect job ads in minutes",
-    description:
-      "Using interviewcrew, you could easily figure out what roles you need to hire for your business based on the nature of your business and create the perfect job ad in minutes.",
-    image: screenshotInventory,
-    icon: function InventoryIcon() {
-      return (
-        <>
-          <path
-            opacity=".5"
-            d="M8 17a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2Z"
-            fill="#fff"
-          />
-          <path
-            opacity=".3"
-            d="M8 24a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2Z"
-            fill="#fff"
-          />
-          <path
-            d="M8 10a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2Z"
-            fill="#fff"
-          />
-        </>
-      );
-    },
-  },
-  {
     name: "ATS integrations and SSO support",
     summary: "Sync the interview results back to your favorite ATS",
     description:
-      "Using interviewcrew, updating the status of a candidate in the ATS after an interview would be as easy as pressing a button",
+      "Using InterviewCrew, updating the status of a candidate in the ATS after an interview would be as easy as pressing a button",
     image: screenshotContacts,
     icon: function ContactsIcon() {
       return (
@@ -211,7 +212,7 @@ export function SecondaryFeatures() {
             in our enterprise plan
           </h2>
           <p className="mt-4 text-lg tracking-tight text-slate-700">
-            Interviewcrew would be equiped with all the enterprise features that
+            InterviewCrew would be equiped with all the enterprise features that
             your organization needs to make the best hiring decisions.
           </p>
         </div>

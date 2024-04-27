@@ -16,13 +16,13 @@ const features = [
   {
     title: "Custom question generation",
     description:
-      "InterviewCrew's AI crafts technical questions directly from your job ad, ensuring you ask the right questions to identify the best candidates",
+      "InterviewCrew's AI interview assistant, crafts technical questions directly from your job ad, ensuring you ask the right questions to identify the best candidates.",
     image: questionGeneration,
   },
   {
-    title: "AI-Powered interview assistant",
+    title: "AI interview assistant",
     description:
-      "During the interview, InterviewCrew serves as your AI assistant, providing the optimal follow-up questions to ask candidates.",
+      "During the interview, InterviewCrew serves as your AI interview assistant, providing the optimal follow-up questions to ask candidates.",
     image: followupQuestions,
   },
   {
@@ -34,7 +34,7 @@ const features = [
   {
     title: "Interview assessment",
     description:
-      "InterviewCrew's AI analyzes candidate performance post-interview and delivers a detailed report. This enables you to make informed decisions with precision and ease.",
+      "InterviewCrew's AI interview assistant, analyzes candidate performance post-interview and delivers a detailed report. This enables you to make informed decisions with precision and ease.",
     image: assessment,
   },
 ];
@@ -76,7 +76,7 @@ export function PrimaryFeatures() {
       <Container className="relative">
         <div className="max-w-2xl md:mx-auto md:text-center xl:max-w-none">
           <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl md:text-5xl">
-            Our AI Co-Pilot Supports You, Every Step of the Way
+            Our <span className="font-bold">AI interview assistant</span> supports you, every step of the way
           </h2>
           <p className="mt-6 text-lg tracking-tight text-blue-100">
             Equipped with everything you need for a successful technical

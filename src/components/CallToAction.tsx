@@ -24,7 +24,7 @@ export function CallToAction() {
             Get started today, risk free
           </h2>
           <p className="mt-4 text-lg tracking-tight text-white">
-            With a simple pay as you go pricing, start using Interviewcrew today.<br /> 
+            With a simple pay as you go pricing, start using InterviewCrew today.<br /> 
             And if you didn&apos;t like it, get your money back, no questions asked
           </p>
           <Button href="/register" color="white" className="mt-10">
