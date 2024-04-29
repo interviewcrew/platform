@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   createCandidate,
   createInterview,
+  deleteInterviewFromCandidate,
   editCandidate,
   editInterview,
 } from "@/app/job-listing-actions";
@@ -14,6 +15,7 @@ import { EditIcon, ChevronRightIcon, ExternalLinkIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { EnvelopeIcon, UsersIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
+import { EditableInterviews } from "./EditableInterviews";
 
 export default function ManageCandidates({
   jobListing,
@@ -63,14 +65,6 @@ export default function ManageCandidates({
   );
   const [isCandidateEditOpen, setIsCandidateEditOpen] = useState(false);
 
-  const [newInterview, setNewInterview] = useState<NewInterview>({
-    candidateId: candidate.id,
-    organizationId,
-    jobListingId: jobListing.id,
-    title: "",
-    hash: "",
-  } as NewInterview);
-
   const cancel = async () => {
     setCandidates(allCandidates);
     setCandidate({ organizationId } as CandidateWithInterviews);
@@ -104,10 +98,6 @@ export default function ManageCandidates({
         ...candidate,
         ...result,
       });
-      setNewInterview({
-        ...newInterview,
-        candidateId: result.id,
-      });
 
       setIsCandidateEditOpen(false);
     } catch (error) {
@@ -126,14 +116,6 @@ export default function ManageCandidates({
       setCandidate({
         ...candidate,
         interviews: [...candidate.interviews, result],
-      });
-
-      setNewInterview({
-        candidateId: candidate.id,
-        organizationId,
-        jobListingId: jobListing.id,
-        title: "",
-        hash: "",
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -203,13 +185,6 @@ export default function ManageCandidates({
                     )}
                     onClick={() => {
                       setCandidate(candidateItem);
-                      setNewInterview({
-                        organizationId,
-                        jobListingId: jobListing.id,
-                        title: "",
-                        hash: "",
-                        candidateId: candidateItem.id,
-                      } as NewInterview);
                       router.push(
                         getUpdatedSearchParams(searchParams, [
                           {
@@ -443,7 +418,31 @@ export default function ManageCandidates({
                     link to create an interview
                   </p>
                 </div>
-                <form className="mt-5 sm:flex sm:items-center">
+                <form
+                  className="mt-5 sm:flex sm:items-center"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+
+                    const form = e.target as HTMLFormElement;
+                    const hashInput = form.elements.namedItem(
+                      "hash"
+                    ) as HTMLInputElement;
+                    const hash =
+                      hashInput.value.split("/").pop()?.split("?")[0] ?? "";
+
+                    await createNewInterview({
+                      candidateId: candidate.id,
+                      organizationId,
+                      jobListingId: jobListing.id,
+                      title:
+                        (candidate.name ? candidate.name + " for " : "") +
+                        jobListing.title,
+                      hash: hash,
+                    });
+
+                    hashInput.value = "";
+                  }}
+                >
                   <div className="w-full sm:max-w-xs">
                     <label htmlFor="hash" className="sr-only">
                       Interview Link
@@ -454,29 +453,11 @@ export default function ManageCandidates({
                       id="hash"
                       className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                       placeholder="https://meet.google.com/xxx-xxxx-xxx"
-                      value={
-                        newInterview.hash
-                          ? `https://meet.google.com/${newInterview.hash}`
-                          : ""
-                      }
-                      onChange={(e) => {
-                        const hash =
-                          e.target.value.split("/").pop()?.split("?")[0] ?? "";
-
-                        setNewInterview({
-                          ...newInterview,
-                          hash,
-                        });
-                      }}
                     />
                   </div>
                   <button
                     type="submit"
                     className="mt-3 inline-flex w-full items-center justify-center rounded-md bg-sky-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 sm:ml-3 sm:mt-0 sm:w-auto"
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      await createNewInterview(newInterview);
-                    }}
                   >
                     Create interview
                   </button>
@@ -494,30 +475,27 @@ export default function ManageCandidates({
               </legend>
             )}
             <div className="">
-              {candidate?.interviews?.length > 0 &&
-                candidate?.interviews.map((interview) => (
-                  <Link
-                    href={`/dashboard/interviews/${interview.hash}`}
-                    key={interview.id}
-                    className={cn(
-                      "relative flex items-start p-4 [&:not(:last-child)]:border-b-2 hover:bg-gray-100"
-                    )}
-                  >
-                    <div className="min-w-0 flex-1 text-sm leading-6">
-                      <label
-                        htmlFor={`interview-${interview.id}`}
-                        className="select-none font-medium text-gray-900"
-                      >
-                        {interview.title?.length > 0
-                          ? interview.title
-                          : `Untitled Interview with hash ${interview.hash}`}
-                      </label>
-                    </div>
-                    <div className="ml-3 flex h-6 items-center ">
-                      <ExternalLinkIcon className="h-5 w-5 text-gray-400 font-bold" />
-                    </div>
-                  </Link>
-                ))}
+              {candidate?.interviews?.length > 0 && (
+                <EditableInterviews
+                  interviews={candidate.interviews}
+                  deleteInterviewCallback={async (interview: Interview) => {
+                    await deleteInterviewFromCandidate(interview);
+                    setCandidate({
+                      ...candidate,
+                      interviews: candidate.interviews.filter(
+                        (inter) => inter.id !== interview.id
+                      ),
+                    });
+                    console.log("deleteInterviewCallback", interview.title);
+                    console.log("deleteInterviewCallback", interview.id);
+                  }}
+                  updateInterviewCallback={(interview: Interview) => {
+                    console.log("updateInterviewCallback", interview.title);
+                    console.log("updateInterviewCallback", interview.id);
+                  }}
+                  clickedOnInterviewCallback={(interview: Interview) => {}}
+                />
+              )}
             </div>
           </div>
         </div>

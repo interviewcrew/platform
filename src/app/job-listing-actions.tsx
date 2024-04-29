@@ -8,6 +8,7 @@ import {
 import {
   insertInterview,
   updateInterview,
+  deleteInterview,
 } from "@/db/repositories/interviewRepository";
 import {
   JobListingListItem,
@@ -35,6 +36,7 @@ import {
 } from "@/db/schema";
 import { generateJobListingQuestions } from "@/lib/openai/client";
 import { createInsertSchema } from "drizzle-zod";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export async function createJobListing(
@@ -166,7 +168,15 @@ export async function createInterview(interview: NewInterview) {
   });
 
   const validatedFields = requestSchema.parse(interview);
-  return insertInterview(validatedFields);
+  const returnValue = await insertInterview(validatedFields);
+  revalidatePath("/dashboard");
+  return returnValue;
+}
+
+export async function deleteInterviewFromCandidate(interview: Interview) {
+  await deleteInterview(interview);
+  revalidatePath("/dashboard");
+  return true;
 }
 
 export async function editInterview(interview: Interview) {

@@ -24,12 +24,12 @@ export default function JobListingManager(props: CreatorComponentProps) {
     typeof props.searchParams.candidateId == "string"
       ? parseInt(props.searchParams.candidateId)
       : undefined
-  )
+  );
   const [interviewId, setInterviewId] = useState<number | undefined>(
     typeof props.searchParams.interviewId == "string"
       ? parseInt(props.searchParams.interviewId)
       : undefined
-  )
+  );
   const [steps, setSteps] = useState<Step[]>([
     {
       id: "Step 1",
