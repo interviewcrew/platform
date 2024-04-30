@@ -21,19 +21,19 @@ export function EditableInterviews({
     null
   );
 
-  const saveEditing = (interview: Interview) => {
+  const applyEditingChanges = () => {
     setInterviews(
       interviews.map((it) => {
-        if (it.id === interview.id) {
-          return interview;
+        if (it.id === editingInterview?.id) {
+          return editingInterview;
         }
 
         return it;
       })
     );
 
+    updateInterviewCallback(editingInterview!);
     setEditingInterview(null);
-    updateInterviewCallback(interview);
   };
 
   const isBeingEdited = (interview: Interview) => {
@@ -82,27 +82,28 @@ export function EditableInterviews({
                 />
               )}
             </div>
+
             <div className="ml-3 flex h-6 items-center">
               {isBeingEdited(inter) ? (
                 <>
+                  {/* Cancel editing interview */}
                   <button onClick={() => setEditingInterview(null)}>
                     <XMarkIcon className="h-5 w-5 text-sky-600 font-bold" />
                   </button>
-                  <button
-                    onClick={() => {
-                      if (editingInterview) {
-                        saveEditing(editingInterview);
-                      }
-                    }}
-                  >
+
+                  {/* Apply the changes to the title */}
+                  <button onClick={() => applyEditingChanges()}>
                     <CheckIcon className="h-5 w-5 text-sky-600 font-bold" />
                   </button>
                 </>
               ) : (
                 <>
+                  {/* Start editing the interview */}
                   <button onClick={() => setEditingInterview(inter)}>
                     <EditIcon className="h-5 w-5 text-sky-600 font-bold" />
                   </button>
+
+                  {/* Delete this interview */}
                   <button onClick={() => deleteInterviewCallback(inter)}>
                     <Trash2Icon className="h-5 w-5 text-sky-600 font-bold" />
                   </button>

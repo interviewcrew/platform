@@ -3,9 +3,9 @@ import { useState } from "react";
 import {
   createCandidate,
   createInterview,
-  deleteInterviewFromCandidate,
+  deleteInterview,
   editCandidate,
-  editInterview,
+  updateInterview,
 } from "@/app/job-listing-actions";
 import { z } from "zod";
 import { cn, getUpdatedSearchParams } from "@/lib/utils";
@@ -132,7 +132,7 @@ export default function ManageCandidates({
       let result: Interview;
 
       if (interview.id !== undefined) {
-        result = (await editInterview(interview as Interview))[0];
+        result = (await updateInterview(interview as Interview))[0];
       } else {
         result = (await createInterview(interview))[0];
         setCandidate({
@@ -479,7 +479,7 @@ export default function ManageCandidates({
                 <EditableInterviews
                   interviews={candidate.interviews}
                   deleteInterviewCallback={async (interview: Interview) => {
-                    await deleteInterviewFromCandidate(interview);
+                    await deleteInterview(interview);
                     setCandidate({
                       ...candidate,
                       interviews: candidate.interviews.filter(
@@ -489,9 +489,11 @@ export default function ManageCandidates({
                     console.log("deleteInterviewCallback", interview.title);
                     console.log("deleteInterviewCallback", interview.id);
                   }}
-                  updateInterviewCallback={(interview: Interview) => {
+                  updateInterviewCallback={async (interview: Interview) => {
                     console.log("updateInterviewCallback", interview.title);
                     console.log("updateInterviewCallback", interview.id);
+
+                    await updateInterview(interview);
                   }}
                   clickedOnInterviewCallback={(interview: Interview) => {}}
                 />

@@ -4,7 +4,7 @@ import { NewInterview, interviewsTable } from "@/db/schema";
 import { createInsertSchema } from "drizzle-zod";
 import {
   getInterviewByHashId,
-  insertInterview,
+  insertInterviewRepo,
 } from "@/db/repositories/interviewRepository";
 import { withErrorHandler } from "@/lib/api-helpers/error-handler";
 import {
@@ -62,8 +62,14 @@ async function getOrInsertInterview(
     return NextResponse.json(interview, { status: 200 });
   }
 
-  const jobListing = await getJobListingById(organizationId, interviewDto.jobListingId);
-  const candidate = await getCandidateById(organizationId, interviewDto.candidateId);
+  const jobListing = await getJobListingById(
+    organizationId,
+    interviewDto.jobListingId
+  );
+  const candidate = await getCandidateById(
+    organizationId,
+    interviewDto.candidateId
+  );
 
   if (!jobListing) {
     return NextResponse.json(
@@ -75,7 +81,7 @@ async function getOrInsertInterview(
   if (!candidate) {
     return NextResponse.json({ error: "Candidate not found" }, { status: 404 });
   }
-  const interviews = await insertInterview({
+  const interviews = await insertInterviewRepo({
     ...interviewDto,
     organizationId,
     jobListingId: jobListing.id,

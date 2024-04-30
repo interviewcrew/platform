@@ -6,9 +6,9 @@ import {
   updateCandidate,
 } from "@/db/repositories/candidateRepository";
 import {
-  insertInterview,
-  updateInterview,
-  deleteInterview,
+  insertInterviewRepo,
+  updateInterviewRepo,
+  deleteInterviewRepo,
 } from "@/db/repositories/interviewRepository";
 import {
   JobListingListItem,
@@ -168,18 +168,18 @@ export async function createInterview(interview: NewInterview) {
   });
 
   const validatedFields = requestSchema.parse(interview);
-  const returnValue = await insertInterview(validatedFields);
+  const returnValue = await insertInterviewRepo(validatedFields);
   revalidatePath("/dashboard");
   return returnValue;
 }
 
-export async function deleteInterviewFromCandidate(interview: Interview) {
-  await deleteInterview(interview);
+export async function deleteInterview(interview: Interview) {
+  await deleteInterviewRepo(interview);
   revalidatePath("/dashboard");
   return true;
 }
 
-export async function editInterview(interview: Interview) {
+export async function updateInterview(interview: Interview) {
   if (interview.id === undefined) {
     throw new Error("Interview ID is required");
   }
@@ -200,7 +200,9 @@ export async function editInterview(interview: Interview) {
 
   interview.updatedAt = new Date();
 
-  return updateInterview(interview);
+  const updatedValue = await updateInterviewRepo(interview);
+  revalidatePath("/dashboard");
+  return updatedValue;
 }
 
 export async function getCandidatesList(

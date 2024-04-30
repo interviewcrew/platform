@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { QueryResult, sql } from "@vercel/postgres";
 import { Interview, NewInterview, interviewsTable } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { JobListingListItem } from "./jobListingRepository";
 
@@ -60,7 +60,7 @@ export async function getInterviewByHashIdWithFields(
   });
 }
 
-export async function deleteInterview(
+export async function deleteInterviewRepo(
   interview: Interview
 ): Promise<QueryResult<never>> {
   const db = drizzle(sql, { schema });
@@ -68,7 +68,7 @@ export async function deleteInterview(
   return db.delete(interviewsTable).where(eq(interviewsTable.id, interview.id));
 }
 
-export async function insertInterview(interview: NewInterview) {
+export async function insertInterviewRepo(interview: NewInterview) {
   const db = drizzle(sql, { schema });
 
   return db
@@ -89,25 +89,31 @@ export async function insertInterview(interview: NewInterview) {
     });
 }
 
-export async function updateInterview(interview: Interview) {
+export async function updateInterviewRepo(interview: Interview) {
   const db = drizzle(sql, { schema });
 
-  return db
-    .update(interviewsTable)
-    .set(interview)
-    .where(eq(interviewsTable.id, interview.id))
-    .returning({
-      id: interviewsTable.id,
-      title: interviewsTable.title,
-      hash: interviewsTable.hash,
-      organizationId: interviewsTable.organizationId,
-      problemId: interviewsTable.problemId,
-      jobListingId: interviewsTable.jobListingId,
-      candidateId: interviewsTable.candidateId,
-      languageId: interviewsTable.languageId,
-      createdAt: interviewsTable.createdAt,
-      updatedAt: interviewsTable.updatedAt,
-    });
+  return (
+    db
+      .update(interviewsTable)
+      // TODO: why seting the whole interview breaks the code??
+      // .set(interview)
+      .set({
+        title: interview.title,
+      })
+      .where(eq(interviewsTable.id, interview.id))
+      .returning({
+        id: interviewsTable.id,
+        title: interviewsTable.title,
+        hash: interviewsTable.hash,
+        organizationId: interviewsTable.organizationId,
+        problemId: interviewsTable.problemId,
+        jobListingId: interviewsTable.jobListingId,
+        candidateId: interviewsTable.candidateId,
+        languageId: interviewsTable.languageId,
+        createdAt: interviewsTable.createdAt,
+        updatedAt: interviewsTable.updatedAt,
+      })
+  );
 }
 
 export async function getAllInterviews(organiaztionId: number) {
@@ -115,6 +121,7 @@ export async function getAllInterviews(organiaztionId: number) {
 
   return db.query.interviewsTable.findMany({
     where: eq(interviewsTable.organizationId, organiaztionId),
+    orderBy: [asc(interviewsTable.createdAt)],
     with: {
       organization: true,
       problem: true,
