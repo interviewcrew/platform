@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { EnvelopeIcon, UsersIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { EditableInterviews } from "./EditableInterviews";
+import { ConfirmationModal } from "./ConfirmationModal";
 
 export default function ManageCandidates({
   jobListing,
@@ -28,6 +29,7 @@ export default function ManageCandidates({
   searchParams,
   doneCallback,
   cancelCallback,
+  setAllCandidates,
 }: {
   jobListing: JobListingListItem;
   candidateId: number | undefined;
@@ -39,7 +41,13 @@ export default function ManageCandidates({
   searchParams: { [key: string]: string | string[] | undefined };
   doneCallback: (jobListing: JobListingListItem, step: number) => void;
   cancelCallback: () => void;
+  setAllCandidates: (allCandidates: CandidateWithInterviews[]) => void;
 }) {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [deletingInterview, setDeletingInterview] = useState<Interview | null>(
+    null
+  );
+
   type CandidateCreationErrors = {
     email?: string[] | undefined;
     name?: string[] | undefined;
@@ -58,13 +66,11 @@ export default function ManageCandidates({
     {}
   );
   const [isSavingCandidate, setIsSavingCandidate] = useState(false);
-  const [candidates, setCandidates] =
-    useState<CandidateWithInterviews[]>(allCandidates);
   const [isSavingInterview, setIsSavingInterview] = useState(false);
   const router = useRouter();
 
   const [candidate, setCandidate] = useState<CandidateWithInterviews>(
-    candidates.find((candidate) => candidate.id === candidateId) ??
+    allCandidates.find((candidate) => candidate.id === candidateId) ??
       ({ organizationId } as CandidateWithInterviews)
   );
   const [interview, setInterview] = useState<Interview>(
@@ -74,7 +80,7 @@ export default function ManageCandidates({
   const [isCandidateEditOpen, setIsCandidateEditOpen] = useState(false);
 
   const cancel = async () => {
-    setCandidates(allCandidates);
+    setAllCandidates(allCandidates);
     setCandidate({ organizationId } as CandidateWithInterviews);
     router.push(
       getUpdatedSearchParams(searchParams, [
@@ -91,15 +97,15 @@ export default function ManageCandidates({
 
       if (candidate.id !== undefined) {
         result = (await editCandidate(candidate))[0];
-        setCandidates(
-          candidates.map((c) =>
+        setAllCandidates(
+          allCandidates.map((c) =>
             c.id === result.id ? { ...candidate, ...result } : c
           )
         );
       } else {
         result = (await createCandidate(candidate))[0];
         candidate.interviews = [];
-        setCandidates([...candidates, { ...candidate, ...result }]);
+        setAllCandidates([...allCandidates, { ...candidate, ...result }]);
       }
 
       setCandidate({
@@ -147,6 +153,20 @@ export default function ManageCandidates({
     return true;
   }
 
+  async function handleConfirmDeleteInterview(): Promise<void> {
+    await deleteInterview(deletingInterview!);
+
+    setCandidate({
+      ...candidate,
+      interviews: candidate.interviews.filter(
+        (inter) => inter.id !== deletingInterview!.id
+      ),
+    });
+
+    setModalOpen(false);
+    setDeletingInterview(null);
+  }
+
   const handleSaveInterview = async (interview: Interview) => {
     setIsSavingInterview(true);
     try {
@@ -187,17 +207,17 @@ export default function ManageCandidates({
       </div>
       <div className="mt-4 grid lg:grid-cols-2 sm:grid-cols">
         <div className="pt-2 h-full border-r border-solid">
-          {candidates.length > 0 && (
+          {allCandidates.length > 0 && (
             <legend className="text-base font-semibold leading-6 text-gray-900">
               Candidates
               <span className="text-sm text-gray-500">
-                {" (" + candidates.length + ")"}
+                {" (" + allCandidates.length + ")"}
               </span>
             </legend>
           )}
           <div className="p-2">
-            {candidates.length > 0 ? (
-              candidates.map((candidateItem) =>
+            {allCandidates.length > 0 ? (
+              allCandidates.map((candidateItem) =>
                 candidateItem.id != candidate.id ? (
                   <button
                     key={candidateItem.id}
@@ -513,15 +533,8 @@ export default function ManageCandidates({
                 <EditableInterviews
                   interviews={candidate.interviews}
                   deleteInterviewCallback={async (interview: Interview) => {
-                    await deleteInterview(interview);
-                    setCandidate({
-                      ...candidate,
-                      interviews: candidate.interviews.filter(
-                        (inter) => inter.id !== interview.id
-                      ),
-                    });
-                    console.log("deleteInterviewCallback", interview.title);
-                    console.log("deleteInterviewCallback", interview.id);
+                    setDeletingInterview(interview);
+                    setModalOpen(true);
                   }}
                   updateInterviewCallback={async (interview: Interview) => {
                     console.log("updateInterviewCallback", interview.title);
@@ -536,6 +549,14 @@ export default function ManageCandidates({
           </div>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleConfirmDeleteInterview}
+      >
+        Are you sure you want to delete this item?
+      </ConfirmationModal>
     </>
   );
 }
