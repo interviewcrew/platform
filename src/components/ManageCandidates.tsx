@@ -46,6 +46,14 @@ export default function ManageCandidates({
     about?: string[] | undefined;
   };
 
+  type CandidateFormErrors = {
+    name: string | null;
+  };
+
+  const [formErrors, setFormErrors] = useState<CandidateFormErrors>({
+    name: null,
+  });
+
   const [creationErrors, setCreationErrors] = useState<CandidateCreationErrors>(
     {}
   );
@@ -125,6 +133,19 @@ export default function ManageCandidates({
       setIsSavingCandidate(false);
     }
   };
+
+  function validCandidateForCreation(): boolean {
+    if (!candidate.name || !candidate.name.trim()) {
+      setFormErrors({
+        ...formErrors,
+        name: "Full name is required.",
+      });
+
+      return false;
+    }
+
+    return true;
+  }
 
   const handleSaveInterview = async (interview: Interview) => {
     setIsSavingInterview(true);
@@ -276,7 +297,6 @@ export default function ManageCandidates({
                         className="block text-sm font-medium leading-6 text-gray-900"
                       >
                         Full name{" "}
-                        <span className="text-gray-400">(optional)</span>
                       </label>
                       <div className="mt-2">
                         <div className="relative mt-2 rounded-md shadow-sm">
@@ -293,14 +313,23 @@ export default function ManageCandidates({
                             className="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                             placeholder="John Doe"
                             value={candidate.name ?? ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                setFormErrors({ ...formErrors, name: null });
+                              }
+
                               setCandidate({
                                 ...candidate,
                                 name: e.target.value,
-                              })
-                            }
+                              });
+                            }}
                           />
                         </div>
+                        {formErrors && formErrors.name && (
+                          <div className="text-red-500 text-sm mt-1">
+                            {formErrors.name}
+                          </div>
+                        )}
                         {creationErrors && creationErrors.name && (
                           <div className="text-red-500 text-sm mt-1">
                             {creationErrors.name.join(", ")}
@@ -395,6 +424,11 @@ export default function ManageCandidates({
                     )}
                     onClick={async (e) => {
                       e.preventDefault();
+
+                      if (!validCandidateForCreation()) {
+                        return;
+                      }
+
                       await handleSaveCandidate(candidate);
                     }}
                     disabled={isSavingCandidate}
