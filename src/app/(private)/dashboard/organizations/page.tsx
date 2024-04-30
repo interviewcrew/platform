@@ -6,7 +6,6 @@ import { type Metadata } from "next";
 import {
   CreateOrganization,
   OrganizationList,
-  OrganizationSwitcher,
   auth,
   clerkClient,
   currentUser,
@@ -22,6 +21,7 @@ import {
   getUserByExternalId,
   updateUser,
 } from "@/db/repositories/userRepository";
+import { Waitlist } from "@/components/Waitlist";
 
 export const metadata: Metadata = {
   title: "Create organization",
@@ -40,6 +40,14 @@ export default async function OrganizationPage({
 
   if (!loadedUser) {
     return redirect("/login");
+  }
+
+  let loggedInUser = await getUserByExternalId(loadedUser.id);
+
+  if (!loggedInUser) {
+    loggedInUser = await createUser({
+      externalId: loadedUser.id,
+    });
   }
 
   if (organizationExternalId) {
@@ -65,15 +73,6 @@ export default async function OrganizationPage({
       });
     }
 
-    let loggedInUser = await getUserByExternalId(loadedUser.id);
-
-    if (!loggedInUser) {
-      loggedInUser = await createUser({
-        externalId: loadedUser.id,
-        organizationId: organization.id,
-      });
-    }
-
     if (loggedInUser.organizationId != organization.id) {
       await updateUser({
         ...loggedInUser,
@@ -86,19 +85,19 @@ export default async function OrganizationPage({
 
   return (
     <SlimLayout>
-      <div className="flex">
+      <div className="flex justify-center">
         <Link href="/" aria-label="Home">
           <Logo className="h-14 w-auto" />
         </Link>
       </div>
-      {loadedUser && !organizationExternalId ? (
-        <CreateOrganization
-          afterCreateOrganizationUrl={`/dashboard/${organizationExternalId}`}
-        />
-      ) : (
-        <div>
-          {shouldChangeOrganization === "true" && <OrganizationList />}
-        </div>
+      {loadedUser &&
+        organizationExternalId &&
+        shouldChangeOrganization === "true" && <OrganizationList />}
+      {loadedUser && loggedInUser.activatedAt && !organizationExternalId && (
+        <CreateOrganization afterCreateOrganizationUrl={`/dashboard`} />
+      )}
+      {loadedUser && !loggedInUser.activatedAt && (
+        <Waitlist user={loggedInUser} />
       )}
     </SlimLayout>
   );

@@ -37,10 +37,14 @@ export const usersTable = pgTable("users", {
   id: serial("id").primaryKey(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  activatedAt: timestamp("activated_at", { mode: "date" }),
+  linkedinLink: varchar("linkedin_link"),
+  registrationReason: varchar("registration_reason"),
   externalId: varchar("external_id", { length: 256 }).unique(),
-  organizationId: integer("organization_id")
-    .references(() => organizationsTable.id, { onDelete: "cascade" })
-    .notNull(),
+  organizationId: integer("organization_id").references(
+    () => organizationsTable.id,
+    { onDelete: "cascade" }
+  ),
 });
 
 export const usersTableRelations = relations(usersTable, ({ one, many }) => ({

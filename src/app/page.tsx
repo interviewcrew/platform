@@ -9,11 +9,16 @@ import { SecondaryFeatures } from "@/components/SecondaryFeatures";
 import { Testimonials } from "@/components/Testimonials";
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
+import { getUserByExternalId } from "@/db/repositories/userRepository";
 
 export default async function Home() {
   const loadedUser = await currentUser();
+
   if (loadedUser) {
-    return redirect("/dashboard");
+    const loggedInUser = await getUserByExternalId(loadedUser.id);
+    if (loggedInUser && loggedInUser.organizationId) {
+      return redirect("/dashboard");
+    }
   }
 
   return (
