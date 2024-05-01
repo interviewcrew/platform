@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
-import { sql } from "@vercel/postgres";
+import { QueryResult, sql } from "@vercel/postgres";
 import { Interview, NewInterview, interviewsTable } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { JobListingListItem } from "./jobListingRepository";
 
@@ -42,7 +42,7 @@ export async function getInterviewByHashIdWithFields(
       jobListing: {
         with: {
           questions: true,
-        }
+        },
       },
       candidate: true,
       language: true,
@@ -60,7 +60,15 @@ export async function getInterviewByHashIdWithFields(
   });
 }
 
-export async function insertInterview(interview: NewInterview) {
+export async function deleteInterviewRepo(
+  interview: Interview
+): Promise<QueryResult<never>> {
+  const db = drizzle(sql, { schema });
+
+  return db.delete(interviewsTable).where(eq(interviewsTable.id, interview.id));
+}
+
+export async function insertInterviewRepo(interview: NewInterview) {
   const db = drizzle(sql, { schema });
 
   return db
@@ -81,12 +89,22 @@ export async function insertInterview(interview: NewInterview) {
     });
 }
 
-export async function updateInterview(interview: Interview) {
+function getUpdatableInterview(interview: Interview): Interview {
+  return Object.keys(interviewsTable).reduce((acc, key: string) => {
+    if (key in interview) {
+      acc[key] = interview[key as keyof Interview];
+    }
+
+    return acc;
+  }, {} as { [key: string]: any }) as Interview;
+}
+
+export async function updateInterviewRepo(interview: Interview) {
   const db = drizzle(sql, { schema });
 
   return db
     .update(interviewsTable)
-    .set(interview)
+    .set(getUpdatableInterview(interview))
     .where(eq(interviewsTable.id, interview.id))
     .returning({
       id: interviewsTable.id,
@@ -107,6 +125,7 @@ export async function getAllInterviews(organiaztionId: number) {
 
   return db.query.interviewsTable.findMany({
     where: eq(interviewsTable.organizationId, organiaztionId),
+    orderBy: [asc(interviewsTable.createdAt)],
     with: {
       organization: true,
       problem: true,
@@ -114,7 +133,7 @@ export async function getAllInterviews(organiaztionId: number) {
       jobListing: {
         with: {
           questions: true,
-        }
+        },
       },
       candidate: true,
       language: true,

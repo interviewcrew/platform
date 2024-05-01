@@ -11,6 +11,8 @@ import { getUpdatedSearchParams } from "@/lib/utils";
 import ManageCandidates from "@/components/ManageCandidates";
 
 export default function JobListingManager(props: CreatorComponentProps) {
+  const [allCandidates, setAllCandidates] = useState(props.allCandidates);
+
   const [jobListing, setJobListing] = useState<JobListingListItem>(
     props.jobListing ?? ({} as JobListingListItem)
   );
@@ -24,12 +26,12 @@ export default function JobListingManager(props: CreatorComponentProps) {
     typeof props.searchParams.candidateId == "string"
       ? parseInt(props.searchParams.candidateId)
       : undefined
-  )
+  );
   const [interviewId, setInterviewId] = useState<number | undefined>(
     typeof props.searchParams.interviewId == "string"
       ? parseInt(props.searchParams.interviewId)
       : undefined
-  )
+  );
   const [steps, setSteps] = useState<Step[]>([
     {
       id: "Step 1",
@@ -125,6 +127,7 @@ export default function JobListingManager(props: CreatorComponentProps) {
           searchParams={props.searchParams}
           userId={props.userId}
           allCandidates={props.allCandidates}
+          setAllCandidates={setAllCandidates}
           candidateId={candidateId}
           interviewId={interviewId}
         />

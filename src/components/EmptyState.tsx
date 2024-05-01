@@ -43,7 +43,8 @@ export default function EmptyState({
           userId={userId}
           organizationId={organizationId}
           searchParams={searchParams}
-          allCandidates={[]}        />
+          allCandidates={[]}
+        />
       ) : (
         <div className="text-center">
           {icon}

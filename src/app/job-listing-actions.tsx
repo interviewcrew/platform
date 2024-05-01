@@ -6,8 +6,11 @@ import {
   updateCandidate,
 } from "@/db/repositories/candidateRepository";
 import {
-  insertInterview,
-  updateInterview,
+  insertInterviewRepo,
+  updateInterviewRepo,
+  deleteInterviewRepo,
+  getInterviewByHashId,
+  getInterviewByHashIdWithFields,
 } from "@/db/repositories/interviewRepository";
 import {
   JobListingListItem,
@@ -35,6 +38,7 @@ import {
 } from "@/db/schema";
 import { generateJobListingQuestions } from "@/lib/openai/client";
 import { createInsertSchema } from "drizzle-zod";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export async function createJobListing(
@@ -166,10 +170,24 @@ export async function createInterview(interview: NewInterview) {
   });
 
   const validatedFields = requestSchema.parse(interview);
-  return insertInterview(validatedFields);
+  const insertedInterview = await insertInterviewRepo(validatedFields);
+  const returnValue = await getInterviewByHashIdWithFields(insertedInterview[0].hash, insertedInterview[0].organizationId);
+
+  if(!returnValue) {
+    throw new Error("Interview not found");
+  }
+
+  revalidatePath("/dashboard");
+  return returnValue;
 }
 
-export async function editInterview(interview: Interview) {
+export async function deleteInterview(interview: Interview) {
+  await deleteInterviewRepo(interview);
+  revalidatePath("/dashboard");
+  return true;
+}
+
+export async function updateInterview(interview: Interview) {
   if (interview.id === undefined) {
     throw new Error("Interview ID is required");
   }
@@ -190,7 +208,9 @@ export async function editInterview(interview: Interview) {
 
   interview.updatedAt = new Date();
 
-  return updateInterview(interview);
+  const updatedValue = await updateInterviewRepo(interview);
+  revalidatePath("/dashboard");
+  return updatedValue;
 }
 
 export async function getCandidatesList(

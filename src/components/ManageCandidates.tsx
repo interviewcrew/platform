@@ -3,17 +3,23 @@ import { useState } from "react";
 import {
   createCandidate,
   createInterview,
+  deleteInterview,
   editCandidate,
-  editInterview,
+  updateInterview,
 } from "@/app/job-listing-actions";
 import { z } from "zod";
 import { cn, getUpdatedSearchParams } from "@/lib/utils";
-import { CandidateWithInterviews } from "@/db/repositories/candidateRepository";
+import {
+  CandidateInterviewsType,
+  CandidateWithInterviews,
+} from "@/db/repositories/candidateRepository";
 import { Candidate, Interview, NewInterview } from "@/db/schema";
 import { EditIcon, ChevronRightIcon, ExternalLinkIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { EnvelopeIcon, UsersIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
+import { EditableInterviews } from "./EditableInterviews";
+import { ConfirmationModal } from "./ConfirmationModal";
 
 export default function ManageCandidates({
   jobListing,
@@ -26,6 +32,7 @@ export default function ManageCandidates({
   searchParams,
   doneCallback,
   cancelCallback,
+  setAllCandidates,
 }: {
   jobListing: JobListingListItem;
   candidateId: number | undefined;
@@ -37,24 +44,35 @@ export default function ManageCandidates({
   searchParams: { [key: string]: string | string[] | undefined };
   doneCallback: (jobListing: JobListingListItem, step: number) => void;
   cancelCallback: () => void;
+  setAllCandidates: (allCandidates: CandidateWithInterviews[]) => void;
 }) {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [deletingInterview, setDeletingInterview] =
+    useState<CandidateInterviewsType | null>(null);
+
   type CandidateCreationErrors = {
     email?: string[] | undefined;
     name?: string[] | undefined;
     about?: string[] | undefined;
   };
 
+  type CandidateFormErrors = {
+    name: string | null;
+  };
+
+  const [formErrors, setFormErrors] = useState<CandidateFormErrors>({
+    name: null,
+  });
+
   const [creationErrors, setCreationErrors] = useState<CandidateCreationErrors>(
     {}
   );
   const [isSavingCandidate, setIsSavingCandidate] = useState(false);
-  const [candidates, setCandidates] =
-    useState<CandidateWithInterviews[]>(allCandidates);
   const [isSavingInterview, setIsSavingInterview] = useState(false);
   const router = useRouter();
 
   const [candidate, setCandidate] = useState<CandidateWithInterviews>(
-    candidates.find((candidate) => candidate.id === candidateId) ??
+    allCandidates.find((candidate) => candidate.id === candidateId) ??
       ({ organizationId } as CandidateWithInterviews)
   );
   const [interview, setInterview] = useState<Interview>(
@@ -63,16 +81,8 @@ export default function ManageCandidates({
   );
   const [isCandidateEditOpen, setIsCandidateEditOpen] = useState(false);
 
-  const [newInterview, setNewInterview] = useState<NewInterview>({
-    candidateId: candidate.id,
-    organizationId,
-    jobListingId: jobListing.id,
-    title: "",
-    hash: "",
-  } as NewInterview);
-
   const cancel = async () => {
-    setCandidates(allCandidates);
+    setAllCandidates(allCandidates);
     setCandidate({ organizationId } as CandidateWithInterviews);
     router.push(
       getUpdatedSearchParams(searchParams, [
@@ -89,24 +99,20 @@ export default function ManageCandidates({
 
       if (candidate.id !== undefined) {
         result = (await editCandidate(candidate))[0];
-        setCandidates(
-          candidates.map((c) =>
+        setAllCandidates(
+          allCandidates.map((c) =>
             c.id === result.id ? { ...candidate, ...result } : c
           )
         );
       } else {
         result = (await createCandidate(candidate))[0];
         candidate.interviews = [];
-        setCandidates([...candidates, { ...candidate, ...result }]);
+        setAllCandidates([...allCandidates, { ...candidate, ...result }]);
       }
 
       setCandidate({
         ...candidate,
         ...result,
-      });
-      setNewInterview({
-        ...newInterview,
-        candidateId: result.id,
       });
 
       setIsCandidateEditOpen(false);
@@ -122,54 +128,46 @@ export default function ManageCandidates({
   const createNewInterview = async (newInterview: NewInterview) => {
     setIsSavingInterview(true);
     try {
-      const result = (await createInterview(newInterview))[0];
+      const result = await createInterview(newInterview);
       setCandidate({
         ...candidate,
         interviews: [...candidate.interviews, result],
       });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setCreationErrors(error.flatten().fieldErrors);
+      }
+    } finally {
+      setIsSavingCandidate(false);
+    }
+  };
 
-      setNewInterview({
-        candidateId: candidate.id,
-        organizationId,
-        jobListingId: jobListing.id,
-        title: "",
-        hash: "",
+  function validCandidateForCreation(): boolean {
+    if (!candidate.name || !candidate.name.trim()) {
+      setFormErrors({
+        ...formErrors,
+        name: "Full name is required.",
       });
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        setCreationErrors(error.flatten().fieldErrors);
-      }
-    } finally {
-      setIsSavingCandidate(false);
+
+      return false;
     }
-  };
 
-  const handleSaveInterview = async (interview: Interview) => {
-    setIsSavingInterview(true);
-    try {
-      let result: Interview;
+    return true;
+  }
 
-      if (interview.id !== undefined) {
-        result = (await editInterview(interview as Interview))[0];
-      } else {
-        result = (await createInterview(interview))[0];
-        setCandidate({
-          ...candidate,
-          interviews: [...candidate.interviews, result],
-        });
-      }
+  async function handleConfirmDeleteInterview(): Promise<void> {
+    await deleteInterview(deletingInterview!);
 
-      setInterview(result);
+    setCandidate({
+      ...candidate,
+      interviews: candidate.interviews.filter(
+        (inter) => inter.id !== deletingInterview!.id
+      ),
+    });
 
-      // doneCallback(result, step);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        setCreationErrors(error.flatten().fieldErrors);
-      }
-    } finally {
-      setIsSavingCandidate(false);
-    }
-  };
+    setModalOpen(false);
+    setDeletingInterview(null);
+  }
 
   return (
     <>
@@ -184,17 +182,17 @@ export default function ManageCandidates({
       </div>
       <div className="mt-4 grid lg:grid-cols-2 sm:grid-cols">
         <div className="pt-2 h-full border-r border-solid">
-          {candidates.length > 0 && (
+          {allCandidates.length > 0 && (
             <legend className="text-base font-semibold leading-6 text-gray-900">
               Candidates
               <span className="text-sm text-gray-500">
-                {" (" + candidates.length + ")"}
+                {" (" + allCandidates.length + ")"}
               </span>
             </legend>
           )}
           <div className="p-2">
-            {candidates.length > 0 ? (
-              candidates.map((candidateItem) =>
+            {allCandidates.length > 0 ? (
+              allCandidates.map((candidateItem) =>
                 candidateItem.id != candidate.id ? (
                   <button
                     key={candidateItem.id}
@@ -203,13 +201,6 @@ export default function ManageCandidates({
                     )}
                     onClick={() => {
                       setCandidate(candidateItem);
-                      setNewInterview({
-                        organizationId,
-                        jobListingId: jobListing.id,
-                        title: "",
-                        hash: "",
-                        candidateId: candidateItem.id,
-                      } as NewInterview);
                       router.push(
                         getUpdatedSearchParams(searchParams, [
                           {
@@ -301,7 +292,6 @@ export default function ManageCandidates({
                         className="block text-sm font-medium leading-6 text-gray-900"
                       >
                         Full name{" "}
-                        <span className="text-gray-400">(optional)</span>
                       </label>
                       <div className="mt-2">
                         <div className="relative mt-2 rounded-md shadow-sm">
@@ -318,14 +308,23 @@ export default function ManageCandidates({
                             className="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                             placeholder="John Doe"
                             value={candidate.name ?? ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                setFormErrors({ ...formErrors, name: null });
+                              }
+
                               setCandidate({
                                 ...candidate,
                                 name: e.target.value,
-                              })
-                            }
+                              });
+                            }}
                           />
                         </div>
+                        {formErrors && formErrors.name && (
+                          <div className="text-red-500 text-sm mt-1">
+                            {formErrors.name}
+                          </div>
+                        )}
                         {creationErrors && creationErrors.name && (
                           <div className="text-red-500 text-sm mt-1">
                             {creationErrors.name.join(", ")}
@@ -420,6 +419,11 @@ export default function ManageCandidates({
                     )}
                     onClick={async (e) => {
                       e.preventDefault();
+
+                      if (!validCandidateForCreation()) {
+                        return;
+                      }
+
                       await handleSaveCandidate(candidate);
                     }}
                     disabled={isSavingCandidate}
@@ -443,7 +447,31 @@ export default function ManageCandidates({
                     link to create an interview
                   </p>
                 </div>
-                <form className="mt-5 sm:flex sm:items-center">
+                <form
+                  className="mt-5 sm:flex sm:items-center"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+
+                    const form = e.target as HTMLFormElement;
+                    const hashInput = form.elements.namedItem(
+                      "hash"
+                    ) as HTMLInputElement;
+                    const hash =
+                      hashInput.value.split("/").pop()?.split("?")[0] ?? "";
+
+                    await createNewInterview({
+                      candidateId: candidate.id,
+                      organizationId,
+                      jobListingId: jobListing.id,
+                      title:
+                        (candidate.name ? candidate.name + " for " : "") +
+                        jobListing.title,
+                      hash: hash,
+                    });
+
+                    hashInput.value = "";
+                  }}
+                >
                   <div className="w-full sm:max-w-xs">
                     <label htmlFor="hash" className="sr-only">
                       Interview Link
@@ -454,29 +482,11 @@ export default function ManageCandidates({
                       id="hash"
                       className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                       placeholder="https://meet.google.com/xxx-xxxx-xxx"
-                      value={
-                        newInterview.hash
-                          ? `https://meet.google.com/${newInterview.hash}`
-                          : ""
-                      }
-                      onChange={(e) => {
-                        const hash =
-                          e.target.value.split("/").pop()?.split("?")[0] ?? "";
-
-                        setNewInterview({
-                          ...newInterview,
-                          hash,
-                        });
-                      }}
                     />
                   </div>
                   <button
                     type="submit"
                     className="mt-3 inline-flex w-full items-center justify-center rounded-md bg-sky-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 sm:ml-3 sm:mt-0 sm:w-auto"
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      await createNewInterview(newInterview);
-                    }}
                   >
                     Create interview
                   </button>
@@ -494,34 +504,43 @@ export default function ManageCandidates({
               </legend>
             )}
             <div className="">
-              {candidate?.interviews?.length > 0 &&
-                candidate?.interviews.map((interview) => (
-                  <Link
-                    href={`/dashboard/interviews/${interview.hash}`}
-                    key={interview.id}
-                    className={cn(
-                      "relative flex items-start p-4 [&:not(:last-child)]:border-b-2 hover:bg-gray-100"
-                    )}
-                  >
-                    <div className="min-w-0 flex-1 text-sm leading-6">
-                      <label
-                        htmlFor={`interview-${interview.id}`}
-                        className="select-none font-medium text-gray-900"
-                      >
-                        {interview.title?.length > 0
-                          ? interview.title
-                          : `Untitled Interview with hash ${interview.hash}`}
-                      </label>
-                    </div>
-                    <div className="ml-3 flex h-6 items-center ">
-                      <ExternalLinkIcon className="h-5 w-5 text-gray-400 font-bold" />
-                    </div>
-                  </Link>
-                ))}
+              {candidate?.interviews?.length > 0 && (
+                <EditableInterviews
+                  interviews={candidate.interviews}
+                  deleteInterviewCallback={async (interview: CandidateInterviewsType) => {
+                    setDeletingInterview(interview);
+                    setModalOpen(true);
+                  }}
+                  updateInterviewCallback={async (interview: Interview) => {
+                    console.log("updateInterviewCallback", interview.title);
+                    console.log("updateInterviewCallback", interview.id);
+
+                    await updateInterview(interview);
+                  }}
+                  clickedOnInterviewCallback={(interview: Interview) => {}}
+                />
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleConfirmDeleteInterview}
+        title="Delete Interview"
+      >
+        Are you sure you want to delete{" "}
+        <span className="font-bold">{deletingInterview?.title}</span>. It has{" "}
+        {deletingInterview?.evaluations?.length ? (
+          <span className="font-bold">evaluations associated with it</span>
+        ) : (
+          <>
+            <span className="font-bold">no evaluations</span> yet.
+          </>
+        )}
+      </ConfirmationModal>
     </>
   );
 }
