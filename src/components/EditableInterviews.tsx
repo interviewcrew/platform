@@ -50,8 +50,8 @@ export function EditableInterviews({
         {interviews.map((inter, index) => (
           <div
             key={index + 1}
-            className={cn("relative flex items-start p-4", {
-              "odd:bg-white border-2": isBeingEdited(inter),
+            className={cn("relative flex items-start p-4 hover:bg-gray-100 rounded-md", {
+              "odd:bg-white border-2 hover:bg-white": isBeingEdited(inter),
             })}
           >
             <div className="min-w-0 flex-1 text-sm leading-6 ">
@@ -61,7 +61,7 @@ export function EditableInterviews({
                     href={`/dashboard/interviews/${inter.hash}`}
                     key={inter.id}
                     className={cn(
-                      "relative flex items-start [&:not(:last-child)]:border-b-2 hover:bg-gray-100"
+                      "relative flex items-start [&:not(:last-child)]:border-b-2"
                     )}
                   >
                     <div>{inter.title}</div>
