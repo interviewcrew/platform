@@ -4,6 +4,7 @@ import { CheckIcon, EditIcon, Trash2Icon, Undo2Icon } from "lucide-react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Interview } from "@/db/schema";
 import Link from "next/link";
+import { CandidateInterviewsType } from "@/db/repositories/candidateRepository";
 
 export function EditableInterviews({
   interviews: savedInterviews,
@@ -11,13 +12,13 @@ export function EditableInterviews({
   updateInterviewCallback,
   clickedOnInterviewCallback,
 }: {
-  interviews: Interview[];
-  deleteInterviewCallback: (interview: Interview) => void;
-  updateInterviewCallback: (interview: Interview) => void;
-  clickedOnInterviewCallback: (interview: Interview) => void;
+  interviews: CandidateInterviewsType[];
+  deleteInterviewCallback: (interview: CandidateInterviewsType) => void;
+  updateInterviewCallback: (interview: CandidateInterviewsType) => void;
+  clickedOnInterviewCallback: (interview: CandidateInterviewsType) => void;
 }) {
-  const [interviews, setInterviews] = useState<Interview[]>(savedInterviews);
-  const [editingInterview, setEditingInterview] = useState<Interview | null>(
+  const [interviews, setInterviews] = useState<CandidateInterviewsType[]>(savedInterviews);
+  const [editingInterview, setEditingInterview] = useState<CandidateInterviewsType | null>(
     null
   );
 
@@ -36,7 +37,7 @@ export function EditableInterviews({
     setEditingInterview(null);
   };
 
-  const isBeingEdited = (interview: Interview) => {
+  const isBeingEdited = (interview: CandidateInterviewsType) => {
     return editingInterview && editingInterview.id === interview.id;
   };
 

@@ -128,7 +128,7 @@ export default function ManageCandidates({
   const createNewInterview = async (newInterview: NewInterview) => {
     setIsSavingInterview(true);
     try {
-      const result = (await createInterview(newInterview))[0];
+      const result = await createInterview(newInterview);
       setCandidate({
         ...candidate,
         interviews: [...candidate.interviews, result],
@@ -168,33 +168,6 @@ export default function ManageCandidates({
     setModalOpen(false);
     setDeletingInterview(null);
   }
-
-  const handleSaveInterview = async (interview: Interview) => {
-    setIsSavingInterview(true);
-    try {
-      let result: Interview;
-
-      if (interview.id !== undefined) {
-        result = (await updateInterview(interview as Interview))[0];
-      } else {
-        result = (await createInterview(interview))[0];
-        setCandidate({
-          ...candidate,
-          interviews: [...candidate.interviews, result],
-        });
-      }
-
-      setInterview(result);
-
-      // doneCallback(result, step);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        setCreationErrors(error.flatten().fieldErrors);
-      }
-    } finally {
-      setIsSavingCandidate(false);
-    }
-  };
 
   return (
     <>
@@ -534,7 +507,7 @@ export default function ManageCandidates({
               {candidate?.interviews?.length > 0 && (
                 <EditableInterviews
                   interviews={candidate.interviews}
-                  deleteInterviewCallback={async (interview: Interview) => {
+                  deleteInterviewCallback={async (interview: CandidateInterviewsType) => {
                     setDeletingInterview(interview);
                     setModalOpen(true);
                   }}

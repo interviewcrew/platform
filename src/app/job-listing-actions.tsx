@@ -9,6 +9,8 @@ import {
   insertInterviewRepo,
   updateInterviewRepo,
   deleteInterviewRepo,
+  getInterviewByHashId,
+  getInterviewByHashIdWithFields,
 } from "@/db/repositories/interviewRepository";
 import {
   JobListingListItem,
@@ -168,7 +170,13 @@ export async function createInterview(interview: NewInterview) {
   });
 
   const validatedFields = requestSchema.parse(interview);
-  const returnValue = await insertInterviewRepo(validatedFields);
+  const insertedInterview = await insertInterviewRepo(validatedFields);
+  const returnValue = await getInterviewByHashIdWithFields(insertedInterview[0].hash, insertedInterview[0].organizationId);
+
+  if(!returnValue) {
+    throw new Error("Interview not found");
+  }
+
   revalidatePath("/dashboard");
   return returnValue;
 }
