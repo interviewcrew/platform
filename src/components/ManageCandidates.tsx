@@ -9,7 +9,10 @@ import {
 } from "@/app/job-listing-actions";
 import { z } from "zod";
 import { cn, getUpdatedSearchParams } from "@/lib/utils";
-import { CandidateWithInterviews } from "@/db/repositories/candidateRepository";
+import {
+  CandidateInterviewsType,
+  CandidateWithInterviews,
+} from "@/db/repositories/candidateRepository";
 import { Candidate, Interview, NewInterview } from "@/db/schema";
 import { EditIcon, ChevronRightIcon, ExternalLinkIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -44,9 +47,8 @@ export default function ManageCandidates({
   setAllCandidates: (allCandidates: CandidateWithInterviews[]) => void;
 }) {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [deletingInterview, setDeletingInterview] = useState<Interview | null>(
-    null
-  );
+  const [deletingInterview, setDeletingInterview] =
+    useState<CandidateInterviewsType | null>(null);
 
   type CandidateCreationErrors = {
     email?: string[] | undefined;
@@ -554,8 +556,17 @@ export default function ManageCandidates({
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={handleConfirmDeleteInterview}
+        title="Delete Interview"
       >
-        Are you sure you want to delete this item?
+        Are you sure you want to delete{" "}
+        <span className="font-bold">{deletingInterview?.title}</span>. It has{" "}
+        {deletingInterview?.evaluations?.length ? (
+          <span className="font-bold">evaluations associated with it</span>
+        ) : (
+          <>
+            <span className="font-bold">no evaluations</span> yet.
+          </>
+        )}
       </ConfirmationModal>
     </>
   );

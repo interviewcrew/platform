@@ -9,7 +9,8 @@ import * as schema from "@/db/schema";
 import { sql } from "@vercel/postgres";
 import { and, eq, isNull, like, or } from "drizzle-orm";
 
-export type CandidateWithInterviews = Candidate & { interviews: Interview[] };
+export type CandidateWithInterviews = Awaited<ReturnType<typeof getCandidates>>[0];
+export type CandidateInterviewsType = CandidateWithInterviews["interviews"][0];
 
 export async function insertCandidate(candidate: NewCandidate) {
   const db = drizzle(sql, { schema });
