@@ -89,31 +89,35 @@ export async function insertInterviewRepo(interview: NewInterview) {
     });
 }
 
+function getUpdatableInterview(interview: Interview): Interview {
+  return Object.keys(interviewsTable).reduce((acc, key: string) => {
+    if (key in interview) {
+      acc[key] = interview[key as keyof Interview];
+    }
+
+    return acc;
+  }, {} as { [key: string]: any }) as Interview;
+}
+
 export async function updateInterviewRepo(interview: Interview) {
   const db = drizzle(sql, { schema });
 
-  return (
-    db
-      .update(interviewsTable)
-      // TODO: why seting the whole interview breaks the code??
-      // .set(interview)
-      .set({
-        title: interview.title,
-      })
-      .where(eq(interviewsTable.id, interview.id))
-      .returning({
-        id: interviewsTable.id,
-        title: interviewsTable.title,
-        hash: interviewsTable.hash,
-        organizationId: interviewsTable.organizationId,
-        problemId: interviewsTable.problemId,
-        jobListingId: interviewsTable.jobListingId,
-        candidateId: interviewsTable.candidateId,
-        languageId: interviewsTable.languageId,
-        createdAt: interviewsTable.createdAt,
-        updatedAt: interviewsTable.updatedAt,
-      })
-  );
+  return db
+    .update(interviewsTable)
+    .set(getUpdatableInterview(interview))
+    .where(eq(interviewsTable.id, interview.id))
+    .returning({
+      id: interviewsTable.id,
+      title: interviewsTable.title,
+      hash: interviewsTable.hash,
+      organizationId: interviewsTable.organizationId,
+      problemId: interviewsTable.problemId,
+      jobListingId: interviewsTable.jobListingId,
+      candidateId: interviewsTable.candidateId,
+      languageId: interviewsTable.languageId,
+      createdAt: interviewsTable.createdAt,
+      updatedAt: interviewsTable.updatedAt,
+    });
 }
 
 export async function getAllInterviews(organiaztionId: number) {
