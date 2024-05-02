@@ -126,7 +126,7 @@ export default function JobListingManager(props: CreatorComponentProps) {
           step={step}
           searchParams={props.searchParams}
           userId={props.userId}
-          allCandidates={props.allCandidates}
+          allCandidates={allCandidates}
           setAllCandidates={setAllCandidates}
           candidateId={candidateId}
           interviewId={interviewId}

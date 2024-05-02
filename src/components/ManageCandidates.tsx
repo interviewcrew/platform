@@ -507,7 +507,9 @@ export default function ManageCandidates({
               {candidate?.interviews?.length > 0 && (
                 <EditableInterviews
                   interviews={candidate.interviews}
-                  deleteInterviewCallback={async (interview: CandidateInterviewsType) => {
+                  deleteInterviewCallback={async (
+                    interview: CandidateInterviewsType
+                  ) => {
                     setDeletingInterview(interview);
                     setModalOpen(true);
                   }}
