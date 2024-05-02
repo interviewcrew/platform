@@ -92,6 +92,10 @@ export default async function OrganizationPage({
     }
   }
 
+  const organizations = await clerkClient.users.getOrganizationMembershipList({
+    userId: loadedUser.id,
+  });
+
   return (
     <SlimLayout>
       <div className="flex justify-center">
@@ -106,7 +110,11 @@ export default async function OrganizationPage({
         <CreateOrganization afterCreateOrganizationUrl={`/dashboard`} />
       )}
       {loadedUser && !loggedInUser.activatedAt && (
-        <Waitlist user={loggedInUser} userData={userData} />
+        <Waitlist
+          user={loggedInUser}
+          userData={userData}
+          organizationId={organizations[0]?.organization.id}
+        />
       )}
     </SlimLayout>
   );

@@ -5,7 +5,10 @@ import { Button } from "./Button";
 import { useEffect, useState } from "react";
 import { activateUser, registerWaitlist } from "@/app/waitlist-actions";
 import { cn } from "@/lib/utils";
-import { useClerk } from "@clerk/nextjs";
+import {
+  useClerk,
+  useOrganizationList,
+} from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { ConfirmationModal } from "./ConfirmationModal";
 
@@ -192,18 +195,32 @@ function RegisterForPriorityAccess({
 export function Waitlist({
   user,
   userData,
+  organizationId,
 }: {
   user: User;
   userData: { fullName: string; email: string };
+  organizationId: string | null;
 }) {
   const [hasRegistered, setHasRegistered] = useState(isUserOnWaitlist(user));
   const { signOut } = useClerk();
   const router = useRouter();
   const [isSignoutModalOpen, setIsSignoutModalOpen] = useState(false);
+  const { isLoaded, setActive } = useOrganizationList();
 
   useEffect(() => {
     setHasRegistered(isUserOnWaitlist(user));
   }, [user]);
+
+  useEffect(() => {
+    if (organizationId && setActive) {
+      setActive({ organization: organizationId });
+      window.location.assign("/dashboard");
+    }
+  }, [organizationId, setActive]);
+
+  if (!isLoaded) {
+    return <div className="w-full mt-8 text-center">Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col items-left justify-center h-full">
