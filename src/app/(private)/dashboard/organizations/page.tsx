@@ -35,12 +35,21 @@ export default async function OrganizationPage({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const loadedUser = await currentUser();
+
   const { orgId: organizationExternalId, sessionId } = auth();
   const shouldChangeOrganization = searchParams.shouldChangeOrganization;
 
   if (!loadedUser) {
     return redirect("/login");
   }
+
+  const userData = {
+    fullName: `${loadedUser.firstName} ${loadedUser.lastName}`,
+    email:
+      loadedUser.emailAddresses.find(
+        (email) => email.id == loadedUser.primaryEmailAddressId
+      )?.emailAddress ?? "",
+  };
 
   let loggedInUser = await getUserByExternalId(loadedUser.id);
 
@@ -97,7 +106,7 @@ export default async function OrganizationPage({
         <CreateOrganization afterCreateOrganizationUrl={`/dashboard`} />
       )}
       {loadedUser && !loggedInUser.activatedAt && (
-        <Waitlist user={loggedInUser} />
+        <Waitlist user={loggedInUser} userData={userData} />
       )}
     </SlimLayout>
   );

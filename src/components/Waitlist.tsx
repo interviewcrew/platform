@@ -5,6 +5,9 @@ import { Button } from "./Button";
 import { useEffect, useState } from "react";
 import { activateUser, registerWaitlist } from "@/app/waitlist-actions";
 import { cn } from "@/lib/utils";
+import { useClerk } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { ConfirmationModal } from "./ConfirmationModal";
 
 function isUserOnWaitlist(user: User) {
   return user.linkedinLink !== null || user.registrationReason !== null;
@@ -172,7 +175,12 @@ function RegisterForPriorityAccess({
           </div>
         </div>
         <div className="flex justify-end">
-          <Button className="mt-4 rounded-md" type="submit" color="blue" disabled={isRegistering}>
+          <Button
+            className="mt-4 rounded-md"
+            type="submit"
+            color="blue"
+            disabled={isRegistering}
+          >
             Get higher priority
           </Button>
         </div>
@@ -181,18 +189,26 @@ function RegisterForPriorityAccess({
   );
 }
 
-export function Waitlist({ user }: { user: User }) {
+export function Waitlist({
+  user,
+  userData,
+}: {
+  user: User;
+  userData: { fullName: string; email: string };
+}) {
   const [hasRegistered, setHasRegistered] = useState(isUserOnWaitlist(user));
+  const { signOut } = useClerk();
+  const router = useRouter();
+  const [isSignoutModalOpen, setIsSignoutModalOpen] = useState(false);
 
   useEffect(() => {
     setHasRegistered(isUserOnWaitlist(user));
   }, [user]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <h1 className="text-3xl font-bold text-center">
-        You are now on our waitlist
-      </h1>
+    <div className="flex flex-col items-left justify-center h-full">
+      <div className="text-2xl font-bold">{userData.fullName},</div>
+      <h1 className="text-3xl font-bold">You are now on our waitlist</h1>
       <ActivateWaitlist user={user} />
       {!hasRegistered ? (
         <RegisterForPriorityAccess
@@ -208,9 +224,32 @@ export function Waitlist({ user }: { user: User }) {
           </p>
         </div>
       )}
-      <Button className="mt-8 border-2" href={"/"} type="button" color="white">
-        Back to the homepage
-      </Button>
+      <div className="mt-8 text-center text-xs">
+        You are in the waitlist using:
+      </div>
+      <div className="text-center font-bold text-xs">{userData.email}</div>
+      <div className="flex justify-center w-full space-x-3 mt-8 text-center">
+        <Button
+          className=""
+          onClick={() => setIsSignoutModalOpen(true)}
+          type="button"
+          color="white"
+        >
+          Sign out
+        </Button>
+        <Button className="border-2" href={"/"} type="button" color="white">
+          Back to the homepage
+        </Button>
+      </div>
+      <ConfirmationModal
+        title="Sign out"
+        isOpen={isSignoutModalOpen}
+        onClose={() => setIsSignoutModalOpen(false)}
+        onConfirm={() => signOut(() => router.push("/"))}
+        actionButton="Sign out"
+      >
+        {userData.fullName}, Are you sure you want to sign out?
+      </ConfirmationModal>
     </div>
   );
 }
