@@ -34,7 +34,6 @@ export function EditableQuestions({
   };
 
   const deleteQuestion = (question: Question) => {
-    setQuestions(questions.filter((q) => q.id !== question.id));
     deleteQuestionCallback(question);
   };
 
