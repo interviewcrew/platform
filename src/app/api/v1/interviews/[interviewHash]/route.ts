@@ -1,9 +1,9 @@
 import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
-import { getInterviewByHashId, getInterviewByHashIdWithFields } from "@/db/repositories/interviewRepository";
+import { getInterviewByHashIdWithFields } from "@/db/repositories/interviewRepository";
 import { withErrorHandler } from "@/lib/api-helpers/error-handler";
 import {
-  getOrganizationWithErrorHandling,
+  getUserOrganizationWithErrorHandling,
   getUserWithErrorHandling,
 } from "@/lib/api-helpers/auth";
 
@@ -24,9 +24,7 @@ async function getInterview(
 
   const user = await getUserWithErrorHandling(userExternalId);
 
-  const organization = await getOrganizationWithErrorHandling(
-    user.organizationId
-  );
+  const organization = await getUserOrganizationWithErrorHandling(user);
 
   let interview = await getInterviewByHashIdWithFields(
     params.interviewHash,

@@ -8,7 +8,7 @@ import {
 } from "@/db/repositories/interviewRepository";
 import { withErrorHandler } from "@/lib/api-helpers/error-handler";
 import {
-  getOrganizationWithErrorHandling,
+  getUserOrganizationWithErrorHandling,
   getUserWithErrorHandling,
 } from "@/lib/api-helpers/auth";
 import { OptionsHandler } from "@/lib/api-helpers/shared";
@@ -42,12 +42,10 @@ async function createInterview(request: NextRequest) {
 
   const user = await getUserWithErrorHandling(userExternalId);
 
-  const organization = await getOrganizationWithErrorHandling(
-    user.organizationId
-  );
+  const organization = await getUserOrganizationWithErrorHandling(user);
 
   return getOrInsertInterview(
-    { ...interviewParams, organizationId: user.organizationId },
+    { ...interviewParams, organizationId: organization.id },
     organization.id
   );
 }
