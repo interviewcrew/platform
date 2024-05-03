@@ -11,6 +11,7 @@ import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { SparklesIcon } from "lucide-react";
 import { useState } from "react";
 import { EditableQuestions } from "@/components/EditableQuestions";
+import { ConfirmationModal } from "./ConfirmationModal";
 
 export default function JobListingQuestions({
   jobListing,
@@ -25,6 +26,11 @@ export default function JobListingQuestions({
   doneCallback: (jobListing: JobListingListItem, step: number) => void;
   cancelCallback: () => void;
 }) {
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletingQuestion, setDeletingQuestion] = useState<Question | null>(
+    null
+  );
+
   const [questions, setQuestions] = useState<Question[]>(jobListing.questions);
   const [generatedQuestions, setGeneratedQuestions] = useState<NewQuestion[]>(
     []
@@ -34,13 +40,16 @@ export default function JobListingQuestions({
   const [newQuestion, setNewQuestion] = useState<string>("");
 
   const deleteQuestion = async (deletedQuestion: Question) => {
+    setDeleteModalOpen(true);
+    setDeletingQuestion(deletedQuestion);
     setIsSavingQuestions(true);
+  };
 
-    await deleteQuestionFromJobListing(deletedQuestion);
-
+  const handleConfirmDeleteQuestion = async () => {
+    await deleteQuestionFromJobListing(deletingQuestion!);
     setQuestions(
       questions.filter((question: Question) => {
-        if (deletedQuestion.id === question.id) {
+        if (deletingQuestion?.id === question.id) {
           return false;
         }
 
@@ -50,6 +59,8 @@ export default function JobListingQuestions({
 
     jobListing.questions = questions;
 
+    setDeleteModalOpen(false);
+    setDeletingQuestion(null);
     setIsSavingQuestions(false);
   };
 
@@ -303,6 +314,16 @@ export default function JobListingQuestions({
           </div>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDeleteQuestion}
+        title="Delete Question"
+      >
+        Are you sure you want to <span className="font-bold">delete</span> this
+        question?
+      </ConfirmationModal>
     </>
   );
 }
