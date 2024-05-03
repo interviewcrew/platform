@@ -5,10 +5,7 @@ import { Button } from "./Button";
 import { useEffect, useState } from "react";
 import { activateUser, registerWaitlist } from "@/app/waitlist-actions";
 import { cn } from "@/lib/utils";
-import {
-  useClerk,
-  useOrganizationList,
-} from "@clerk/nextjs";
+import { useClerk, useOrganizationList } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { ConfirmationModal } from "./ConfirmationModal";
 
@@ -99,12 +96,14 @@ function RegisterForPriorityAccess({
       setLinkedinLinkError("Please enter a valid linkedin link");
       hasErrors = true;
     }
+
     if (registrationReason.length < 10) {
       setRegistrationReasonError("Please fill in this field");
       hasErrors = true;
     }
 
     if (hasErrors) {
+      setIsRegistering(false);
       return;
     }
 
@@ -170,7 +169,10 @@ function RegisterForPriorityAccess({
               rows={3}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               value={registrationReason}
-              onChange={(e) => setRegistrationReason(e.target.value)}
+              onChange={(e) => {
+                setRegistrationReason(e.target.value);
+                setRegistrationReasonError("");
+              }}
             />
             <span className="text-sm text-red-500">
               {registrationReasonError}
@@ -179,7 +181,9 @@ function RegisterForPriorityAccess({
         </div>
         <div className="flex justify-end">
           <Button
-            className="mt-4 rounded-md"
+            className={cn("mt-4 rounded-md", {
+              "cursor-not-allowed bg-gray-500 hover:bg-gray-500": isRegistering,
+            })}
             type="submit"
             color="blue"
             disabled={isRegistering}
@@ -242,7 +246,7 @@ export function Waitlist({
         </div>
       )}
       <div className="mt-8 text-center text-xs">
-        You are in the waitlist using:
+        You are on the waitlist using:
       </div>
       <div className="text-center font-bold text-xs">{userData.email}</div>
       <div className="flex justify-center w-full space-x-3 mt-8 text-center">
