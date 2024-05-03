@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import {
-  getOrganizationWithErrorHandling,
+  getUserOrganizationWithErrorHandling,
   getUserWithErrorHandling,
 } from "@/lib/api-helpers/auth";
 import { getInterviewByHashIdWithFields } from "@/db/repositories/interviewRepository";
@@ -27,9 +27,7 @@ async function getFollowupQuestion(
 
   const user = await getUserWithErrorHandling(userExternalId);
 
-  const organization = await getOrganizationWithErrorHandling(
-    user.organizationId
-  );
+  const organization = await getUserOrganizationWithErrorHandling(user);
 
   const interview = await getInterviewByHashIdWithFields(
     params.interviewHash,

@@ -4,7 +4,9 @@ import { eq } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { sql } from "@vercel/postgres";
 
-export async function getUserByExternalId(externalId: string): Promise<User | undefined> {
+export async function getUserByExternalId(
+  externalId: string
+): Promise<User | undefined> {
   const db = drizzle(sql, { schema });
 
   return db.query.usersTable.findFirst({
@@ -20,6 +22,9 @@ export async function createUser(user: NewUser): Promise<User> {
       id: usersTable.id,
       externalId: usersTable.externalId,
       organizationId: usersTable.organizationId,
+      linkedinLink: usersTable.linkedinLink,
+      registrationReason: usersTable.registrationReason,
+      activatedAt: usersTable.activatedAt,
       createdAt: usersTable.createdAt,
       updatedAt: usersTable.updatedAt,
     })
@@ -30,12 +35,19 @@ export async function updateUser(user: User): Promise<User> {
   const db = drizzle(sql, { schema });
 
   return (
-    await db.update(usersTable).set(user).where(eq(usersTable.id, user.id)).returning({
-      id: usersTable.id,
-      externalId: usersTable.externalId,
-      organizationId: usersTable.organizationId,
-      createdAt: usersTable.createdAt,
-      updatedAt: usersTable.updatedAt,
-    })
+    await db
+      .update(usersTable)
+      .set(user)
+      .where(eq(usersTable.id, user.id))
+      .returning({
+        id: usersTable.id,
+        externalId: usersTable.externalId,
+        organizationId: usersTable.organizationId,
+        linkedinLink: usersTable.linkedinLink,
+        registrationReason: usersTable.registrationReason,
+        activatedAt: usersTable.activatedAt,
+        createdAt: usersTable.createdAt,
+        updatedAt: usersTable.updatedAt,
+      })
   )[0];
 }

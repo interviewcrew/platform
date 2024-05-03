@@ -6,7 +6,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { insertTranscriptions } from "@/db/repositories/transcriptionRepository";
 import { getInterviewByHashId } from "@/db/repositories/interviewRepository";
 import {
-  getOrganizationWithErrorHandling,
+  getUserOrganizationWithErrorHandling,
   getUserWithErrorHandling,
 } from "@/lib/api-helpers/auth";
 import { withErrorHandler } from "@/lib/api-helpers/error-handler";
@@ -43,9 +43,7 @@ async function createTranscription(
 
   const user = await getUserWithErrorHandling(userExternalId);
 
-  const organization = await getOrganizationWithErrorHandling(
-    user.organizationId
-  );
+  const organization = await getUserOrganizationWithErrorHandling(user);
 
   let interview = await getInterviewByHashId(
     params.interviewHash,

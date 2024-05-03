@@ -13,6 +13,7 @@ interface ConfirmationModalProps {
   title: string;
   onClose: () => void;
   onConfirm: () => void;
+  actionButton?: string;
   children: React.ReactNode;
 }
 
@@ -21,6 +22,7 @@ export function ConfirmationModal({
   title,
   onClose,
   onConfirm,
+  actionButton,
   children,
 }: ConfirmationModalProps) {
   const [open, setOpen] = useState(isOpen);
@@ -97,7 +99,7 @@ export function ConfirmationModal({
                       onConfirm();
                     }}
                   >
-                    Delete
+                    {actionButton || "Delete"}
                   </button>
                   <button
                     type="button"

@@ -20,12 +20,12 @@ export default function Login() {
 
   return (
     <SlimLayout>
-      <div className="flex">
+      <div className="flex justify-center">
         <Link href="/" aria-label="Home">
           <Logo className="h-14 w-auto" />
         </Link>
       </div>
-      <SignIn afterSignInUrl={"/dashboard"}/>
+      <SignIn afterSignInUrl={"/dashboard"} afterSignUpUrl={"/dashboard/organizations"}/>
       <div className="text-xs ml-2 text-gray-600">
         No account? {" "}
         <Link href="/register" className="text-blue-600 font-bold">
