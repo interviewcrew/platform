@@ -14,27 +14,26 @@ import questionGeneration from "@/images/screenshots/question-generation-fixed.p
 
 const features = [
   {
-    title: "Custom question generation",
-    description:
-      "InterviewCrew's AI interview assistant, crafts technical questions directly from your job ad, ensuring you ask the right questions to identify the best candidates.",
+    title: "You, The Startup Founder",
+    description: `We understand you are very busy and need more capacity in your team right away. By delegating your hiring processes to us, you will save a lot of time and get top-notch results quickly.`,
     image: questionGeneration,
   },
   {
-    title: "AI interview assistant",
+    title: "Your Engineers",
     description:
-      "During the interview, InterviewCrew serves as your AI interview assistant, providing the optimal follow-up questions to ask candidates.",
+      "While your engineers are amazing, interviews take many hours of their time. They might not enjoy conducting interviews, or you may be hiring for roles in which you don't yet have expertise.",
     image: followupQuestions,
   },
   {
-    title: "Integrated IDE for live coding",
+    title: "Your Investors",
     description:
-      "InterviewCrew not only facilitates real-time coding tests but also serves as a valuable data source for assessing candidate skills accurately and effectively.",
+      "Boost your investors' confidence in your team by attracting amazing engineers quickly and meeting your roadmap.",
     image: codingEnvironment,
   },
   {
-    title: "Interview assessment",
+    title: "The Candidates",
     description:
-      "InterviewCrew's AI interview assistant, analyzes candidate performance post-interview and delivers a detailed report. This enables you to make informed decisions with precision and ease.",
+      "Candidates appreciate interviews that are conducted fairly and a decision-making process that is fast and handled by world-class, well-trained human engineers.",
     image: assessment,
   },
 ];
@@ -76,12 +75,13 @@ export function PrimaryFeatures() {
       <Container className="relative">
         <div className="max-w-2xl md:mx-auto md:text-center xl:max-w-none">
           <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl md:text-5xl">
-            Our <span className="font-bold">AI interview assistant</span> supports you, every step of the way
+            Hiring with InterviewCrew would save you{" "}
+            <span className="font-bold">time</span> and{" "}
+            <span className="font-bold">money</span> while dramatically
+            improving the quality of the hires
           </h2>
           <p className="mt-6 text-lg tracking-tight text-blue-100">
-            Equipped with everything you need for a successful technical
-            interview, our tool supports you before, during, and after the
-            interview.
+            Everyone involved would love InterviewCrew
           </p>
         </div>
         <Tab.Group
