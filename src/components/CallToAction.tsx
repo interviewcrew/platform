@@ -1,8 +1,8 @@
-import Image from 'next/image'
+import Image from "next/image";
 
-import { Button } from '@/components/Button'
-import { Container } from '@/components/Container'
-import backgroundImage from '@/images/background-call-to-action.jpg'
+import { Button } from "@/components/Button";
+import { Container } from "@/components/Container";
+import backgroundImage from "@/images/background-call-to-action.jpg";
 
 export function CallToAction() {
   return (
@@ -21,17 +21,21 @@ export function CallToAction() {
       <Container className="relative">
         <div className="mx-auto max-w-lg text-center">
           <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl">
-            Get started today, risk free
+            Get started today
           </h2>
           <p className="mt-4 text-lg tracking-tight text-white">
-            With a simple pay as you go pricing, start using InterviewCrew today.<br /> 
-            And if you didn&apos;t like it, get your money back, no questions asked
+            We will have a brief session to understand your needs and discuss
+            how we can assist you in hiring new employees.{" "}
           </p>
-          <Button href="/register" color="white" className="mt-10">
-            Try it, risk free
+          <Button
+            href="https://calendar.app.google/Bv2qS2hUHfmP691NA"
+            color="white"
+            className="mt-10"
+          >
+            Book a session with us
           </Button>
         </div>
       </Container>
     </section>
-  )
+  );
 }

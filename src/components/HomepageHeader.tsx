@@ -19,10 +19,11 @@ export function Header() {
             </Link>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
-            <Button href="/register" color="blue">
-              <span>
-                Get started <span className="hidden lg:inline">today</span>
-              </span>
+            <Button
+              href="https://calendar.app.google/Bv2qS2hUHfmP691NA"
+              color="blue"
+            >
+              <span>Book a session with us</span>
             </Button>
           </div>
         </nav>
