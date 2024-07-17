@@ -197,8 +197,8 @@ export function SecondaryFeatures() {
       <Container>
         <div className="mx-auto max-w-2xl md:text-center">
           <h2 className="font-display tracking-tight text-slate-900 text-4xl">
-            We're not just another agency; we are an extension of your company,
-            offering a{" "}
+            We&apos;re not just another agency; we are an extension of your
+            company, offering a{" "}
             <span className="relative whitespace-nowrap text-blue-600">
               <svg
                 aria-hidden="true"
