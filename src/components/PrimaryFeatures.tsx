@@ -7,34 +7,35 @@ import clsx from "clsx";
 
 import { Container } from "@/components/Container";
 import backgroundImage from "@/images/background-features.jpg";
-import codingEnvironment from "@/images/screenshots/ide-fixed.png";
-import assessment from "@/images/screenshots/assessments-fixed.png";
-import followupQuestions from "@/images/screenshots/followup-questions-fixed.png";
-import questionGeneration from "@/images/screenshots/question-generation-fixed.png";
+
+import founderPhoto from "@/images/everyone/founder.png";
+import developerPhoto from "@/images/everyone/developer.png";
+import investorPhoto from "@/images/everyone/investor.png";
+import candidatePhoto from "@/images/everyone/candidate.png";
 
 const features = [
   {
     title: "You, The Startup Founder",
     description: `We understand you are very busy and need more capacity in your team right away. By delegating your hiring processes to us, you will save a lot of time and get top-notch results quickly.`,
-    image: questionGeneration,
+    image: founderPhoto,
   },
   {
     title: "Your Engineers",
     description:
       "While your engineers are amazing, interviews take many hours of their time. They might not enjoy conducting interviews, or you may be hiring for roles in which you don't yet have expertise.",
-    image: followupQuestions,
+    image: developerPhoto,
   },
   {
     title: "Your Investors",
     description:
       "Boost your investors' confidence in your team by attracting amazing engineers quickly and meeting your roadmap.",
-    image: codingEnvironment,
+    image: investorPhoto,
   },
   {
     title: "The Candidates",
     description:
       "Candidates appreciate interviews that are conducted fairly and a decision-making process that is fast and handled by world-class, well-trained human engineers.",
-    image: assessment,
+    image: candidatePhoto,
   },
 ];
 
