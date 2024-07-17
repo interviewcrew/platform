@@ -10,6 +10,7 @@ import { Testimonials } from "@/components/Testimonials";
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { getUserByExternalId } from "@/db/repositories/userRepository";
+import People from "@/components/team";
 
 export default async function Home() {
   const loadedUser = await currentUser();
@@ -28,6 +29,7 @@ export default async function Home() {
         <Hero />
         <PrimaryFeatures />
         <SecondaryFeatures />
+        <People />
         <CallToAction />
         <Testimonials />
         <Faqs />
