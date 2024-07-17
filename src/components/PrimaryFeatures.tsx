@@ -92,7 +92,7 @@ export function PrimaryFeatures() {
         >
           {({ selectedIndex }) => (
             <>
-              <div className="-mx-4 flex overflow-x-auto pb-4 sm:mx-0 sm:overflow-visible sm:pb-0 lg:col-span-5">
+              <div className="-mx-4 flex overflow-x-auto pb-4 sm:mx-0 sm:overflow-visible sm:pb-0 lg:col-span-7">
                 <Tab.List className="relative z-10 flex gap-x-4 whitespace-nowrap px-4 sm:mx-auto sm:px-0 lg:mx-0 lg:block lg:gap-x-0 lg:gap-y-1 lg:whitespace-normal">
                   {features.map((feature, featureIndex) => (
                     <div
@@ -107,7 +107,7 @@ export function PrimaryFeatures() {
                       <h3>
                         <Tab
                           className={clsx(
-                            "font-display text-lg ui-not-focus-visible:outline-none",
+                            "font-display text-2xl ui-not-focus-visible:outline-none",
                             selectedIndex === featureIndex
                               ? "text-blue-600 lg:text-white"
                               : "text-blue-100 hover:text-white lg:text-white"
@@ -119,7 +119,7 @@ export function PrimaryFeatures() {
                       </h3>
                       <p
                         className={clsx(
-                          "mt-2 hidden text-sm lg:block",
+                          "mt-2 hidden text-lg lg:block",
                           selectedIndex === featureIndex
                             ? "text-white"
                             : "text-blue-100 group-hover:text-white"
@@ -131,7 +131,7 @@ export function PrimaryFeatures() {
                   ))}
                 </Tab.List>
               </div>
-              <Tab.Panels className="lg:col-span-7">
+              <Tab.Panels className="lg:col-span-5">
                 {features.map((feature) => (
                   <Tab.Panel key={feature.title} unmount={false}>
                     <div className="relative sm:px-6 lg:hidden">
@@ -140,13 +140,12 @@ export function PrimaryFeatures() {
                         {feature.description}
                       </p>
                     </div>
-                    <div className="mt-10 w-[45rem] overflow-hidden rounded-xl bg-slate-50 shadow-xl shadow-blue-900/20 sm:w-auto lg:mt-0 lg:w-[67.8125rem]">
+                    <div className="mt-10 p-10 overflow-hidden rounded-xl shadow-xl shadow-blue-900/20 sm:w-auto lg:mt-0">
                       <Image
-                        className="w-full"
+                        className="max-h-[550px] w-fit m-auto"
                         src={feature.image}
                         alt=""
                         priority
-                        sizes="(min-width: 1024px) 67.8125rem, (min-width: 640px) 100vw, 45rem"
                       />
                     </div>
                   </Tab.Panel>
