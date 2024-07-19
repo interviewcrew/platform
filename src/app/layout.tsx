@@ -7,11 +7,11 @@ import { ClerkProvider } from "@clerk/nextjs";
 export const metadata: Metadata = {
   title: {
     template: "%s - Interviewcrew",
-    default: "Interviewcrew - Your AI co-pilot interviewer",
+    default: "Hire top talent, seamlessly with world-class interviewers",
   },
   description:
-    "Interviewing is an art, technical interviewing is a skill. \
-    Whatever skill you are, with our AI you would nail it everytime.",
+    "Our world-class interviewers from top tech companies conduct the \
+    technical interviews on your behalf, enabling you to find great hires in less than 3 weeks",
 };
 
 const inter = Inter({
