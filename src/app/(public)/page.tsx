@@ -31,7 +31,7 @@ export default async function Home() {
         <SecondaryFeatures />
         <People />
         <CallToAction />
-        {/* <Testimonials /> */}
+        <Testimonials />
         {/* <Faqs /> */}
       </main>
       <Footer />

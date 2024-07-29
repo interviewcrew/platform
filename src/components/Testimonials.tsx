@@ -1,70 +1,33 @@
 import Image from "next/image";
 
 import { Container } from "@/components/Container";
-import avatarImage1 from "@/images/avatars/avatar-1.png";
-import avatarImage2 from "@/images/avatars/avatar-2.png";
-import avatarImage3 from "@/images/avatars/avatar-3.png";
-import avatarImage4 from "@/images/avatars/avatar-4.png";
-import avatarImage5 from "@/images/avatars/avatar-5.png";
+import avatarUsman from "@/images/avatars/avatar-usman.jpg";
+import avatarOren from "@/images/avatars/avatar-oren.jpeg";
 
 const testimonials = [
   [
     {
       content:
-        "InterviewCrew is so easy to use I can’t help but wonder if this is what engineers feel when they do the interview",
+        "InterviewCrew allowed me to fully showcase my skills. The interview rounds were both challenging and engaging, creating a collaborative team effort. I particularly appreciated that their interviews closely mirrored real-world work scenarios, which I found very beneficial.",
       author: {
-        name: "This is you with InterviewCrew",
-        role: "Tech recruiter at Your Company",
-        image: avatarImage1,
-      },
-    },
-    {
-      content:
-        "It feels like magic, I just click a button and a follow up question pops up. I could just concentrate on the interview and not worry about the questions",
-      author: {
-        name: "This is you with InterviewCrew",
-        role: "Tech recruiter at Your Company",
-        image: avatarImage4,
+        name: "Usman",
+        role: "Senior Frontend Engineer",
+        image: avatarUsman,
       },
     },
   ],
   [
     {
       content:
-        "Now I don't have to take all those boring notes during the interview. InterviewCrew not just handles that but is also another set of eyes for me",
+        "Personally, I had an exceptional experience with the interview services provided by InterviewCrew. \
+          The process was incredibly efficient and professional, making the entire process seamless and stress-free. \
+          Though the tests provided by InterviewCrew weren't that easy to pass it was convenient and interesting ones. \
+          Honestly, Compared to other interviews I've had, InterviewCrew stood out for its organization and clarity. \
+          I highly recommend InterviewCrew to anyone seeking a positive and professional interview experience.",
       author: {
-        name: "This is you with InterviewCrew",
-        role: "Software engineer at Your Company",
-        image: avatarImage5,
-      },
-    },
-    {
-      content:
-        "I feel way more confident that my personal biases don't affect the interview results. I am more confident in my hiring decisions now",
-      author: {
-        name: "This is you with InterviewCrew",
-        role: "Software engineer at Your Company",
-        image: avatarImage2,
-      },
-    },
-  ],
-  [
-    {
-      content:
-        "Now everytime the candidate asks me a question, I don't have to think about it. InterviewCrew has got my back",
-      author: {
-        name: "This is you with InterviewCrew",
-        role: "Startup CEO at Your Company",
-        image: avatarImage3,
-      },
-    },
-    {
-      content:
-        "I am very happy that my engineers would always be assisted in interviews and their assessments",
-      author: {
-        name: "This is you with InterviewCrew",
-        role: "Recruiting manager at Your Company",
-        image: avatarImage4,
+        name: "Oren",
+        role: "Senior Software Engineer",
+        image: avatarOren,
       },
     },
   ],
@@ -88,7 +51,7 @@ export function Testimonials() {
       <Container>
         <div className="mx-auto max-w-2xl md:text-center">
           <h2 className="font-display text-3xl tracking-tight text-slate-900 sm:text-4xl">
-            Loved by our customers worldwide
+            Loved by Candidates and Companies
           </h2>
         </div>
         <ul
