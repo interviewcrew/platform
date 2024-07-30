@@ -3,12 +3,32 @@ import Image from "next/image";
 import { Container } from "@/components/Container";
 import avatarUsman from "@/images/avatars/avatar-usman.jpg";
 import avatarOren from "@/images/avatars/avatar-oren.jpeg";
+import avatarAli from "@/images/avatars/avatar-ali.jpeg";
 
 const testimonials = [
   [
     {
-      content:
-        "InterviewCrew allowed me to fully showcase my skills. The interview rounds were both challenging and engaging, creating a collaborative team effort. I particularly appreciated that their interviews closely mirrored real-world work scenarios, which I found very beneficial.",
+      content: [
+        "InterviewCrew has been instrumental in scaling our development team efficiently.",
+        "They helped us define positions, craft job descriptions, and design our hiring funnel.",
+        "Their management of the entire interview process, including live coding sessions, was invaluable for us as a busy early-stage startup.",
+        "Before InterviewCrew, we handled everything ourselves, which was time-consuming. Now, we receive a curated list of technically vetted candidates, allowing us to focus solely on cultural fit.",
+        "This service has significantly streamlined our hiring process and saved us countless hours.",
+        "I highly recommend InterviewCrew to any startup looking to grow their tech team while maintaining focus on their core business.",
+      ],
+      author: {
+        name: "Ali Nezamolmaleki",
+        role: "Co-founder & CTO at Faircado",
+        image: avatarAli,
+      },
+    },
+  ],
+  [
+    {
+      content: [
+        "InterviewCrew allowed me to fully showcase my skills. The interview rounds were both challenging and engaging, creating a collaborative team effort.",
+        "I particularly appreciated that their interviews closely mirrored real-world work scenarios, which I found very beneficial.",
+      ],
       author: {
         name: "Usman",
         role: "Senior Frontend Engineer",
@@ -18,12 +38,13 @@ const testimonials = [
   ],
   [
     {
-      content:
-        "Personally, I had an exceptional experience with the interview services provided by InterviewCrew. \
-          The process was incredibly efficient and professional, making the entire process seamless and stress-free. \
-          Though the tests provided by InterviewCrew weren't that easy to pass it was convenient and interesting ones. \
-          Honestly, Compared to other interviews I've had, InterviewCrew stood out for its organization and clarity. \
-          I highly recommend InterviewCrew to anyone seeking a positive and professional interview experience.",
+      content: [
+        "Personally, I had an exceptional experience with the interview services provided by InterviewCrew.",
+        "The process was incredibly efficient and professional, making the entire process seamless and stress-free.",
+        "Though the tests provided by InterviewCrew weren't that easy to pass it was convenient and interesting ones.",
+        "Honestly, Compared to other interviews I've had, InterviewCrew stood out for its organization and clarity.",
+        "I highly recommend InterviewCrew to anyone seeking a positive and professional interview experience.",
+      ],
       author: {
         name: "Oren",
         role: "Senior Software Engineer",
@@ -66,9 +87,14 @@ export function Testimonials() {
                     <figure className="relative rounded-2xl bg-white p-6 shadow-xl shadow-slate-900/10">
                       <QuoteIcon className="absolute left-6 top-6 fill-slate-100" />
                       <blockquote className="relative">
-                        <p className="text-lg tracking-tight text-slate-900">
-                          {testimonial.content}
-                        </p>
+                        {testimonial.content.map((paragraph, index) => (
+                          <p
+                            key={index}
+                            className="text-md tracking-tight text-slate-900"
+                          >
+                            {paragraph}
+                          </p>
+                        ))}
                       </blockquote>
                       <figcaption className="relative mt-6 flex items-center justify-between border-t border-slate-100 pt-6">
                         <div>
