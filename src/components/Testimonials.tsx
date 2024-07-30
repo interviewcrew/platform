@@ -30,8 +30,8 @@ const testimonials = [
         "I particularly appreciated that their interviews closely mirrored real-world work scenarios, which I found very beneficial.",
       ],
       author: {
-        name: "Usman",
-        role: "Senior Frontend Engineer",
+        name: "Usman Sajjad",
+        role: "Senior Frontend Engineer at Faircado",
         image: avatarUsman,
       },
     },
@@ -46,8 +46,8 @@ const testimonials = [
         "I highly recommend InterviewCrew to anyone seeking a positive and professional interview experience.",
       ],
       author: {
-        name: "Oren",
-        role: "Senior Software Engineer",
+        name: "Oren Hoffman",
+        role: "Senior Software Engineer at eToro",
         image: avatarOren,
       },
     },
