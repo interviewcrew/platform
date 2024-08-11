@@ -2,7 +2,6 @@ import Image from "next/image";
 import sadjadPhoto from "@/images/team/sadjad.png";
 import mehdiPhoto from "@/images/team/mehdi.png";
 import masoudPhoto from "@/images/team/masoud.png";
-import rezaPhoto from "@/images/team/reza.png";
 import sepehrPhoto from "@/images/team/sepehr.jpeg";
 import EmmaIcon from "@/images/companies/emma-icon.svg";
 import GoogleIcon from "@/images/companies/google-icon.svg";
@@ -25,14 +24,6 @@ const people = [
     xUrl: "#",
     linkedinUrl: "https://www.linkedin.com/in/mehdikazemi8",
     companyIcons: [GoogleIcon, InterviewCrewIcon],
-  },
-  {
-    name: "Reza",
-    role: "Staff Software Engineer",
-    imageUrl: rezaPhoto,
-    xUrl: "#",
-    linkedinUrl: "https://www.linkedin.com/in/rezasherkat",
-    companyIcons: [GoogleIcon],
   },
   {
     name: "Masoud",
@@ -109,7 +100,9 @@ export default function People() {
                 {person.name}
               </h3>
               <div className="flex justify-center space-x-2">
-                <p className=" col-span-3 text-sm leading-6 text-gray-400">{person.role}</p>
+                <p className=" col-span-3 text-sm leading-6 text-gray-400">
+                  {person.role}
+                </p>
                 <div className="flex col-span-1">
                   {person.companyIcons.map((icon, index) => (
                     <Image
