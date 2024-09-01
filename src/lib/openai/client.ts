@@ -13,7 +13,7 @@ export async function getFollowupQuestion(
   });
 
   const followup = await openai.chat.completions.create({
-    model: "gpt-4-turbo-preview",
+    model: process.env.OPEN_AI_MODEL || "gpt-4o",
     messages: [
       {
         role: "system",
@@ -47,7 +47,7 @@ export async function getEvaluationAndStoreInDB(
   }
 
   const evaluation = await openai.chat.completions.create({
-    model: "gpt-4-turbo-preview",
+    model: process.env.OPEN_AI_MODEL || "gpt-4o",
     messages: [
       {
         role: "system",
@@ -74,7 +74,7 @@ export async function getFormatedEvaluation(
   });
 
   const evaluationFormated = await openai.chat.completions.create({
-    model: "gpt-4-turbo-preview",
+    model: process.env.OPEN_AI_MODEL || "gpt-4o",
     response_format: { type: "json_object" },
     messages: [
       {
@@ -122,7 +122,7 @@ export async function generateJobListingQuestions(
   );
 
   const questions = await openai.chat.completions.create({
-    model: "gpt-4-turbo-preview",
+    model: process.env.OPEN_AI_MODEL || "gpt-4o",
     response_format: { type: "json_object" },
     messages: [
       {
