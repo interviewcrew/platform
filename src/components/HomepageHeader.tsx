@@ -20,7 +20,7 @@ export function Header() {
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
             <Button
-              href="https://calendar.app.google/Bv2qS2hUHfmP691NA"
+              href="https://zeeg.me/interviewcrew/introduction-call"
               color="blue"
             >
               <span>Book a session with us</span>
