@@ -6,12 +6,11 @@ import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s - Interviewcrew",
-    default: "Hire top talent, seamlessly with world-class interviewers",
+    template: "%s - InterviewCrew",
+    default: "Find incredible people, through people you trust",
   },
   description:
-    "Our world-class interviewers from top tech companies conduct the \
-    technical interviews on your behalf, enabling you to find great hires in less than 3 weeks",
+    "Stop Interviewing the Wrong People; Select from a curated shortlist of vetted talent.",
 };
 
 const inter = Inter({
