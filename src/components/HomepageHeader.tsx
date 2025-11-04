@@ -27,7 +27,7 @@ export function Header() {
               Login
             </Link>
             <Button
-              href="#request-access"
+              href="https://zeeg.me/interviewcrew/introduction-call"
               className="bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-slate-800 transition-colors"
             >
               Request access

@@ -28,7 +28,7 @@ export function CallToAction() {
             how we can assist you in hiring new employees.{" "}
           </p>
           <Button
-            href="https://calendar.app.google/Bv2qS2hUHfmP691NA"
+            href="https://zeeg.me/interviewcrew/introduction-call"
             color="white"
             className="mt-10"
           >

@@ -9,7 +9,7 @@ import { withErrorHandler } from "@/lib/api-helpers/error-handler";
 import { getFollowupQuestion as getFollowupQuestionFromOpenAI } from "@/lib/openai/client";
 import { addQuestion } from "@/db/repositories/questionRepository";
 
-export const maxDuration = 300;
+// export const maxDuration = 300;
 export const GET = withErrorHandler(getFollowupQuestion);
 
 async function getFollowupQuestion(
