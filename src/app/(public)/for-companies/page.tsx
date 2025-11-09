@@ -1,17 +1,18 @@
 import { Footer } from "@/components/HomepageFooter";
 import { Header } from "@/components/HomepageHeader";
-import { Hero } from "@/components/Hero";
-import { HowItWorks } from "@/components/HowItWorks";
-import { Faqs } from "@/components/Faqs";
-import { NetworkingWithoutNoise } from "@/components/NetworkingWithoutNoise";
-import { Testimonials } from "@/components/Testimonials";
-import { CallToAction } from "@/components/CallToAction";
+import { CompaniesHero } from "@/components/CompaniesHero";
+import { TheProblem } from "@/components/TheProblem";
+import { CompaniesProcess } from "@/components/CompaniesProcess";
+import { Guarantee } from "@/components/Guarantee";
+import { WhyCompaniesChooseUs } from "@/components/WhyCompaniesChooseUs";
+import { WhoWeWorkWith } from "@/components/WhoWeWorkWith";
+import { TermsAndConditions } from "@/components/TermsAndConditions";
 import { Separator } from "@/components/ui/separator";
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { getUserByExternalId } from "@/db/repositories/userRepository";
 
-export default async function Home() {
+export default async function ForCompanies() {
   const loadedUser = await currentUser();
 
   if (loadedUser) {
@@ -25,19 +26,24 @@ export default async function Home() {
     <>
       <Header />
       <main>
-        <Hero />
+        <CompaniesHero />
         <Separator />
-        <HowItWorks />
+        <TheProblem />
         <Separator />
-        <Faqs />
+        <CompaniesProcess />
         <Separator />
-        <NetworkingWithoutNoise />
+        <Guarantee />
         <Separator />
-        <Testimonials />
+        <WhyCompaniesChooseUs />
         <Separator />
-        <CallToAction />
+        <WhoWeWorkWith />
+        <Separator />
+        <TermsAndConditions />
       </main>
       <Footer />
     </>
   );
 }
+
+
+

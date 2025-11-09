@@ -1,17 +1,17 @@
-import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
+import { Button } from "@/components/Button";
 
-export function CallToAction() {
+export function CompaniesClosingCTA() {
   return (
     <section className="py-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-200/30 via-indigo-200/20 to-purple-200/30 blur-3xl"></div>
       <Container className="relative">
-        <div className="text-center">
+        <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-satoshi text-[36px] sm:text-[40px] font-semibold leading-[120%] text-slate-900">
-            Get started today
+            Let's make hiring simple again.
           </h2>
-          <p className="mt-6 font-inter text-lg leading-[150%] text-slate-600 max-w-2xl mx-auto">
-            Looking to hire? Book a session with us to discuss how we can help you find the right talent.
+          <p className="mt-6 font-inter text-lg leading-[150%] text-slate-600">
+            Tell us what you're hiring for. We'll send you a shortlist of fully vetted engineers ready to join your team.
           </p>
           <div className="mt-10">
             <Button
@@ -26,3 +26,4 @@ export function CallToAction() {
     </section>
   );
 }
+

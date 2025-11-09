@@ -53,11 +53,11 @@ export default function Header({
             <div className="relative flex flex-wrap items-center justify-center lg:justify-between">
               {/* Logo */}
               <div className="absolute left-0 flex-shrink-0 py-5 lg:static">
-                <a href="/dashboard">
-                  <span className="sr-only">Interview crew</span>
+                <Link href="/">
+                  <span className="sr-only">InterviewCrew</span>
                   <IconLight className="md:hidden h-8 w-auto" />
                   <LogoLight className="hidden md:block h-8 w-auto" />
-                </a>
+                </Link>
               </div>
 
               {/* Right section on desktop */}
@@ -207,7 +207,9 @@ export default function Header({
                     <div className="pb-2 pt-3">
                       <div className="flex items-center justify-between px-4">
                         <div>
+                          <Link href="/">
                           <Logo className="h-8 w-auto" />
+                          </Link>
                         </div>
                         <div className="-mr-2">
                           <Popover.Button className="relative inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-500">
