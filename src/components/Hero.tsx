@@ -17,7 +17,7 @@ export function Hero() {
             href="#request-access"
             className="bg-slate-900 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-slate-800 transition-colors"
           >
-            Request access
+            Book a session with us
           </Button>
         </div>
         

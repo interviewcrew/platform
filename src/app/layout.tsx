@@ -1,4 +1,4 @@
-import { Inter, Lexend } from "next/font/google";
+import { Inter, Lexend, Space_Grotesk } from "next/font/google";
 import clsx from "clsx";
 import "@/styles/tailwind.css";
 import { type Metadata } from "next";
@@ -25,6 +25,13 @@ const lexend = Lexend({
   variable: "--font-lexend",
 });
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-space-grotesk",
+});
+
 export default function RootLayout({
   children,
 }: {
@@ -36,7 +43,8 @@ export default function RootLayout({
       className={clsx(
         "h-full scroll-smooth bg-white antialiased",
         inter.variable,
-        lexend.variable
+        lexend.variable,
+        spaceGrotesk.variable
       )}
     >
       <body className="flex h-full flex-col">

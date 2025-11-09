@@ -17,20 +17,17 @@ export function Header() {
             </Link>
           </div>
           <div className="flex items-center gap-x-8">
-            <Link href="/for-talents" className="text-slate-700 hover:text-slate-900 transition-colors">
-              For Talents
+            <Link href="/for-companies" className="text-slate-700 hover:text-slate-900 transition-colors">
+              For Companies
             </Link>
             <Link href="#about" className="text-slate-700 hover:text-slate-900 transition-colors">
               About Us
-            </Link>
-            <Link href="/login" className="text-slate-700 hover:text-slate-900 transition-colors">
-              Login
             </Link>
             <Button
               href="https://zeeg.me/interviewcrew/introduction-call"
               className="bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-slate-800 transition-colors"
             >
-              Request access
+              Book a session with us
             </Button>
           </div>
         </nav>

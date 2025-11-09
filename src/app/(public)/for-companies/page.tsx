@@ -10,7 +10,7 @@ import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { getUserByExternalId } from "@/db/repositories/userRepository";
 
-export default async function Home() {
+export default async function ForCompanies() {
   const loadedUser = await currentUser();
 
   if (loadedUser) {
@@ -35,3 +35,6 @@ export default async function Home() {
     </>
   );
 }
+
+
+

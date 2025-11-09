@@ -11,20 +11,17 @@ export function TalentsCTA() {
             Ready to find your next role?
           </h2>
           <p className="mt-6 text-xl text-slate-600 max-w-2xl mx-auto">
-            Join our exclusive talent pool and get matched with opportunities at top companies through your professional network.
+            Get evaluated once. Join a trusted network.
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
+            We'll match you with opportunities that actually fit your skills and goals.
+          </p>
+          <div className="mt-10">
             <Button
               href="#join-pool"
               className="bg-slate-900 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-slate-800 transition-colors"
             >
-              Join our talent pool
-            </Button>
-            <Button
-              href="#learn-more"
-              className="bg-white text-slate-900 px-8 py-3 rounded-lg text-lg font-medium border border-slate-300 hover:bg-slate-50 transition-colors"
-            >
-              Learn more
+              → Apply to the Talent Pool
             </Button>
           </div>
         </div>

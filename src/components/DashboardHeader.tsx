@@ -54,7 +54,7 @@ export default function Header({
               {/* Logo */}
               <div className="absolute left-0 flex-shrink-0 py-5 lg:static">
                 <Link href="/">
-                  <span className="sr-only">Interview crew</span>
+                  <span className="sr-only">InterviewCrew</span>
                   <IconLight className="md:hidden h-8 w-auto" />
                   <LogoLight className="hidden md:block h-8 w-auto" />
                 </Link>

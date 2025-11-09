@@ -22,7 +22,7 @@ const faqs = [
   },
     {
     question: "How do I get started on Liftoff?",
-    answer: "Getting started is simple - just request access, build your profile with your interests and skills, and start connecting with people in your network. We'll help you discover relevant opportunities."
+    answer: "Getting started is simple - just book a session with us, build your profile with your interests and skills, and start connecting with people in your network. We'll help you discover relevant opportunities."
   }
 ];
 
