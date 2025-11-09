@@ -39,7 +39,9 @@ export default {
     typography: typographyStyles,
     extend: {
       fontFamily: {
-        spaceGrotesk: ['var(--font-space-grotesk)', 'sans-serif'],
+        inter: ['var(--font-inter)', 'sans-serif'],
+        satoshi: ['var(--font-secondary)', 'sans-serif'],
+        display: ['var(--font-secondary)', 'sans-serif'],
       },
       colors: {
         'editor': '#1e1e1e',

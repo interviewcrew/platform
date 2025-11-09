@@ -71,7 +71,7 @@ export function Testimonials() {
     >
       <Container>
         <div className="mx-auto max-w-2xl md:text-center">
-          <h2 className="font-display text-3xl tracking-tight text-slate-900 sm:text-4xl">
+          <h2 className="font-satoshi text-[36px] sm:text-[40px] font-semibold leading-[120%] text-slate-900">
             Loved by Candidates and Companies
           </h2>
         </div>
@@ -90,7 +90,7 @@ export function Testimonials() {
                         {testimonial.content.map((paragraph, index) => (
                           <p
                             key={index}
-                            className="text-md tracking-tight text-slate-900"
+                            className="font-inter text-base leading-[150%] text-slate-900"
                           >
                             {paragraph}
                           </p>
@@ -98,10 +98,10 @@ export function Testimonials() {
                       </blockquote>
                       <figcaption className="relative mt-6 flex items-center justify-between border-t border-slate-100 pt-6">
                         <div>
-                          <div className="font-display text-base text-slate-900">
+                          <div className="font-inter text-base font-medium text-slate-900">
                             {testimonial.author.name}
                           </div>
-                          <div className="mt-1 text-sm text-slate-500">
+                          <div className="mt-1 font-inter text-sm leading-[140%] text-slate-500">
                             {testimonial.author.role}
                           </div>
                         </div>

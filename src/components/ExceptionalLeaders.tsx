@@ -1,5 +1,3 @@
-"use client";
-
 import { Container } from "@/components/Container";
 import Image from "next/image";
 
@@ -14,53 +12,35 @@ const companies: Company[] = [
 ];
 
 export function ExceptionalLeaders() {
-  const duplicatedCompanies = [...companies, ...companies];
-
   return (
-    <section className="py-20 bg-slate-50">
+    <div className="bg-white py-24 sm:py-32">
       <Container>
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">
-            Trusted by teams that value engineering quality.
-          </h2>
-          <p className="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">
-            We partner with companies that care about long-term growth, clean code, and good culture fit.
-          </p>
-          <p className="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">
-            You'll only meet teams that are serious about building great products and treating developers as partners.
-          </p>
-        </div>
-        
-        <div className="mt-16 overflow-hidden">
-          <div className="relative">
-            <div className="flex animate-scroll w-fit pause-on-hover">
-              {duplicatedCompanies.map((company, index) => (
-                <div
-                  key={`${company.name}-${index}`}
-                  className="flex-shrink-0 mx-8 flex items-center justify-center w-48 h-20"
-                >
-                  <div className="w-full h-full flex items-center justify-center p-4 bg-white rounded-lg shadow-sm border border-slate-200">
-                    {company.logo ? (
-                      <Image
-                        src={company.logo}
-                        alt={company.alt || company.name}
-                        width={160}
-                        height={48}
-                        className="grayscale contrast-200 object-contain w-full h-full"
-                        style={{ objectFit: 'contain' }}
-                      />
-                    ) : (
-                      <span className="text-slate-900 font-semibold text-sm grayscale contrast-200">
-                        {company.name}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
+        <h2 className="text-center text-lg/8 font-semibold text-gray-900">
+          Trusted by the world's most innovative teams
+        </h2>
+        <div className="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
+          {companies.map((company, index) => (
+            <div
+              key={`${company.name}-${index}`}
+              className="col-span-2 max-h-12 w-full flex items-center justify-center lg:col-span-1"
+            >
+              {company.logo ? (
+                <Image
+                  src={company.logo}
+                  alt={company.alt || company.name}
+                  width={158}
+                  height={48}
+                  className="max-h-12 w-full object-contain grayscale"
+                />
+              ) : (
+                <span className="text-gray-900 font-semibold text-sm">
+                  {company.name}
+                </span>
+              )}
             </div>
-          </div>
+          ))}
         </div>
       </Container>
-    </section>
+    </div>
   );
 }

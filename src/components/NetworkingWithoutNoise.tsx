@@ -7,15 +7,15 @@ export function NetworkingWithoutNoise() {
       <div className="absolute inset-0 bg-gradient-to-br from-purple-200/30 via-pink-200/20 to-orange-200/30 blur-3xl"></div>
       <Container className="relative">
         <div className="text-center">
-          <h2 className="text-4xl font-bold text-slate-900 sm:text-5xl">
-            Networking without the noise.
+          <h2 className="font-satoshi text-[36px] sm:text-[40px] font-semibold leading-[120%] text-slate-900">
+            Take the guesswork out of prepping for technical interviews
           </h2>
           <div className="mt-10">
             <Button
-              href="#request-access"
-              className="bg-slate-900 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-slate-800 transition-colors"
+              href="https://forms.gle/xrCJx96rF86HDL576"
+              className="bg-slate-900 text-white px-8 py-3 rounded-lg font-satoshi text-base font-semibold leading-[120%] hover:bg-slate-800 transition-colors"
             >
-              Book a session with us
+              → Book Your Mock Interview
             </Button>
           </div>
         </div>
