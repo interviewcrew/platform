@@ -24,7 +24,7 @@ export default async function ForCompanies() {
 
   return (
     <>
-      <Header />
+      <Header forCompanies={true} />
       <main>
         <CompaniesHero />
         <Separator />
@@ -44,6 +44,3 @@ export default async function ForCompanies() {
     </>
   );
 }
-
-
-

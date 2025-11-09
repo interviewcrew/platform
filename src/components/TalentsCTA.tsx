@@ -14,7 +14,7 @@ export function TalentsCTA() {
             Get evaluated once. Join a trusted network.
           </p>
           <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
-            We'll match you with opportunities that actually fit your skills and goals.
+            We&ldquo;ll match you with opportunities that actually fit your skills and goals.
           </p>
           <div className="mt-10">
             <Button
@@ -29,5 +29,3 @@ export function TalentsCTA() {
     </section>
   );
 }
-
-

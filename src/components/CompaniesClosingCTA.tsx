@@ -8,10 +8,10 @@ export function CompaniesClosingCTA() {
       <Container className="relative">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-satoshi text-[36px] sm:text-[40px] font-semibold leading-[120%] text-slate-900">
-            Let's make hiring simple again.
+            Let&apos;s make hiring simple again.
           </h2>
           <p className="mt-6 font-inter text-lg leading-[150%] text-slate-600">
-            Tell us what you're hiring for. We'll send you a shortlist of fully vetted engineers ready to join your team.
+            Tell us what you&apos;re hiring for. We&apos;ll send you a shortlist of fully vetted engineers ready to join your team.
           </p>
           <div className="mt-10">
             <Button

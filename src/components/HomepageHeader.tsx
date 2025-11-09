@@ -6,7 +6,7 @@ import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { InterviewCrewLogo } from "@/components/InterviewCrewLogo";
 
-export function Header() {
+export function Header({ forCompanies }: { forCompanies: boolean }) {
   return (
     <header className="py-6">
       <Container>
@@ -17,14 +17,23 @@ export function Header() {
             </Link>
           </div>
           <div className="flex items-center gap-x-8">
-            <Link href="/for-companies" className="text-slate-700 hover:text-slate-900 transition-colors">
-              For Companies
+            <Link
+              href={!forCompanies ? "/for-companies" : "/"}
+              className="text-slate-700 hover:text-slate-900 transition-colors"
+            >
+              {!forCompanies ? "For Companies" : "For Candidates"}
             </Link>
             <Button
-              href="https://zeeg.me/interviewcrew/introduction-call"
+              href={
+                forCompanies
+                  ? "https://zeeg.me/interviewcrew/introduction-call"
+                  : "https://forms.gle/xrCJx96rF86HDL576"
+              }
               className="bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-slate-800 transition-colors"
             >
-              Book a session with us
+              {forCompanies
+                ? "Book a session with us"
+                : "Book a mock interview"}
             </Button>
           </div>
         </nav>
