@@ -21,7 +21,7 @@ export default async function ForTalents() {
 
   return (
     <>
-      <Header />
+      <Header forCompanies={false} />
       <main>
         <TalentsHero />
         <JoinProcess />
@@ -33,5 +33,3 @@ export default async function ForTalents() {
     </>
   );
 }
-
-

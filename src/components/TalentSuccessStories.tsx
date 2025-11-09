@@ -36,7 +36,7 @@ export function TalentSuccessStories() {
             Success stories from our talent pool
           </h2>
           <p className="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">
-            See how talented professionals have found their dream roles through InterviewCrew's network-driven approach.
+            See how talented professionals have found their dream roles through InterviewCrew&apos;s network-driven approach.
           </p>
         </div>
         
@@ -55,7 +55,7 @@ export function TalentSuccessStories() {
                   </div>
                 </div>
                 <blockquote className="text-slate-700 italic">
-                  "{story.quote}"
+                &ldquo;{story.quote}&rdquo;
                 </blockquote>
               </div>
             ))}
