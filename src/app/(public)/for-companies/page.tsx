@@ -1,11 +1,13 @@
 import { Footer } from "@/components/HomepageFooter";
 import { Header } from "@/components/HomepageHeader";
-import { Hero } from "@/components/Hero";
-import { ExceptionalLeaders } from "@/components/ExceptionalLeaders";
-import { HumanNetworking } from "@/components/HumanNetworking";
-import { HowItWorks } from "@/components/HowItWorks";
-import { Faqs } from "@/components/Faqs";
-import { NetworkingWithoutNoise } from "@/components/NetworkingWithoutNoise";
+import { CompaniesHero } from "@/components/CompaniesHero";
+import { TheProblem } from "@/components/TheProblem";
+import { CompaniesProcess } from "@/components/CompaniesProcess";
+import { Guarantee } from "@/components/Guarantee";
+import { WhyCompaniesChooseUs } from "@/components/WhyCompaniesChooseUs";
+import { WhoWeWorkWith } from "@/components/WhoWeWorkWith";
+import { TermsAndConditions } from "@/components/TermsAndConditions";
+import { Separator } from "@/components/ui/separator";
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { getUserByExternalId } from "@/db/repositories/userRepository";
@@ -24,12 +26,19 @@ export default async function ForCompanies() {
     <>
       <Header />
       <main>
-        <Hero />
-        <ExceptionalLeaders />
-        <HumanNetworking />
-        <HowItWorks />
-        <Faqs />
-        <NetworkingWithoutNoise />
+        <CompaniesHero />
+        <Separator />
+        <TheProblem />
+        <Separator />
+        <CompaniesProcess />
+        <Separator />
+        <Guarantee />
+        <Separator />
+        <WhyCompaniesChooseUs />
+        <Separator />
+        <WhoWeWorkWith />
+        <Separator />
+        <TermsAndConditions />
       </main>
       <Footer />
     </>
