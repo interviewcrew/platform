@@ -53,26 +53,26 @@ const steps = [
 
 export function CompaniesProcess() {
   return (
-    <section id="our-process" className="py-20 bg-slate-50">
+    <section id="our-process" className="py-12 bg-slate-50 sm:py-16 lg:py-20">
       <Container>
-        <div className="text-center mb-16">
-          <h2 className="font-satoshi text-[36px] sm:text-[40px] font-semibold leading-[120%] text-slate-900">
+        <div className="text-center mb-10 sm:mb-12 lg:mb-16 px-4 sm:px-0">
+          <h2 className="font-satoshi text-[28px] sm:text-[36px] lg:text-[40px] font-semibold leading-[120%] text-slate-900">
             We handle the hard part, you focus on hiring the right fit.
           </h2>
         </div>
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-4 px-4 sm:px-0">
           {steps.map((step, index) => (
-            <div key={index} className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+            <div key={index} className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
               <div className="flex items-center space-x-4 mb-4">
                 {step.icon}
-                <div className="font-satoshi text-2xl font-bold text-slate-900">
+                <div className="font-satoshi text-xl sm:text-2xl font-bold text-slate-900">
                   {step.number}
                 </div>
               </div>
-              <h3 className="font-inter text-xl font-semibold leading-[130%] text-slate-900 mb-3">
+              <h3 className="font-inter text-lg sm:text-xl font-semibold leading-[130%] text-slate-900 mb-3">
                 {step.title}
               </h3>
-              <p className="font-inter text-base leading-[150%] text-slate-600">
+              <p className="font-inter text-sm sm:text-base leading-[150%] text-slate-600">
                 {step.description}
               </p>
             </div>

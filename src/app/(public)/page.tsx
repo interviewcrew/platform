@@ -23,7 +23,7 @@ export default async function Home() {
 
   return (
     <>
-      <Header forCompanies={false} />
+      <Header />
       <main>
         <Hero />
         <Separator />

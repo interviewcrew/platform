@@ -6,23 +6,23 @@ export function CompaniesHero() {
   return (
     <div className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-200/30 via-indigo-200/20 to-purple-200/30 blur-3xl"></div>
-      <Container className="relative pb-20 pt-16 text-center lg:pt-24">
-        <h1 className="mx-auto max-w-4xl font-satoshi text-[56px] sm:text-[64px] font-bold leading-[110%] tracking-tight text-slate-900">
+      <Container className="relative pb-12 pt-12 text-center sm:pb-16 sm:pt-16 lg:pb-20 lg:pt-24">
+        <h1 className="mx-auto max-w-4xl font-satoshi text-[32px] sm:text-[48px] lg:text-[64px] font-bold leading-[110%] tracking-tight text-slate-900 px-4">
           Hire the top 1% of engineers who deliver from day one.
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl font-inter text-lg leading-[150%] text-slate-600">
+        <p className="mx-auto mt-4 max-w-2xl font-inter text-base sm:text-lg leading-[150%] text-slate-600 px-4 sm:mt-6">
           We pre-interview, test, and verify every developer before they reach you. You meet only proven A-players who match your team technically and culturally, and you pay only after they pass probation.
         </p>
-        <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
           <Button
             href="https://zeeg.me/interviewcrew/introduction-call"
-            className="bg-slate-900 text-white px-8 py-3 rounded-lg font-satoshi text-base font-semibold leading-[120%] hover:bg-slate-800 transition-colors"
+            className="bg-slate-900 text-white w-full sm:w-auto px-6 sm:px-8 py-3 rounded-lg font-satoshi text-sm sm:text-base font-semibold leading-[120%] hover:bg-slate-800 transition-colors"
           >
             Book a session with us
           </Button>
           <Link
             href="#our-process"
-            className="font-inter text-base font-medium text-slate-700 hover:text-slate-900 transition-colors"
+            className="font-inter text-sm sm:text-base font-medium text-slate-700 hover:text-slate-900 transition-colors"
           >
             See How Our Process Works
           </Link>
