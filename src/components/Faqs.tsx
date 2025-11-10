@@ -34,11 +34,11 @@ export function Faqs() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section className="py-20 bg-slate-50">
+    <section className="py-12 bg-slate-50 sm:py-16 lg:py-20">
       <Container>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 px-4 sm:px-0">
           <div>
-            <h2 className="font-satoshi text-[36px] sm:text-[40px] font-semibold leading-[120%] text-slate-900">
+            <h2 className="font-satoshi text-[28px] sm:text-[36px] lg:text-[40px] font-semibold leading-[120%] text-slate-900">
             Frequently asked questions
           </h2>
           </div>
@@ -47,10 +47,10 @@ export function Faqs() {
             {faqs.map((faq, index) => (
               <div key={index} className="border border-slate-200 rounded-lg">
                 <button
-                  className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-slate-50 transition-colors"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 text-left flex justify-between items-center hover:bg-slate-50 transition-colors gap-4"
                   onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
                 >
-                  <span className="font-inter font-medium text-slate-900">
+                  <span className="font-inter text-sm sm:text-base font-medium text-slate-900">
                     {faq.question}
                   </span>
                   <svg
@@ -70,8 +70,8 @@ export function Faqs() {
                   </svg>
                 </button>
                 {openIndex === index && (
-                  <div className="px-6 pb-4">
-                    <p className="font-inter text-base leading-[150%] text-slate-600">
+                  <div className="px-4 sm:px-6 pb-4">
+                    <p className="font-inter text-sm sm:text-base leading-[150%] text-slate-600">
                       {faq.answer}
                     </p>
                   </div>

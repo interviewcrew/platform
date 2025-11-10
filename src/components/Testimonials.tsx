@@ -67,47 +67,47 @@ export function Testimonials() {
     <section
       id="testimonials"
       aria-label="What our customers are saying"
-      className="bg-slate-50 py-20 sm:py-32"
+      className="bg-slate-50 py-12 sm:py-16 lg:py-20 xl:py-32"
     >
       <Container>
-        <div className="mx-auto max-w-2xl md:text-center">
-          <h2 className="font-satoshi text-[36px] sm:text-[40px] font-semibold leading-[120%] text-slate-900">
+        <div className="mx-auto max-w-2xl md:text-center px-4 sm:px-0">
+          <h2 className="font-satoshi text-[28px] sm:text-[36px] lg:text-[40px] font-semibold leading-[120%] text-slate-900">
             Loved by Candidates and Companies
           </h2>
         </div>
         <ul
           role="list"
-          className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:gap-8 lg:mt-20 lg:max-w-none lg:grid-cols-3"
+          className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-6 sm:mt-12 sm:gap-8 lg:mt-20 lg:max-w-none lg:grid-cols-3 px-4 sm:px-0"
         >
           {testimonials.map((column, columnIndex) => (
             <li key={columnIndex}>
               <ul role="list" className="flex flex-col gap-y-6 sm:gap-y-8">
                 {column.map((testimonial, testimonialIndex) => (
                   <li key={testimonialIndex}>
-                    <figure className="relative rounded-2xl bg-white p-6 shadow-xl shadow-slate-900/10">
-                      <QuoteIcon className="absolute left-6 top-6 fill-slate-100" />
+                    <figure className="relative rounded-2xl bg-white p-4 sm:p-6 shadow-xl shadow-slate-900/10">
+                      <QuoteIcon className="absolute left-4 top-4 sm:left-6 sm:top-6 fill-slate-100 w-16 h-12 sm:w-[105px] sm:h-[78px]" />
                       <blockquote className="relative">
                         {testimonial.content.map((paragraph, index) => (
                           <p
                             key={index}
-                            className="font-inter text-base leading-[150%] text-slate-900"
+                            className="font-inter text-sm sm:text-base leading-[150%] text-slate-900"
                           >
                             {paragraph}
                           </p>
                         ))}
                       </blockquote>
-                      <figcaption className="relative mt-6 flex items-center justify-between border-t border-slate-100 pt-6">
+                      <figcaption className="relative mt-4 sm:mt-6 flex items-center justify-between border-t border-slate-100 pt-4 sm:pt-6">
                         <div>
-                          <div className="font-inter text-base font-medium text-slate-900">
+                          <div className="font-inter text-sm sm:text-base font-medium text-slate-900">
                             {testimonial.author.name}
                           </div>
-                          <div className="mt-1 font-inter text-sm leading-[140%] text-slate-500">
+                          <div className="mt-1 font-inter text-xs sm:text-sm leading-[140%] text-slate-500">
                             {testimonial.author.role}
                           </div>
                         </div>
-                        <div className="overflow-hidden rounded-full bg-slate-50">
+                        <div className="overflow-hidden rounded-full bg-slate-50 flex-shrink-0 ml-4">
                           <Image
-                            className="h-14 w-14 object-cover"
+                            className="h-12 w-12 sm:h-14 sm:w-14 object-cover"
                             src={testimonial.author.image}
                             alt=""
                             width={56}
